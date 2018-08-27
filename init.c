@@ -15,12 +15,12 @@ void Init (double *v, double x1, double x2, double x3)
 {
     double r;
 
-    r = sqrt(x1*x1 + x2*x2);
-    v[VX1] = v[VX2] = 0.0;
-    if (r < 1.0){
+    r = sqrt(x1*x1 + x2*x2); # magnitude of radius
+    v[VX1] = v[VX2] = 0.0; # initilize vx and vy to zero
+    if (r < 1.0){ # interior to disk set pressure and density uniform vals
       v[RHO] = 10.0;
       v[PRS] = 30.0;
-    }else{
+    }else{  # exterior to disk set pressure and density to unit vals
       v[RHO] = 1.0;
       v[PRS] = 1.0;
     }
