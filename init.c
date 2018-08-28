@@ -15,12 +15,12 @@ void Init (double *v, double x1, double x2, double x3)
 {
     double r;
 
-    r = sqrt(x1*x1 + x2*x2); # magnitude of radius
-    v[VX1] = v[VX2] = 0.0; # initilize vx and vy to zero
-    if (r < 1.0){ # interior to disk set pressure and density uniform vals
+    r = sqrt(x1*x1 + x2*x2); /* magnitude of radius */
+    v[VX1] = v[VX2] = 0.0; /* initilize vx and vy to zero */
+    if (r < 1.0){ /* interior to disk set pressure and density uniform vals */
       v[RHO] = 10.0;
       v[PRS] = 30.0;
-    }else{  # exterior to disk set pressure and density to unit vals
+    }else{  /* exterior to disk set pressure and density to unit vals */
       v[RHO] = 1.0;
       v[PRS] = 1.0;
     }
@@ -28,7 +28,7 @@ void Init (double *v, double x1, double x2, double x3)
 
 /* ********************************************************************* */
 void InitDomain (Data *d, Grid *grid)
-/*! 
+/*!
  * Assign initial condition by looping over the computational domain.
  * Called after the usual Init() function to assign initial conditions
  * on primitive variables.
@@ -38,4 +38,3 @@ void InitDomain (Data *d, Grid *grid)
  *********************************************************************** */
 {
 }
-
