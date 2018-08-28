@@ -1,7 +1,7 @@
 #define  PHYSICS                        HD
 #define  DIMENSIONS                     2
 #define  COMPONENTS                     2
-#define  GEOMETRY                       CARTESIAN
+#define  GEOMETRY                       POLAR
 #define  BODY_FORCE                     NO
 #define  FORCED_TURB                    NO
 #define  COOLING                        NO
@@ -24,5 +24,6 @@
 
 /* [Beg] user-defined constants (do not change this line) */
 
+#define VTK_VECTOR_DUMP                 YES
 
 /* [End] user-defined constants (do not change this line) */
