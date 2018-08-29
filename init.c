@@ -19,7 +19,7 @@ Simulates a disk modeling a star with radius 10 centered around the origin in a
 /* ******************************************************************** */
 #define RHO_C  1 /* Density at center of star */
 #define K  0.935 /* Constant for polytropic pressure profile */
-#define G  6e-8 /* Gravitational constant */
+#define G  6.67e-3 /* Gravitational constant */
 #define M_STAR  1.e5 /* Mass of Star */
 #define R 10.0 /*Radius of Star*/
 
