@@ -1,12 +1,12 @@
 #define  PHYSICS                        HD
-#define  DIMENSIONS                     2
-#define  COMPONENTS                     2
-#define  GEOMETRY                       POLAR
-#define  BODY_FORCE                     NO
+#define  DIMENSIONS                     3
+#define  COMPONENTS                     3
+#define  GEOMETRY                       SPHERICAL
+#define  BODY_FORCE                     POTENTIAL
 #define  FORCED_TURB                    NO
 #define  COOLING                        NO
 #define  RECONSTRUCTION                 LINEAR
-#define  TIME_STEPPING                  RK2
+#define  TIME_STEPPING                  RK3
 #define  DIMENSIONAL_SPLITTING          NO
 #define  NTRACER                        0
 #define  USER_DEF_PARAMETERS            0
@@ -21,9 +21,7 @@
 
 /* -- user-defined parameters (labels) -- */
 
-
 /* [Beg] user-defined constants (do not change this line) */
 
-#define VTK_VECTOR_DUMP                 YES
 
 /* [End] user-defined constants (do not change this line) */
