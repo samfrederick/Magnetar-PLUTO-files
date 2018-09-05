@@ -5,7 +5,7 @@
 #define  BODY_FORCE                     POTENTIAL
 #define  FORCED_TURB                    NO
 #define  COOLING                        NO
-#define  RECONSTRUCTION                 LINEAR
+#define  RECONSTRUCTION                 WENO3
 #define  TIME_STEPPING                  RK3
 #define  DIMENSIONAL_SPLITTING          NO
 #define  NTRACER                        0
@@ -20,8 +20,10 @@
 #define  ROTATING_FRAME                 NO
 
 /* -- user-defined parameters (labels) -- */
-
+/*#define INITIAL_SMOOTHING               YES*/
+#define INTERNAL_BOUNDARY               YES
 /* [Beg] user-defined constants (do not change this line) */
-
-
+#define UNIT_DENSITY                    1.e10
+#define UNIT_LENGTH                     1.e7
+#define UNIT_VELOCITY                   1.e7
 /* [End] user-defined constants (do not change this line) */
