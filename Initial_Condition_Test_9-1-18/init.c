@@ -13,20 +13,20 @@
 /* ///////////////////////////////////////////////////////////////////// */
 #include "pluto.h"
 
-#define G  6.67e-8 /* Gravitational constant */
-#define M_STAR  1.e8 /* Mass of Star */
-#define RHO_C 1.0 /* Core density of star */
-#define R 1.0 /*Radius of Star*/
-#define K .3
+#define G_CONST  6.67e-8 /* Gravitational constant */
+// #define M_STAR  1e10 /* Mass of Star */
+// #define RHO_C 1e10 /* Core density of star */
+// #define R 1.0 /*Radius of Star*/
+// #define K .3
 
 
 /* The following alternative constants, although more physically accurate, are not
 allowing the simulation to run */
 
-// #define M_STAR  1.e33 /* Mass of Star */
-// #define RHO_C 2.2e15 /* Core density of star */
-// #define R 1e6 /*Radius of Star*/
-// #define K 4.25e4
+#define M_STAR  1.e6 /* Mass of Star */
+#define RHO_C 1e7 /* Core density of star */
+#define R 1.0 /*Radius of Star*/
+#define K 4.25e4
 /* ********************************************************************* */
 void Init (double *v, double x1, double x2, double x3)
 /*!
@@ -55,7 +55,7 @@ void Init (double *v, double x1, double x2, double x3)
  *
  *********************************************************************** */
 {
-  v[RHO] = 1e-4;
+  v[RHO] = 1;
   v[VX1] = 0.0;
   v[VX2] = 0.0;
   v[VX3] = 0.0;
@@ -80,7 +80,7 @@ void Init (double *v, double x1, double x2, double x3)
   v[VX1] = v[VX2] = 0;
   if (r < 1.0){
     v[RHO] = (RHO_C*sin((CONST_PI*r)/1.0)*1.0)/(r*CONST_PI); /* Density for n = 1 polytrope*/
-    v[PRS] = K*v[RHO]*v[RHO]; /* Pressure for n = 1 polytrope*/
+    /*v [PRS] = K*v[RHO]*v[RHO]; /* Pressure for n = 1 polytrope*/
   }
 
 }
@@ -218,7 +218,7 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
 
   if (side == X3_BEG){  /* -- X3_BEG boundary -- */
     if (box->vpos == CENTER) {
-      BOX_LOOP(box,k,j,i){  }
+      BOX_LOOP(box,k,j,i){  }/*M_STAR)/(4*R*RHO_C)*/
     }else if (box->vpos == X1FACE){
       BOX_LOOP(box,k,j,i){  }
     }else if (box->vpos == X2FACE){
@@ -274,18 +274,26 @@ double BodyForcePotential(double x1, double x2, double x3)
  *
  *********************************************************************** */
 {
-  double phi,r;
+  double r;
+  // r = sqrt(x1*x1 + x2*x2);
+  //
+  // return -(G*M_STAR);
+  // }else{
+  //   // return -(G*M_STAR);
+  // }
+  double phi;
 
   r = sqrt(x1*x1 + x2*x2);
-  if ((r < 1.0) && (r != 0)) { /* Potential interior to star except r = 0 */
-    phi = 4*G*RHO_C*(-(R*R*R*sin((CONST_PI*r)/R))/(CONST_PI*CONST_PI*r)-(M_STAR)/(4*R*RHO_C));
+  if ((r < 1) && (r != 0)) { /* Potential interior to star except r = 0 */
+   phi = 4*G_CONST*RHO_C*(-(R*R*R*sin((CONST_PI*r)/R))/(CONST_PI*CONST_PI*r)-(M_STAR)/(4*R*RHO_C));
   }
   if (r >= 1){ /* Potential exterior to star */
-    phi = -(G*M_STAR) / r;
+    phi = -(G_CONST*M_STAR) / r;
   }
   if (r = 0){ /* Potential at r = 0 */
-    phi = 4*G*RHO_C*(-(R*R)/(CONST_PI)-(M_STAR)/(4*R*RHO_C));
+    phi = 4*G_CONST*RHO_C*(-(R*R)/(CONST_PI)-(M_STAR)/(4*R*RHO_C));
   }
+
   return phi;
 }
 #endif
