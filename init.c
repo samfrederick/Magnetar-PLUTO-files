@@ -34,20 +34,25 @@ ratio at r = 8000 km, where the radius of the star is 10000 km. We want this
 ratio to be 8000 km / 10000 km  = 0.8. NOT 0.8 / 100000 km as I mistakenly
 have previously specified. This means that if we seek to use the domain
 {0 < x1 < 2}, we need to multiply this value by 10000 to 'normalize' the ratio
-r / R such that (10000*x1)/ R = r / R.  
+r / R such that (10000*x1)/ R = r / R.
 
 
 /* ********************************************************************* */
 
-#define G_CONST  6.67e-11 /* Gravitational constant */
+/* CONSTANTS */
+#define G_CONST  6.67e-8 /*cm^3 g^-1 s^-2 */   /* Gravitational constant */
+#define M_STAR  1e33 /* g */                   /* Mass of Star */
+#define RHO_C 2.2e15 /* g cm^-3 */             /* Core density of star */
+#define R 1.e6 /* cm */                        /* Radius of Star */
+#define K 4.25e4 /* cm^5 g^-1 s^-2 */
+
+/* HARD CODED VALUES */
+#define RPOT 6.67e19 /* Magnitude of the gravitational potential at r = R */
+#define GPRSQ 1.4674e20 /* G x rho_c x R^2 */
 
 
-#define M_STAR  1e30 /* Mass of Star */
-#define RHO_C 2.2e17 /* Core density of star */
-#define R 1e7 /*Radius of Star*/
-#define K 4.25e-8
-#define RPOT 6.67e15 /* Magnitude of the gravitational potential at r = R */
-#define GPRSQ 1.4674e21
+#define VACUUM 1e10 /* Vacuum 'density' for purposes of calculation */
+
 /* *****************
 /* ********************************************************************* */
 void Init (double *v, double x1, double x2, double x3)
@@ -77,12 +82,12 @@ void Init (double *v, double x1, double x2, double x3)
  *
  *********************************************************************** */
 {
-  v[RHO] = 1;
+  v[RHO] = VACUUM / UNIT_DENSITY;
   v[VX1] = 0.0;
   v[VX2] = 0.0;
   v[VX3] = 0.0;
   #if HAVE_ENERGY
-  v[PRS] = 1.0;
+  v[PRS] = 1.0e15 / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
   #endif
   v[TRC] = 0.0;
 
@@ -97,11 +102,15 @@ void Init (double *v, double x1, double x2, double x3)
   #endif
 
   if ((x1 < 1.0) && (x1!= 0)){
-    v[RHO] = (RHO_C*sin((CONST_PI*x1)/1.0))/(x1*CONST_PI);
+    v[RHO] = (RHO_C*sin((CONST_PI*x1)/1.0))/(x1*CONST_PI) + VACUUM;
+    v[RHO] = v[RHO] / UNIT_DENSITY; /* Converting to UNITLESS computational values */
     v[PRS] = K*v[RHO]*v[RHO];
+    v[PRS] = v[PRS] / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
   }else if(x1 == 0){ /* Density at center, this may be causing errors in simulation */
-     v[RHO] = RHO_C; /* Density at star core */
+     v[RHO] = RHO_C + VACUUM;/* Density at star core */
+     v[RHO] = v[RHO] / UNIT_DENSITY;
      v[PRS] = K*RHO_C*RHO_C;
+     v[PRS] = v[PRS] / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
   }
 }
 /* ********************************************************************* */
@@ -179,9 +188,14 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
   x2 = grid->x[JDIR];
   x3 = grid->x[KDIR];
 
-  if (side == 0) {    /* -- check solution inside domain -- */
-    DOM_LOOP(k,j,i){}
-  }
+  // if (side == 0) {    /* -- check solution inside domain -- */
+  //   TOT_LOOP(k,j,i){
+  //     /*if (d->Vc[RHO][k][j][i] < 0.0){*/
+  //       d->Vc[RHO][k][j][i] = 1e5;
+  //       d->Vc[PRS][k][j][i] = 1e5;
+  //     /*}*/
+  //   }
+  // }
 
   if (side == X1_BEG){  /* -- X1_BEG boundary -- */
     if (box->vpos == CENTER) {
@@ -294,12 +308,15 @@ double BodyForcePotential(double x1, double x2, double x3)
   if ((x1 < 1) && (x1 != 0)) { /* Potential interior to star except r = 0 */
     phi = (-4*GPRSQ*sin(CONST_PI*x1))/(CONST_PI*CONST_PI*x1) - RPOT ; /* Factor of R has been taken out for first term
     denominator because of normalization*/
+    phi = phi/(UNIT_VELOCITY*UNIT_VELOCITY);
   }
   if (x1 >= 1){ /* Potential exterior to star */
     phi = -(G_CONST*M_STAR) / (10000*x1);
+    phi = phi/(UNIT_VELOCITY*UNIT_VELOCITY);
   }
   if (x1 == 0){ /* Potential at r = 0 */
     phi = 4*G_CONST*RHO_C*(-(R*R)/(CONST_PI)-(M_STAR)/(4*R*RHO_C));
+    phi = phi/(UNIT_VELOCITY*UNIT_VELOCITY);
   }
 
   return phi;
