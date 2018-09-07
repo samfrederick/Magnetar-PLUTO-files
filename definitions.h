@@ -20,13 +20,15 @@
 #define  ROTATING_FRAME                 NO
 
 /* -- user-defined parameters (labels) -- */
-/*#define INITIAL_SMOOTHING               YES*/
-#define INTERNAL_BOUNDARY               YES
+
+
 /* [Beg] user-defined constants (do not change this line) */
-#define UNIT_DENSITY                    1.e10
-#define UNIT_LENGTH                     1.e10
-#define UNIT_VELOCITY                   1.e10
-#define VTK_VECTOR_DUMP                 YES
-#define VTK_TIME_INFO                   YES
-#define WARNING_MESSAGES                YES
+
+#define  UNIT_DENSITY                   1.e10
+#define  UNIT_LENGTH                    1.e10
+#define  UNIT_VELOCITY                  1.e10
+#define  VTK_VECTOR_DUMP                YES
+#define  VTK_TIME_INFO                  YES
+#define  WARNING_MESSAGES               YES
+
 /* [End] user-defined constants (do not change this line) */
