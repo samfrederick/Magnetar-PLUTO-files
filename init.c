@@ -82,6 +82,9 @@ void Init (double *v, double x1, double x2, double x3)
  *
  *********************************************************************** */
 {
+  /* */ 
+  g_gamma = 2.0;
+
   v[RHO] = VACUUM / UNIT_DENSITY;
   v[VX1] = 0.0;
   v[VX2] = 0.0;
@@ -311,7 +314,7 @@ double BodyForcePotential(double x1, double x2, double x3)
 {
   /* similar normalization of computaitonal radius 'r' to be in proportion with R*/
    double phi;
-  
+
    if ((x1 < 1) && (x1 != 0)) { /* Potential interior to star except r = 0 */
      phi = (-4*GPRSQ*sin(CONST_PI*x1))/(CONST_PI*CONST_PI*x1) - RPOT ; /* Factor of R has been taken out for first term
      denominator because of normalization*/
