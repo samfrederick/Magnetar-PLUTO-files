@@ -87,7 +87,7 @@ void Init (double *v, double x1, double x2, double x3)
   v[VX2] = 0.0;
   v[VX3] = 0.0;
   #if HAVE_ENERGY
-  v[PRS] = 1e-2 /*1.0e10 / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY)*/;
+  v[PRS] = 1e-25 /*1.0e10 / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY)*/;
   #endif
   v[TRC] = 0.0;
 
@@ -103,13 +103,19 @@ void Init (double *v, double x1, double x2, double x3)
 
   if ((x1 < 1.0) && (x1!= 0)){
     v[RHO] = (RHO_C*sin(CONST_PI*x1))/(x1*CONST_PI) + VACUUM;
-    v[RHO] = v[RHO] / UNIT_DENSITY; /* Converting to UNITLESS computational values */
     v[PRS] = K*v[RHO]*v[RHO];
+
+    /* Normalize values for density and pressure */
+    v[RHO] = v[RHO] / UNIT_DENSITY; /* Converting to UNITLESS computational values */
     v[PRS] = v[PRS] / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
+
+
   }else if(x1 == 0){ /* Density at center, this may be causing errors in simulation */
      v[RHO] = RHO_C + VACUUM;/* Density at star core */
-     v[RHO] = v[RHO] / UNIT_DENSITY;
      v[PRS] = K*RHO_C*RHO_C;
+
+     /* Normalize values for density and pressure */
+     v[RHO] = v[RHO] / UNIT_DENSITY;
      v[PRS] = v[PRS] / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
   }
 }
@@ -304,20 +310,21 @@ double BodyForcePotential(double x1, double x2, double x3)
  *********************************************************************** */
 {
   /* similar normalization of computaitonal radius 'r' to be in proportion with R*/
-  double phi;
-  if ((x1 < 1) && (x1 != 0)) { /* Potential interior to star except r = 0 */
-    phi = (-4*GPRSQ*sin(CONST_PI*x1))/(CONST_PI*CONST_PI*x1) - RPOT ; /* Factor of R has been taken out for first term
-    denominator because of normalization*/
-    phi = phi/(UNIT_VELOCITY*UNIT_VELOCITY);
-  }
-  if (x1 >= 1){ /* Potential exterior to star */
-    phi = -(G_CONST*M_STAR) / (10000*x1);
-    phi = phi/(UNIT_VELOCITY*UNIT_VELOCITY);
-  }
-  if (x1 == 0){ /* Potential at r = 0 */
-    phi = 4*G_CONST*RHO_C*(-(R*R)/(CONST_PI)-(M_STAR)/(4*R*RHO_C));
-    phi = phi/(UNIT_VELOCITY*UNIT_VELOCITY);
-  }
+   double phi;
+  
+   if ((x1 < 1) && (x1 != 0)) { /* Potential interior to star except r = 0 */
+     phi = (-4*GPRSQ*sin(CONST_PI*x1))/(CONST_PI*CONST_PI*x1) - RPOT ; /* Factor of R has been taken out for first term
+     denominator because of normalization*/
+     phi = phi/(UNIT_VELOCITY*UNIT_VELOCITY);
+   }
+   if (x1 >= 1){ /* Potential exterior to star */
+     phi = -(G_CONST*M_STAR) / (R*x1);
+     phi = phi/(UNIT_VELOCITY*UNIT_VELOCITY);
+   }
+   if (x1 == 0){ /* Potential at r = 0 */
+     phi = 4*G_CONST*RHO_C*(-(R*R)/(CONST_PI)-(M_STAR)/(4*R*RHO_C));
+     phi = phi/(UNIT_VELOCITY*UNIT_VELOCITY);
+   }
 
   return phi;
 }
