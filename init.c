@@ -47,9 +47,9 @@ ratio r / R such that (10000*x1)/ R = r / R.
 #define K 4.25e4 /* cm^5 g^-1 s^-2 */
 
 /* HARD CODED VALUES */
-#define RPOT 6.67e19 /* Magnitude of the gravitational potential at r = R */
+#define RPOT 6.67e19    /* Magnitude of the gravitational potential at r = R */
 #define GPRSQ 1.4674e20 /* G x rho_c x R^2 */
-#define VACUUM 1e10 /* Vacuum 'density' for purposes of calculation */
+#define VACUUM 1e10     /* Vacuum 'density' for purposes of calculation */
 
 /* ********************************************************************* */
 void Init (double *v, double x1, double x2, double x3)
