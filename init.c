@@ -41,7 +41,7 @@ r / R such that (10000*x1)/ R = r / R.
 
 /* CONSTANTS */
 #define G_CONST  6.67e-8 /*cm^3 g^-1 s^-2 */   /* Gravitational constant */
-#define M_STAR  1e33 /* g */                   /* Mass of Star */
+#define M_STAR  2.785e33 /* g */                   /* Mass of Star */
 #define RHO_C 2.2e15 /* g cm^-3 */             /* Core density of star */
 #define R 1.e6 /* cm */                        /* Radius of Star */
 #define K 4.25e4 /* cm^5 g^-1 s^-2 */
@@ -87,7 +87,7 @@ void Init (double *v, double x1, double x2, double x3)
   v[VX2] = 0.0;
   v[VX3] = 0.0;
   #if HAVE_ENERGY
-  v[PRS] = 1.0e10 / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
+  v[PRS] = 1e-2 /*1.0e10 / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY)*/;
   #endif
   v[TRC] = 0.0;
 
@@ -102,7 +102,7 @@ void Init (double *v, double x1, double x2, double x3)
   #endif
 
   if ((x1 < 1.0) && (x1!= 0)){
-    v[RHO] = (RHO_C*sin((CONST_PI*x1)/1.0))/(x1*CONST_PI) + VACUUM;
+    v[RHO] = (RHO_C*sin(CONST_PI*x1))/(x1*CONST_PI) + VACUUM;
     v[RHO] = v[RHO] / UNIT_DENSITY; /* Converting to UNITLESS computational values */
     v[PRS] = K*v[RHO]*v[RHO];
     v[PRS] = v[PRS] / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
@@ -191,8 +191,8 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
   // if (side == 0) {    /* -- check solution inside domain -- */
   //   TOT_LOOP(k,j,i){
   //     /*if (d->Vc[RHO][k][j][i] < 0.0){*/
-  //       d->Vc[RHO][k][j][i] = 1e5;
-  //       d->Vc[PRS][k][j][i] = 1e5;
+  //       d->Vc[RHO][k][j][i] = 1e-4;
+  //       d->Vc[PRS][k][j][i] = 1e-4;
   //     /*}*/
   //   }
   // }
