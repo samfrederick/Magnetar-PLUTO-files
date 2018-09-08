@@ -82,7 +82,7 @@ void Init (double *v, double x1, double x2, double x3)
  *
  *********************************************************************** */
 {
-  /* */ 
+  /* */
   g_gamma = 2.0;
 
   v[RHO] = VACUUM / UNIT_DENSITY;
@@ -197,14 +197,16 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
   x2 = grid->x[JDIR];
   x3 = grid->x[KDIR];
 
-  // if (side == 0) {    /* -- check solution inside domain -- */
-  //   TOT_LOOP(k,j,i){
-  //     /*if (d->Vc[RHO][k][j][i] < 0.0){*/
-  //       d->Vc[RHO][k][j][i] = 1e-4;
-  //       d->Vc[PRS][k][j][i] = 1e-4;
-  //     /*}*/
-  //   }
-  // }
+  if (side == 0) {  /* NO EVOLUTION FOR PRESSURE/DENSITY OCCUR INSIDE THIS DOMAIN */
+    TOT_LOOP(k,j,i){
+      if (x1[i] <= 3*(RMAX-RMIN)/(RGRID)){ /* Determined domain lower limit for accuracy
+        in calucations of pressure and density which involve radius */ 
+        d->Vc[RHO][k][j][i] = (RHO_C + VACUUM) / UNIT_DENSITY;
+        d->Vc[PRS][k][j][i] = (K*RHO_C*RHO_C)/ (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
+        d->flag[k][j][i]   |= FLAG_INTERNAL_BOUNDARY; /* These values are TIME INDEPENDENT */
+      }
+    }
+  }
 
   if (side == X1_BEG){  /* -- X1_BEG boundary -- */
     if (box->vpos == CENTER) {
