@@ -7,53 +7,50 @@
   for problem configuration.
   It is automatically searched for by the makefile.
 
-  \author Sam Frederick
-  \date  created: 8-27-18, updated 9-4-18
+  \ author: Sam Frederick, Davidson College
+  \ date created: 8-27-18, work in progress.
 */
 /* ///////////////////////////////////////////////////////////////////// */
+
 #include "pluto.h"
 
 /*
 
-FOREWORD (9-4-18):
+FOREWORD (9-7-18):
 
-Units defined in  kms. It should be noted that this code does not successfuly
-function in conjunction with the current definitions.h and pluto.ini file.
-Solutions are actively being sought to minimize computational overload/underload
-and to bolster numerical stability by various hard coded parameters, changing to
-a unit system more apt to the problem and the magnitude of computed values.
+Units defined in cgs. Parameter values are first computed using cgs constants
+and are subsequently converted into 'dimensionless units' with considerations
+for minimizing computational over/underflow and in supporting the robustness of
+chosen numerical methods for computation.
 
 The radius r, which will be referred to in the code as 'x1' is a value that
 ranges from {0 < r < C} where C is the outermost boundary of the computational
-domain specified in line 3 of the pluto.ini file. Within the star, this radius
-takes the value {0 < r < 1}. There are numerous points in the code where we
-make reference in both equations of state and potential to r / R. We need to be
-very careful in our understanding of this value, as we can not simply use the
+domain specified in line 3 of the pluto.ini file. The domain of the star is
+defined by {0 < r < 1}. There are numerous points in the code where we make
+reference in both equations of state and potential to r / R. We must be
+quite careful in our understanding of this value, as we can not simply use the
 r specified prior as 'x1' in this ratio. Say we're computing the value of this
-ratio at r = 8000 km, where the radius of the star is 10000 km. We want this
-ratio to be 8000 km / 10000 km  = 0.8. NOT 0.8 / 100000 km as I mistakenly
-have previously specified. This means that if we seek to use the domain
-{0 < x1 < 2}, we need to multiply this value by 10000 to 'normalize' the ratio
-r / R such that (10000*x1)/ R = r / R.
+ratio at r = 8e5 cm  = 8000 km, where the radius of the star is 1e6 cm =
+10000 km. We want this ratio to be 8000 km / 10000 km  = 0.8. NOT 0.8 / 100000 km
+as I mistakenly have previously specified. This means that if we seek to use the
+domain {0 < x1 < 2}, we need to multiply this value by 10000 to 'normalize' the
+ratio r / R such that (10000*x1)/ R = r / R.
 
 
 /* ********************************************************************* */
 
 /* CONSTANTS */
 #define G_CONST  6.67e-8 /*cm^3 g^-1 s^-2 */   /* Gravitational constant */
-#define M_STAR  2.785e33 /* g */                   /* Mass of Star */
-#define RHO_C 2.2e15 /* g cm^-3 */             /* Core density of star */
-#define R 1.e6 /* cm */                        /* Radius of Star */
+#define M_STAR  2.785e33 /* g */               /* Mass of Star           */
+#define RHO_C 2.2e15 /* g cm^-3 */             /* Core density of star   */
+#define R 1.e6 /* cm */                        /* Radius of Star         */
 #define K 4.25e4 /* cm^5 g^-1 s^-2 */
 
 /* HARD CODED VALUES */
-#define RPOT 6.67e19 /* Magnitude of the gravitational potential at r = R */
+#define RPOT 6.67e19    /* Magnitude of the gravitational potential at r = R */
 #define GPRSQ 1.4674e20 /* G x rho_c x R^2 */
+#define VACUUM 1e10     /* Vacuum 'density' for purposes of calculation */
 
-
-#define VACUUM 1e10 /* Vacuum 'density' for purposes of calculation */
-
-/* *****************
 /* ********************************************************************* */
 void Init (double *v, double x1, double x2, double x3)
 /*!
@@ -82,19 +79,26 @@ void Init (double *v, double x1, double x2, double x3)
  *
  *********************************************************************** */
 {
+<<<<<<< HEAD
   /* */
   g_gamma = 2.0;
+=======
+>>>>>>> 59e15a82b298f943e3a7d8b83608ec4ac05b9743
 
-  v[RHO] = VACUUM / UNIT_DENSITY;
+  g_gamma = 2.0; /* Ratio of specific heats for an ideal gas, specifically
+  defined for N = 1 polytrope [USING IDEAL EOS] */
+
+  /* Global Initialization of state variables */
+  v[RHO] = VACUUM / UNIT_DENSITY; /* Vacuum density surrounding star */
   v[VX1] = 0.0;
   v[VX2] = 0.0;
   v[VX3] = 0.0;
   #if HAVE_ENERGY
   v[PRS] = 1e-25 /*1.0e10 / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY)*/;
   #endif
-  v[TRC] = 0.0;
+  v[TRC] = 0.0; /* Tracer (passive scalar, Q) */
 
-  #if PHYSICS == MHD || PHYSICS == RMHD
+  #if PHYSICS == MHD || PHYSICS == RMHD /* Presently inactive, using HD module */
   v[BX1] = 0.0;
   v[BX2] = 0.0;
   v[BX3] = 0.0;
@@ -105,6 +109,7 @@ void Init (double *v, double x1, double x2, double x3)
   #endif
 
   if ((x1 < 1.0) && (x1!= 0)){
+    /* Calcuate values for pressure and density using N = 1 polytrope EOS */
     v[RHO] = (RHO_C*sin(CONST_PI*x1))/(x1*CONST_PI) + VACUUM;
     v[PRS] = K*v[RHO]*v[RHO];
 
