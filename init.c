@@ -79,11 +79,8 @@ void Init (double *v, double x1, double x2, double x3)
  *
  *********************************************************************** */
 {
-<<<<<<< HEAD
   /* */
   g_gamma = 2.0;
-=======
->>>>>>> 59e15a82b298f943e3a7d8b83608ec4ac05b9743
 
   g_gamma = 2.0; /* Ratio of specific heats for an ideal gas, specifically
   defined for N = 1 polytrope [USING IDEAL EOS] */
