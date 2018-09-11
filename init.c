@@ -201,8 +201,8 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
 
   if (side == 0) {  /* NO EVOLUTION FOR PRESSURE/DENSITY OCCUR INSIDE THIS DOMAIN */
     TOT_LOOP(k,j,i){
-      if (x1[i] <= 3*(RMAX-RMIN)/(RGRID)){ /* Determined domain lower limit for accuracy
-        in calucations of pressure and density which involve radius */ 
+      if (x1[i] <= 1*(RMAX-RMIN)/(RGRID)){ /* Determined domain lower limit for accuracy
+        in calucations of pressure and density which involve radius */
         d->Vc[RHO][k][j][i] = (RHO_C + VACUUM) / UNIT_DENSITY;
         d->Vc[PRS][k][j][i] = (K*RHO_C*RHO_C)/ (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
         d->flag[k][j][i]   |= FLAG_INTERNAL_BOUNDARY; /* These values are TIME INDEPENDENT */
