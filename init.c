@@ -89,7 +89,7 @@ void Init (double *v, double x1, double x2, double x3)
   v[VX2] = 0.0;
   v[VX3] = 0.0;
   #if HAVE_ENERGY
-  v[PRS] = 1e-25 /*1.0e10 / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY)*/;
+  v[PRS] = v[RHO]/5; /*1.0e10 / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY)*/;
   #endif
   v[TRC] = 0.0; /* Tracer (passive scalar, Q) */
 
