@@ -13,7 +13,8 @@
 /* ///////////////////////////////////////////////////////////////////// */
 
 #include "pluto.h"
-
+#include <stdio.h>
+#include <math.h>
 /*
 
 FOREWORD (9-7-18):
@@ -45,6 +46,7 @@ ratio r / R such that (10000*x1)/ R = r / R.
 #define RHO_C 2.2e15 /* g cm^-3 */             /* Core density of star   */
 #define R 1.e6 /* cm */                        /* Radius of Star         */
 #define K 4.25e4 /* cm^5 g^-1 s^-2 */
+#define BMAX 5e15 /* gauss  := g^1/2 * cm^-1/2 * s */
 
 /* HARD CODED VALUES */
 #define RPOT 6.67e19    /* Magnitude of the gravitational potential at r = R */
@@ -103,10 +105,45 @@ void Init (double *v, double x1, double x2, double x3)
   v[AX3] = 0.0;
   #endif
 
+
+  if ((x1 < 1.0){
+    /*
+    Adding Plurely Poloidal Magnetic Field (Haskell et al. 2008)
+    */
+
+    v[BX1] = CONST_PI*CONST_PI*CONST_PI*x1*x1*x1 +
+    3*(CONST_PI*CONST_PI*x1*x1 -2)*sin(CONST_PI*r)+6*CONST_PI*x1*cos(CONST_PI*x1);
+    v[BX1] = v[BX1]*(BMAX*cos(x2))/(CONST_PI*(CONST_PI*CONST_PI-6))
+
+    v[BX2] = -2*CONST_PI*CONST_PI*CONST_PI*x1*x1*x1+
+    3*(CONST_PI*CONST_PI*x1*x1-2)*(sin(CONST_PI*x1)-CONST_PI*x1*cos(CONST_PI*x1));
+    v[BX2] = v[BX2]*(BMAX*sin(x2))/(2*CONST_PI*(CONST_PI*CONST_PI-6))
+
+    v[BX3] = 0.0;
+
+    /* Normalization */
+    v[BX1] = v[BX1] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY
+    v[BX2] = v[BX2] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY
+    v[BX3] = v[BX3] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY
+
+  } else{
+    v[BX1] = (BMAX*cos(x2))/(x1*x1*x1)
+    v[BX2] = (BMAX*sin(x2))/(2*x1*x1*x1)
+    v[BX3] = 0
+
+    /* Normalization */
+    v[BX1] = v[BX1] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY
+    v[BX2] = v[BX2] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY
+    v[BX3] = v[BX3] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY
+  }
+
   if ((x1 < 1.0) && (x1!= 0)){
     /* Calcuate values for pressure and density using N = 1 polytrope EOS */
     v[RHO] = (RHO_C*sin(CONST_PI*x1))/(x1*CONST_PI) + VACUUM;
     v[PRS] = K*v[RHO]*v[RHO];
+
+
+    /**********************************************************************/
 
     /* Normalize values for density and pressure */
     v[RHO] = v[RHO] / UNIT_DENSITY; /* Converting to UNITLESS computational values */
