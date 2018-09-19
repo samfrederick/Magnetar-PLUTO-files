@@ -106,35 +106,35 @@ void Init (double *v, double x1, double x2, double x3)
   #endif
 
 
-  if ((x1 < 1.0){
+  if (x1 < 1.0){
     /*
     Adding Plurely Poloidal Magnetic Field (Haskell et al. 2008)
     */
 
     v[BX1] = CONST_PI*CONST_PI*CONST_PI*x1*x1*x1 +
-    3*(CONST_PI*CONST_PI*x1*x1 -2)*sin(CONST_PI*r)+6*CONST_PI*x1*cos(CONST_PI*x1);
-    v[BX1] = v[BX1]*(BMAX*cos(x2))/(CONST_PI*(CONST_PI*CONST_PI-6))
+    3*(CONST_PI*CONST_PI*x1*x1 -2)*sin(CONST_PI*x1)+6*CONST_PI*x1*cos(CONST_PI*x1);
+    v[BX1] = v[BX1]*(BMAX*cos(x2))/(CONST_PI*(CONST_PI*CONST_PI-6));
 
     v[BX2] = -2*CONST_PI*CONST_PI*CONST_PI*x1*x1*x1+
     3*(CONST_PI*CONST_PI*x1*x1-2)*(sin(CONST_PI*x1)-CONST_PI*x1*cos(CONST_PI*x1));
-    v[BX2] = v[BX2]*(BMAX*sin(x2))/(2*CONST_PI*(CONST_PI*CONST_PI-6))
+    v[BX2] = v[BX2]*(BMAX*sin(x2))/(2*CONST_PI*(CONST_PI*CONST_PI-6));
 
     v[BX3] = 0.0;
 
     /* Normalization */
-    v[BX1] = v[BX1] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY
-    v[BX2] = v[BX2] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY
-    v[BX3] = v[BX3] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY
+    v[BX1] = v[BX1] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
+    v[BX2] = v[BX2] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
+    v[BX3] = v[BX3] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
 
   } else{
-    v[BX1] = (BMAX*cos(x2))/(x1*x1*x1)
-    v[BX2] = (BMAX*sin(x2))/(2*x1*x1*x1)
-    v[BX3] = 0
+    v[BX1] = (BMAX*cos(x2))/(x1*x1*x1);
+    v[BX2] = (BMAX*sin(x2))/(2*x1*x1*x1);
+    v[BX3] = 0;
 
     /* Normalization */
-    v[BX1] = v[BX1] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY
-    v[BX2] = v[BX2] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY
-    v[BX3] = v[BX3] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY
+    v[BX1] = v[BX1] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
+    v[BX2] = v[BX2] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
+    v[BX3] = v[BX3] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
   }
 
   if ((x1 < 1.0) && (x1!= 0)){
