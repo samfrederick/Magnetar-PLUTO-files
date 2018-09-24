@@ -234,7 +234,7 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
   x2 = grid->x[JDIR];
   x3 = grid->x[KDIR];
 
-  if (side == 0) {  /* NO EVOLUTION FOR PRESSURE/DENSITY OCCUR INSIDE THIS DOMAIN */
+  if (side == 0) {
     TOT_LOOP(k,j,i){
       if (x1[i] <= 1*(RMAX-RMIN)/(RGRID)){ /* Determined domain lower limit for accuracy
         in calucations of pressure and density which involve radius */
@@ -242,12 +242,15 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
         d->Vc[PRS][k][j][i] = (K*RHO_C*RHO_C)/ (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
         d->flag[k][j][i]   |= FLAG_INTERNAL_BOUNDARY; /* These values are TIME INDEPENDENT */
       }
-      if (x1[i] > 1.98 ){
+      if (x1[i] > 1.98 ){ /* Set density/pressure fixed at outermost boundary of simulation */
         if (d->Vc[RHO][k][j][i] ){
           d->Vc[RHO][k][j][i] = (VACUUM) / UNIT_DENSITY;
           d->Vc[PRS][k][j][i] = (K*VACUUM*VACUUM)/ (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
           d->flag[k][j][i]   |= FLAG_INTERNAL_BOUNDARY; /* These values are TIME INDEPENDENT */
         }
+      }
+      if (d->Vc[PRS][k][j][i] < 1e-2 ){
+        d->Vc[PRS][k][j][i] = 4e-2; /* Pressure floor determined through trial testing */
       }
     }
   }
