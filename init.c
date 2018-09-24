@@ -249,8 +249,8 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
           d->flag[k][j][i]   |= FLAG_INTERNAL_BOUNDARY; /* These values are TIME INDEPENDENT */
         }
       }
-      if (d->Vc[PRS][k][j][i] < 1e-2 ){
-        d->Vc[PRS][k][j][i] = 4e-2; /* Pressure floor determined through trial testing */
+      if (d->Vc[PRS][k][j][i] < 1e-5 ){
+        d->Vc[PRS][k][j][i] = (K*VACUUM*VACUUM)/(UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY); /* Pressure floor determined through trial testing */
       }
     }
   }
