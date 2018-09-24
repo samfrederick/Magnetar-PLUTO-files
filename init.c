@@ -91,11 +91,11 @@ void Init (double *v, double x1, double x2, double x3)
   v[VX2] = 0.0;
   v[VX3] = 0.0;
   #if HAVE_ENERGY
-  v[PRS] = v[RHO]/5; /*1.0e10 / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY)*/;
+  v[PRS] = (K*VACUUM*VACUUM)/(UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY); /*1.0e10 / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY)*/;
   #endif
   v[TRC] = 0.0; /* Tracer (passive scalar, Q) */
 
-  #if PHYSICS == MHD || PHYSICS == RMHD /* Presently inactive, using HD module */
+  #if PHYSICS == MHD || PHYSICS == RMHD
   v[BX1] = 0.0;
   v[BX2] = 0.0;
   v[BX3] = 0.0;
@@ -105,37 +105,37 @@ void Init (double *v, double x1, double x2, double x3)
   v[AX3] = 0.0;
   #endif
 
-
-  if (x1 < 1.0){
-    /*
-    Adding Plurely Poloidal Magnetic Field (Haskell et al. 2008)
-    */
-
-    v[BX1] = CONST_PI*CONST_PI*CONST_PI*x1*x1*x1 +
-    3*(CONST_PI*CONST_PI*x1*x1 -2)*sin(CONST_PI*x1)+6*CONST_PI*x1*cos(CONST_PI*x1);
-    v[BX1] = v[BX1]*(BMAX*cos(x2))/(CONST_PI*(CONST_PI*CONST_PI-6));
-
-    v[BX2] = -2*CONST_PI*CONST_PI*CONST_PI*x1*x1*x1+
-    3*(CONST_PI*CONST_PI*x1*x1-2)*(sin(CONST_PI*x1)-CONST_PI*x1*cos(CONST_PI*x1));
-    v[BX2] = v[BX2]*(BMAX*sin(x2))/(2*CONST_PI*(CONST_PI*CONST_PI-6));
-
-    v[BX3] = 0.0;
-
-    /* Normalization */
-    v[BX1] = v[BX1] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
-    v[BX2] = v[BX2] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
-    v[BX3] = v[BX3] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
-
-  } else{
-    v[BX1] = (BMAX*cos(x2))/(x1*x1*x1);
-    v[BX2] = (BMAX*sin(x2))/(2*x1*x1*x1);
-    v[BX3] = 0;
-
-    /* Normalization */
-    v[BX1] = v[BX1] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
-    v[BX2] = v[BX2] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
-    v[BX3] = v[BX3] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
-  }
+  //
+  // if (x1 < 1.0){
+  //   /*
+  //   Adding Plurely Poloidal Magnetic Field (Haskell et al. 2008)
+  //   */
+  //
+  //   v[BX1] = CONST_PI*CONST_PI*CONST_PI*x1*x1*x1 +
+  //   3*(CONST_PI*CONST_PI*x1*x1 -2)*sin(CONST_PI*x1)+6*CONST_PI*x1*cos(CONST_PI*x1);
+  //   v[BX1] = v[BX1]*(BMAX*cos(x2))/(CONST_PI*(CONST_PI*CONST_PI-6));
+  //
+  //   v[BX2] = -2*CONST_PI*CONST_PI*CONST_PI*x1*x1*x1+
+  //   3*(CONST_PI*CONST_PI*x1*x1-2)*(sin(CONST_PI*x1)-CONST_PI*x1*cos(CONST_PI*x1));
+  //   v[BX2] = v[BX2]*(BMAX*sin(x2))/(2*CONST_PI*(CONST_PI*CONST_PI-6));
+  //
+  //   v[BX3] = 0.0;
+  //
+  //   /* Normalization */
+  //   v[BX1] = v[BX1] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
+  //   v[BX2] = v[BX2] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
+  //   v[BX3] = v[BX3] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
+  //
+  // } else{
+  //   v[BX1] = (BMAX*cos(x2))/(x1*x1*x1);
+  //   v[BX2] = (BMAX*sin(x2))/(2*x1*x1*x1);
+  //   v[BX3] = 0;
+  //
+  //   /* Normalization */
+  //   v[BX1] = v[BX1] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
+  //   v[BX2] = v[BX2] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
+  //   v[BX3] = v[BX3] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
+  // }
 
   if ((x1 < 1.0) && (x1!= 0)){
     /* Calcuate values for pressure and density using N = 1 polytrope EOS */
@@ -241,6 +241,13 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
         d->Vc[RHO][k][j][i] = (RHO_C + VACUUM) / UNIT_DENSITY;
         d->Vc[PRS][k][j][i] = (K*RHO_C*RHO_C)/ (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
         d->flag[k][j][i]   |= FLAG_INTERNAL_BOUNDARY; /* These values are TIME INDEPENDENT */
+      }
+      if (x1[i] > 1.98 ){
+        if (d->Vc[RHO][k][j][i] ){
+          d->Vc[RHO][k][j][i] = (VACUUM) / UNIT_DENSITY;
+          d->Vc[PRS][k][j][i] = (K*VACUUM*VACUUM)/ (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
+          d->flag[k][j][i]   |= FLAG_INTERNAL_BOUNDARY; /* These values are TIME INDEPENDENT */
+        }
       }
     }
   }
