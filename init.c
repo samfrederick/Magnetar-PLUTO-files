@@ -46,7 +46,7 @@ ratio r / R such that (10000*x1)/ R = r / R.
 #define RHO_C 2.2e15 /* g cm^-3 */             /* Core density of star   */
 #define R 1.e6 /* cm */                        /* Radius of Star         */
 #define K 4.25e4 /* cm^5 g^-1 s^-2 */
-#define BMAX 5e15 /* gauss  := g^1/2 * cm^-1/2 * s */
+#define BMAX 1e1 /* gauss  := g^1/2 * cm^-1/2 * s */
 
 /* HARD CODED VALUES */
 #define RPOT 6.67e19    /* Magnitude of the gravitational potential at r = R */
@@ -95,47 +95,39 @@ void Init (double *v, double x1, double x2, double x3)
   #endif
   v[TRC] = 0.0; /* Tracer (passive scalar, Q) */
 
-  #if PHYSICS == MHD || PHYSICS == RMHD
-  v[BX1] = 0.0;
-  v[BX2] = 0.0;
-  v[BX3] = 0.0;
 
-  v[AX1] = 0.0;
-  v[AX2] = 0.0;
-  v[AX3] = 0.0;
-  #endif
+  if (x1 < 1.0){
+    /*
+    Adding Plurely Poloidal Magnetic Field (Haskell et al. 2008)
+    */
 
-  //
-  // if (x1 < 1.0){
-  //   /*
-  //   Adding Plurely Poloidal Magnetic Field (Haskell et al. 2008)
-  //   */
-  //
-  //   v[BX1] = CONST_PI*CONST_PI*CONST_PI*x1*x1*x1 +
-  //   3*(CONST_PI*CONST_PI*x1*x1 -2)*sin(CONST_PI*x1)+6*CONST_PI*x1*cos(CONST_PI*x1);
-  //   v[BX1] = v[BX1]*(BMAX*cos(x2))/(CONST_PI*(CONST_PI*CONST_PI-6));
-  //
-  //   v[BX2] = -2*CONST_PI*CONST_PI*CONST_PI*x1*x1*x1+
-  //   3*(CONST_PI*CONST_PI*x1*x1-2)*(sin(CONST_PI*x1)-CONST_PI*x1*cos(CONST_PI*x1));
-  //   v[BX2] = v[BX2]*(BMAX*sin(x2))/(2*CONST_PI*(CONST_PI*CONST_PI-6));
-  //
-  //   v[BX3] = 0.0;
-  //
-  //   /* Normalization */
-  //   v[BX1] = v[BX1] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
-  //   v[BX2] = v[BX2] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
-  //   v[BX3] = v[BX3] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
-  //
-  // } else{
-  //   v[BX1] = (BMAX*cos(x2))/(x1*x1*x1);
-  //   v[BX2] = (BMAX*sin(x2))/(2*x1*x1*x1);
-  //   v[BX3] = 0;
-  //
-  //   /* Normalization */
-  //   v[BX1] = v[BX1] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
-  //   v[BX2] = v[BX2] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
-  //   v[BX3] = v[BX3] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
-  // }
+    v[BX1] = CONST_PI*CONST_PI*CONST_PI*x1*x1*x1 +
+    3*(CONST_PI*CONST_PI*x1*x1 -2)*sin(CONST_PI*x1)+6.0*CONST_PI*x1*cos(CONST_PI*x1);
+    v[BX1] = v[BX1]*(BMAX*cos(x2))/(CONST_PI*(CONST_PI*CONST_PI-6));
+
+    v[BX2] = -2*CONST_PI*CONST_PI*CONST_PI*x1*x1*x1+
+    3*(CONST_PI*CONST_PI*x1*x1-2)*(sin(CONST_PI*x1)-CONST_PI*x1*cos(CONST_PI*x1));
+    v[BX2] = v[BX2]*(BMAX*sin(x2))/(2.0*CONST_PI*(CONST_PI*CONST_PI-6));
+
+    /* Normalization */
+    v[BX1] = v[BX1] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
+    v[BX2] = v[BX2] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
+
+    /*
+    Purely Toroidal Field
+    */
+    v[BX3] = (BMAX*sin(CONST_PI*x1)*sin(x2))/CONST_PI;
+    v[BX3] = v[BX3] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
+  } else{
+    v[BX1] = (BMAX*cos(x2))/(x1*x1*x1);
+    v[BX2] = (BMAX*sin(x2))/(2.0*x1*x1*x1);
+    v[BX3] = 0;
+
+    /* Normalization */
+    v[BX1] = v[BX1] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
+    v[BX2] = v[BX2] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
+    v[BX3] = v[BX3] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
+  }
 
   if ((x1 < 1.0) && (x1!= 0)){
     /* Calcuate values for pressure and density using N = 1 polytrope EOS */
@@ -184,25 +176,25 @@ void Analysis (const Data *d, Grid *grid)
 {
 
 }
-#if PHYSICS == MHD
-/* ********************************************************************* */
-void BackgroundField (double x1, double x2, double x3, double *B0)
-/*!
- * Define the component of a static, curl-free background
- * magnetic field.
- *
- * \param [in] x1  position in the 1st coordinate direction \f$x_1\f$
- * \param [in] x2  position in the 2nd coordinate direction \f$x_2\f$
- * \param [in] x3  position in the 3rd coordinate direction \f$x_3\f$
- * \param [out] B0 array containing the vector componens of the background
- *                 magnetic field
- *********************************************************************** */
-{
-   B0[0] = 0.0;
-   B0[1] = 0.0;
-   B0[2] = 0.0;
-}
-#endif
+// #if PHYSICS == MHD
+// /* ********************************************************************* */
+// void BackgroundField (double x1, double x2, double x3, double *B0)
+// /*!
+//  * Define the component of a static, curl-free background
+//  * magnetic field.
+//  *
+//  * \param [in] x1  position in the 1st coordinate direction \f$x_1\f$
+//  * \param [in] x2  position in the 2nd coordinate direction \f$x_2\f$
+//  * \param [in] x3  position in the 3rd coordinate direction \f$x_3\f$
+//  * \param [out] B0 array containing the vector componens of the background
+//  *                 magnetic field
+//  *********************************************************************** */
+// {
+//    B0[0] = 0.0;
+//    B0[1] = 0.0;
+//    B0[2] = 0.0;
+// }
+// #endif
 
 /* ********************************************************************* */
 void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
@@ -249,7 +241,7 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
           d->flag[k][j][i]   |= FLAG_INTERNAL_BOUNDARY; /* These values are TIME INDEPENDENT */
         }
       }
-      if (d->Vc[PRS][k][j][i] < 1e-5 ){
+      if (d->Vc[PRS][k][j][i] < (K*VACUUM*VACUUM)/(UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY)){
         d->Vc[PRS][k][j][i] = (K*VACUUM*VACUUM)/(UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY); /* Pressure floor determined through trial testing */
       }
     }
@@ -269,7 +261,10 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
 
   if (side == X1_END){  /* -- X1_END boundary -- */
     if (box->vpos == CENTER) {
-      BOX_LOOP(box,k,j,i){  }
+      BOX_LOOP(box,k,j,i){
+        d->Vc[BX1][k][j][i] = (BMAX*cos(x2[j]))/(x1[i]*x1[i]*x1[i]);
+        d->Vc[BX2][k][j][i] = (BMAX*sin(x2[j]))/(2.0*x1[i]*x1[i]*x1[i]);
+        d->Vc[BX3][k][j][i] = 0.0;  }
     }else if (box->vpos == X1FACE){
       BOX_LOOP(box,k,j,i){  }
     }else if (box->vpos == X2FACE){
@@ -281,7 +276,9 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
 
   if (side == X2_BEG){  /* -- X2_BEG boundary -- */
     if (box->vpos == CENTER) {
-      BOX_LOOP(box,k,j,i){  }
+      BOX_LOOP(box,k,j,i){
+      d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
+      }
     }else if (box->vpos == X1FACE){
       BOX_LOOP(box,k,j,i){  }
     }else if (box->vpos == X2FACE){
@@ -293,7 +290,9 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
 
   if (side == X2_END){  /* -- X2_END boundary -- */
     if (box->vpos == CENTER) {
-      BOX_LOOP(box,k,j,i){  }
+      BOX_LOOP(box,k,j,i){
+      d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
+      }
     }else if (box->vpos == X1FACE){
       BOX_LOOP(box,k,j,i){  }
     }else if (box->vpos == X2FACE){
