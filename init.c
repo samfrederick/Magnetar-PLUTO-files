@@ -228,6 +228,34 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
 
   if (side == 0) {
     TOT_LOOP(k,j,i){
+
+      /*
+      Loop over domain immediately interior and exterior to star; replace
+      negative density/pressure values with respective lower boundary
+      */
+      if ((x1[i] > .98) && (x1[i] < 1.02)){
+        if (d->Vc[RHO][k][j][i] < (VACUUM) / UNIT_DENSITY){
+          /* Replace negative values with average density of gridpoints radially adjacent to the current point */
+            d->Vc[RHO][k][j][i] = (d->Vc[RHO][k][j][i+1]+d->Vc[RHO][k][j][i-1])/2.0;
+        }
+        if (d->Vc[PRS][k][j][i] < (K*VACUUM*VACUUM)/(UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY)){
+          /* Replace negative values with average pressure of gridpoints radially adjacent to the current point */
+          d->Vc[PRS][k][j][i] = (d->Vc[PRS][k][j][i+1]+d->Vc[PRS][k][j][i-1])/2.0;
+        }
+      }
+      /*
+      Impose averaging for boundary of computational domain.
+      */
+      if (x1[i] > 1.90) {
+        if (d->Vc[RHO][k][j][i] < (VACUUM) / UNIT_DENSITY){
+          /* Replace negative values with average density of gridpoints radially adjacent to the current point */
+            d->Vc[RHO][k][j][i] = (d->Vc[RHO][k][j][i+1]+d->Vc[RHO][k][j][i-1])/2.0;
+        }
+        if (d->Vc[PRS][k][j][i] < (K*VACUUM*VACUUM)/(UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY)){
+          /* Replace negative values with average pressure of gridpoints radially adjacent to the current point */
+          d->Vc[PRS][k][j][i] = (d->Vc[PRS][k][j][i+1]+d->Vc[PRS][k][j][i-1])/2.0;
+        }
+      }
       if (x1[i] <= 1*(RMAX-RMIN)/(RGRID)){ /* Determined domain lower limit for accuracy
         in calucations of pressure and density which involve radius */
         d->Vc[RHO][k][j][i] = (RHO_C + VACUUM) / UNIT_DENSITY;
