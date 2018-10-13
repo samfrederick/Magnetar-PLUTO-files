@@ -204,46 +204,46 @@ DOM_LOOP(k,j,i){
 
 }
 /* ********************************************************************* */
- void BackgroundField (double x1, double x2, double x3, double *B0)
- /*!
-  * Define the component of a static, curl-free background
-  * magnetic field.
-  *
-  * \param [in] x1  position in the 1st coordinate direction \f$x_1\f$
-  * \param [in] x2  position in the 2nd coordinate direction \f$x_2\f$
-  * \param [in] x3  position in the 3rd coordinate direction \f$x_3\f$
-  * \param [out] B0 array containing the vector components of the background
-  *                 magnetic field
-  *********************************************************************** */
- {
-   /*
-   Adding Plurely Poloidal Magnetic Field (Haskell et al. 2008)
-   */
-
-   v[BX1] = CONST_PI*CONST_PI*CONST_PI*x1*x1*x1 +
-   3*(CONST_PI*CONST_PI*x1*x1 -2)*sin(CONST_PI*x1)+6.0*CONST_PI*x1*cos(CONST_PI*x1);
-   v[BX1] = v[BX1]*(BMAX*cos(x2))/(CONST_PI*(CONST_PI*CONST_PI-6));
-
-   v[BX2] = -2*CONST_PI*CONST_PI*CONST_PI*x1*x1*x1+
-   3*(CONST_PI*CONST_PI*x1*x1-2)*(sin(CONST_PI*x1)-CONST_PI*x1*cos(CONST_PI*x1));
-   v[BX2] = v[BX2]*(BMAX*sin(x2))/(2.0*CONST_PI*(CONST_PI*CONST_PI-6));
-
-   /* Poloidal Normalization */
-   v[BX1] = v[BX1] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
-   v[BX2] = v[BX2] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
-
-
-   /*
-   Purely Toroidal Field
-   */
-   v[BX3] = (BMAX*sin(CONST_PI*x1)*sin(x2))/CONST_PI;
-   /*
-   Toroidal Normalization
-   */
-   v[BX3] = v[BX3] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
-
-
- }
+ // void BackgroundField (double x1, double x2, double x3, double *B0)
+ // /*!
+ //  * Define the component of a static, curl-free background
+ //  * magnetic field.
+ //  *
+ //  * \param [in] x1  position in the 1st coordinate direction \f$x_1\f$
+ //  * \param [in] x2  position in the 2nd coordinate direction \f$x_2\f$
+ //  * \param [in] x3  position in the 3rd coordinate direction \f$x_3\f$
+ //  * \param [out] B0 array containing the vector components of the background
+ //  *                 magnetic field
+ //  *********************************************************************** */
+ // {
+ //   /*
+ //   Adding Plurely Poloidal Magnetic Field (Haskell et al. 2008)
+ //   */
+ //
+ //   v[BX1] = CONST_PI*CONST_PI*CONST_PI*x1*x1*x1 +
+ //   3*(CONST_PI*CONST_PI*x1*x1 -2)*sin(CONST_PI*x1)+6.0*CONST_PI*x1*cos(CONST_PI*x1);
+ //   v[BX1] = v[BX1]*(BMAX*cos(x2))/(CONST_PI*(CONST_PI*CONST_PI-6));
+ //
+ //   v[BX2] = -2*CONST_PI*CONST_PI*CONST_PI*x1*x1*x1+
+ //   3*(CONST_PI*CONST_PI*x1*x1-2)*(sin(CONST_PI*x1)-CONST_PI*x1*cos(CONST_PI*x1));
+ //   v[BX2] = v[BX2]*(BMAX*sin(x2))/(2.0*CONST_PI*(CONST_PI*CONST_PI-6));
+ //
+ //   /* Poloidal Normalization */
+ //   v[BX1] = v[BX1] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
+ //   v[BX2] = v[BX2] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
+ //
+ //
+ //   /*
+ //   Purely Toroidal Field
+ //   */
+ //   v[BX3] = (BMAX*sin(CONST_PI*x1)*sin(x2))/CONST_PI;
+ //   /*
+ //   Toroidal Normalization
+ //   */
+ //   v[BX3] = v[BX3] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
+ //
+ //
+ // }
 
 
 /* ********************************************************************* */
