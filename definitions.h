@@ -1,4 +1,4 @@
-#define  PHYSICS                        HD
+#define  PHYSICS                        MHD
 #define  DIMENSIONS                     3
 #define  COMPONENTS                     3
 #define  GEOMETRY                       SPHERICAL
@@ -15,6 +15,11 @@
 
 #define  EOS                            IDEAL
 #define  ENTROPY_SWITCH                 NO
+#define  DIVB_CONTROL                   DIV_CLEANING
+#define  BACKGROUND_FIELD               NO
+#define  AMBIPOLAR_DIFFUSION            NO
+#define  RESISTIVITY                    NO
+#define  HALL_MHD                       NO
 #define  THERMAL_CONDUCTION             NO
 #define  VISCOSITY                      NO
 #define  ROTATING_FRAME                 NO
@@ -34,5 +39,7 @@
 #define  RMAX                           2.00
 #define  RMIN                           0.00
 #define  RGRID                          70
+
+
 
 /* [End] user-defined constants (do not change this line) */
