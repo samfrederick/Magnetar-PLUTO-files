@@ -191,59 +191,61 @@ DOM_LOOP(k,j,i){
     prs = d->Vc[PRS][k][j][i];
 
     if ((x1[i] < 1.02) && (x1[i] > 0.98)){
-      FILE *f = fopen("analysis.txt","w");
+      FILE *f;
+      f = fopen("ANALYSIS.txt","w");
       if (f == NULL ){
           printf("Error opening file!\n");
           exit(1);
       }
       fprintf(f,"Radius: %12.6f Density: %12.6e  Pressure: %12.6e \n",x1[i],rho,prs);
       fclose(f);
+
     }
 }
 
 
 }
 /* ********************************************************************* */
- void BackgroundField (double x1, double x2, double x3, double *B0)
- /*!
-  * Define the component of a static, curl-free background
-  * magnetic field.
-  *
-  * \param [in] x1  position in the 1st coordinate direction \f$x_1\f$
-  * \param [in] x2  position in the 2nd coordinate direction \f$x_2\f$
-  * \param [in] x3  position in the 3rd coordinate direction \f$x_3\f$
-  * \param [out] B0 array containing the vector components of the background
-  *                 magnetic field
-  *********************************************************************** */
- {
-   /*
-   Adding Plurely Poloidal Magnetic Field (Haskell et al. 2008)
-   */
-
-   v[BX1] = CONST_PI*CONST_PI*CONST_PI*x1*x1*x1 +
-   3*(CONST_PI*CONST_PI*x1*x1 -2)*sin(CONST_PI*x1)+6.0*CONST_PI*x1*cos(CONST_PI*x1);
-   v[BX1] = v[BX1]*(BMAX*cos(x2))/(CONST_PI*(CONST_PI*CONST_PI-6));
-
-   v[BX2] = -2*CONST_PI*CONST_PI*CONST_PI*x1*x1*x1+
-   3*(CONST_PI*CONST_PI*x1*x1-2)*(sin(CONST_PI*x1)-CONST_PI*x1*cos(CONST_PI*x1));
-   v[BX2] = v[BX2]*(BMAX*sin(x2))/(2.0*CONST_PI*(CONST_PI*CONST_PI-6));
-
-   /* Poloidal Normalization */
-   v[BX1] = v[BX1] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
-   v[BX2] = v[BX2] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
-
-
-   /*
-   Purely Toroidal Field
-   */
-   v[BX3] = (BMAX*sin(CONST_PI*x1)*sin(x2))/CONST_PI;
-   /*
-   Toroidal Normalization
-   */
-   v[BX3] = v[BX3] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
-
-
- }
+ // void BackgroundField (double x1, double x2, double x3, double *B0)
+ // /*!
+ //  * Define the component of a static, curl-free background
+ //  * magnetic field.
+ //  *
+ //  * \param [in] x1  position in the 1st coordinate direction \f$x_1\f$
+ //  * \param [in] x2  position in the 2nd coordinate direction \f$x_2\f$
+ //  * \param [in] x3  position in the 3rd coordinate direction \f$x_3\f$
+ //  * \param [out] B0 array containing the vector components of the background
+ //  *                 magnetic field
+ //  *********************************************************************** */
+ // {
+ //   /*
+ //   Adding Plurely Poloidal Magnetic Field (Haskell et al. 2008)
+ //   */
+ //
+ //   v[BX1] = CONST_PI*CONST_PI*CONST_PI*x1*x1*x1 +
+ //   3*(CONST_PI*CONST_PI*x1*x1 -2)*sin(CONST_PI*x1)+6.0*CONST_PI*x1*cos(CONST_PI*x1);
+ //   v[BX1] = v[BX1]*(BMAX*cos(x2))/(CONST_PI*(CONST_PI*CONST_PI-6));
+ //
+ //   v[BX2] = -2*CONST_PI*CONST_PI*CONST_PI*x1*x1*x1+
+ //   3*(CONST_PI*CONST_PI*x1*x1-2)*(sin(CONST_PI*x1)-CONST_PI*x1*cos(CONST_PI*x1));
+ //   v[BX2] = v[BX2]*(BMAX*sin(x2))/(2.0*CONST_PI*(CONST_PI*CONST_PI-6));
+ //
+ //   /* Poloidal Normalization */
+ //   v[BX1] = v[BX1] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
+ //   v[BX2] = v[BX2] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
+ //
+ //
+ //   /*
+ //   Purely Toroidal Field
+ //   */
+ //   v[BX3] = (BMAX*sin(CONST_PI*x1)*sin(x2))/CONST_PI;
+ //   /*
+ //   Toroidal Normalization
+ //   */
+ //   v[BX3] = v[BX3] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
+ //
+ //
+ // }
 
 
 /* ********************************************************************* */
@@ -283,16 +285,16 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
       Loop over domain immediately interior and exterior to star; replace
       negative density/pressure values with respective lower boundary
       */
-      if ((x1[i] > .98) && (x1[i] < 1.02)){
-        if (d->Vc[RHO][k][j][i] < (VACUUM) / UNIT_DENSITY){
-          /* Replace negative values with average density of gridpoints radially adjacent to the current point */
-            d->Vc[RHO][k][j][i] = (d->Vc[RHO][k][j][i+1]+d->Vc[RHO][k][j][i-1])/2.0;
-        }
-        if (d->Vc[PRS][k][j][i] < (K*VACUUM*VACUUM)/(UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY)){
-          /* Replace negative values with average pressure of gridpoints radially adjacent to the current point */
-          d->Vc[PRS][k][j][i] = (d->Vc[PRS][k][j][i+1]+d->Vc[PRS][k][j][i-1])/2.0;
-        }
-      }
+      // if ((x1[i] > .98) && (x1[i] < 1.02)){
+      //   if (d->Vc[RHO][k][j][i] < (VACUUM) / UNIT_DENSITY){
+      //     /* Replace negative values with average density of gridpoints radially adjacent to the current point */
+      //       d->Vc[RHO][k][j][i] = (d->Vc[RHO][k][j][i+1]+d->Vc[RHO][k][j][i-1])/2.0;
+      //   }
+      //   if (d->Vc[PRS][k][j][i] < (K*VACUUM*VACUUM)/(UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY)){
+      //     /* Replace negative values with average pressure of gridpoints radially adjacent to the current point */
+      //     d->Vc[PRS][k][j][i] = (d->Vc[PRS][k][j][i+1]+d->Vc[PRS][k][j][i-1])/2.0;
+      //   }
+      //}
       /*
       Impose averaging for boundary of computational domain.
       */
@@ -322,7 +324,14 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
 
   if (side == X1_BEG){  /* -- X1_BEG boundary -- */
     if (box->vpos == CENTER) {
-      BOX_LOOP(box,k,j,i){  }
+      BOX_LOOP(box,k,j,i){
+        d->Vc[RHO][k][j][i] = RHO_C + VACUUM;/* Density at star core */
+        d->Vc[PRS][k][j][i] = K*RHO_C*RHO_C;
+
+        /* Normalize values for density and pressure */
+        d->Vc[RHO][k][j][i] = d->Vc[RHO][k][j][i] / UNIT_DENSITY;
+        d->Vc[PRS][k][j][i] = d->Vc[PRS][k][j][i] / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
+        }
     }else if (box->vpos == X1FACE){
       BOX_LOOP(box,k,j,i){  }
     }else if (box->vpos == X2FACE){
@@ -332,21 +341,25 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
     }
   }
 
-  // if (side == X1_END){  /* -- X1_END boundary -- */
-  //   if (box->vpos == CENTER) {
-  //     BOX_LOOP(box,k,j,i){
-  //       d->Vc[BX1][k][j][i] = (BMAX*cos(x2[j]))/(x1[i]*x1[i]*x1[i]);
-  //       d->Vc[BX2][k][j][i] = (BMAX*sin(x2[j]))/(2.0*x1[i]*x1[i]*x1[i]);
-  //       d->Vc[BX3][k][j][i] = 0.0;  }
-  //   }else if (box->vpos == X1FACE){
-  //     BOX_LOOP(box,k,j,i){  }
-  //   }else if (box->vpos == X2FACE){
-  //     BOX_LOOP(box,k,j,i){  }
-  //   }else if (box->vpos == X3FACE){
-  //     BOX_LOOP(box,k,j,i){  }
-  //   }
-  // }
-  //
+  if (side == X1_END){  /* -- X1_END boundary -- */
+    if (box->vpos == CENTER) {
+      BOX_LOOP(box,k,j,i){
+        // d->Vc[BX1][k][j][i] = (BMAX*cos(x2[j]))/(x1[i]*x1[i]*x1[i]);
+        // d->Vc[BX2][k][j][i] = (BMAX*sin(x2[j]))/(2.0*x1[i]*x1[i]*x1[i]);
+        // d->Vc[BX3][k][j][i] = 0.0;
+        d->Vc[RHO][k][j][i] = (VACUUM) / UNIT_DENSITY;
+        d->Vc[PRS][k][j][i] = (K*VACUUM*VACUUM)/ (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
+
+      }
+    }else if (box->vpos == X1FACE){
+      BOX_LOOP(box,k,j,i){  }
+    }else if (box->vpos == X2FACE){
+      BOX_LOOP(box,k,j,i){  }
+    }else if (box->vpos == X3FACE){
+      BOX_LOOP(box,k,j,i){  }
+    }
+  }
+
   // if (side == X2_BEG){  /* -- X2_BEG boundary -- */
   //   if (box->vpos == CENTER) {
   //     BOX_LOOP(box,k,j,i){
@@ -375,29 +388,29 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
   //   }
   // }
 
-  if (side == X3_BEG){  /* -- X3_BEG boundary -- */
-    if (box->vpos == CENTER) {
-      BOX_LOOP(box,k,j,i){  }
-    }else if (box->vpos == X1FACE){
-      BOX_LOOP(box,k,j,i){  }
-    }else if (box->vpos == X2FACE){
-      BOX_LOOP(box,k,j,i){  }
-    }else if (box->vpos == X3FACE){
-      BOX_LOOP(box,k,j,i){  }
-    }
-  }
-
-  if (side == X3_END){  /* -- X3_END boundary -- */
-    if (box->vpos == CENTER) {
-      BOX_LOOP(box,k,j,i){  }
-    }else if (box->vpos == X1FACE){
-      BOX_LOOP(box,k,j,i){  }
-    }else if (box->vpos == X2FACE){
-      BOX_LOOP(box,k,j,i){  }
-    }else if (box->vpos == X3FACE){
-      BOX_LOOP(box,k,j,i){  }
-    }
-  }
+  // if (side == X3_BEG){  /* -- X3_BEG boundary -- */
+  //   if (box->vpos == CENTER) {
+  //     BOX_LOOP(box,k,j,i){  }
+  //   }else if (box->vpos == X1FACE){
+  //     BOX_LOOP(box,k,j,i){  }
+  //   }else if (box->vpos == X2FACE){
+  //     BOX_LOOP(box,k,j,i){  }
+  //   }else if (box->vpos == X3FACE){
+  //     BOX_LOOP(box,k,j,i){  }
+  //   }
+  // }
+  //
+  // if (side == X3_END){  /* -- X3_END boundary -- */
+  //   if (box->vpos == CENTER) {
+  //     BOX_LOOP(box,k,j,i){  }
+  //   }else if (box->vpos == X1FACE){
+  //     BOX_LOOP(box,k,j,i){  }
+  //   }else if (box->vpos == X2FACE){
+  //     BOX_LOOP(box,k,j,i){  }
+  //   }else if (box->vpos == X3FACE){
+  //     BOX_LOOP(box,k,j,i){  }
+  //   }
+  // }
 }
 //
 // #if BODY_FORCE != NO
@@ -436,12 +449,12 @@ double BodyForcePotential(double x1, double x2, double x3)
   /* similar normalization of computaitonal radius 'r' to be in proportion with R*/
    double phi;
 
-   if ((x1 < 1) && (x1 != 0)) { /* Potential interior to star except r = 0 */
+   if ((x1 <= 1) && (x1 != 0)) { /* Potential interior to star except r = 0 */
      phi = (-4*GPRSQ*sin(CONST_PI*x1))/(CONST_PI*CONST_PI*x1) - RPOT ; /* Factor of R has been taken out for first term
      denominator because of normalization*/
      phi = phi/(UNIT_VELOCITY*UNIT_VELOCITY);
    }
-   if (x1 >= 1){ /* Potential exterior to star */
+   if (x1 > 1){ /* Potential exterior to star */
      phi = -(G_CONST*M_STAR) / (R*x1);
      phi = phi/(UNIT_VELOCITY*UNIT_VELOCITY);
    }
