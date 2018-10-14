@@ -51,7 +51,7 @@ ratio r / R such that (10000*x1)/ R = r / R.
 /* HARD CODED VALUES */
 #define RPOT 1.857595e20     /* Magnitude of the gravitational potential at r = R */
 #define GPRSQ 1.4674e20 /* G x rho_c x R^2 */
-#define VACUUM 1e10     /* Vacuum 'density' for purposes of calculation */
+#define VACUUM 5e10     /* Vacuum 'density' for purposes of calculation */
 
 /* ********************************************************************* */
 void Init (double *v, double x1, double x2, double x3)
@@ -298,16 +298,22 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
       /*
       Impose averaging for boundary of computational domain.
       */
-      if (x1[i] > 1.90) {
-        if (d->Vc[RHO][k][j][i] < (VACUUM) / UNIT_DENSITY){
+      // if (x1[i] > 1.90) {
+      //   if (d->Vc[RHO][k][j][i] < (VACUUM) / UNIT_DENSITY){
+      //     /* Replace negative values with average density of gridpoints radially adjacent to the current point */
+      //       d->Vc[RHO][k][j][i] = (d->Vc[RHO][k][j][i+1]+d->Vc[RHO][k][j][i-1])/2.0;
+      //   }
+      // }
+      if (d->Vc[RHO][k][j][i] < (VACUUM) / UNIT_DENSITY){
           /* Replace negative values with average density of gridpoints radially adjacent to the current point */
             d->Vc[RHO][k][j][i] = (d->Vc[RHO][k][j][i+1]+d->Vc[RHO][k][j][i-1])/2.0;
-        }
-        if (d->Vc[PRS][k][j][i] < (K*VACUUM*VACUUM)/(UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY)){
+      }
+
+      if (d->Vc[PRS][k][j][i] < (K*VACUUM*VACUUM)/(UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY)){
           /* Replace negative values with average pressure of gridpoints radially adjacent to the current point */
           d->Vc[PRS][k][j][i] = (d->Vc[PRS][k][j][i+1]+d->Vc[PRS][k][j][i-1])/2.0;
-        }
       }
+
       if (x1[i] <= 1*(RMAX-RMIN)/(RGRID)){ /* Determined domain lower limit for accuracy
         in calucations of pressure and density which involve radius */
         d->Vc[RHO][k][j][i] = (RHO_C + VACUUM) / UNIT_DENSITY;
@@ -449,12 +455,12 @@ double BodyForcePotential(double x1, double x2, double x3)
   /* similar normalization of computaitonal radius 'r' to be in proportion with R*/
    double phi;
 
-   if ((x1 <= 1) && (x1 != 0)) { /* Potential interior to star except r = 0 */
+   if ((x1 < 1) && (x1 != 0)) { /* Potential interior to star except r = 0 */
      phi = (-4*GPRSQ*sin(CONST_PI*x1))/(CONST_PI*CONST_PI*x1) - RPOT ; /* Factor of R has been taken out for first term
      denominator because of normalization*/
      phi = phi/(UNIT_VELOCITY*UNIT_VELOCITY);
    }
-   if (x1 > 1){ /* Potential exterior to star */
+   if (x1 >= 1){ /* Potential exterior to star */
      phi = -(G_CONST*M_STAR) / (R*x1);
      phi = phi/(UNIT_VELOCITY*UNIT_VELOCITY);
    }
