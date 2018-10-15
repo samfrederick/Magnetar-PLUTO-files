@@ -36,9 +36,9 @@
 #define  VTK_TIME_INFO                  YES
 #define  WARNING_MESSAGES               YES
 #define  INTERNAL_BOUNDARY              YES
-#define  RMAX                           2.00
+#define  RMAX                           1.00
 #define  RMIN                           0.00
-#define  RGRID                          70
+#define  RGRID                          100
 
 
 
