@@ -30,8 +30,8 @@ for x1 in r:
         pressureval = K*RHO_C*RHO_C
         
     elif x1 >= 1.0:
-        rhoval = VACUUM / UNIT_DENSITY;
-        pressureval = (K*VACUUM*VACUUM)/(UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
+        rhoval = VACUUM;
+        pressureval = (K*VACUUM*VACUUM);
         
     rhoval = rhoval / UNIT_DENSITY
     pressureval = pressureval / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY)  
@@ -39,10 +39,11 @@ for x1 in r:
     rho.append(rhoval)
     pressure.append(pressureval) 
     
-# py.plot(r,rho,"ro-")
-py.plot(r,pressure,"ro-")
+
+py.plot(r,rho,"bo-")
+#py.plot(r,pressure,"ro-")
 py.yscale("log")
-py.title("Log(Pressure) vs. Radius ")
-py.ylabel("Log(Pressure)")
+py.title("Log(Density) vs. Radius ")
+py.ylabel("Log(Density)")
 py.xlabel("Radius")
 py.show()
