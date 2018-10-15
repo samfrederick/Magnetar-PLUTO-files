@@ -306,12 +306,18 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
       // }
       if (d->Vc[RHO][k][j][i] < (VACUUM) / UNIT_DENSITY){
           /* Replace negative values with average density of gridpoints radially adjacent to the current point */
-            d->Vc[RHO][k][j][i] = (d->Vc[RHO][k][j][i+1]+d->Vc[RHO][k][j][i-1])/2.0;
+//          d->Vc[RHO][k][j][i] = (d->Vc[RHO][k][j][i+1]+d->Vc[RHO][k][j][i-1])/2.0;
+
+            d->Vc[RHO][k][j][i] = (VACUUM) / UNIT_DENSITY;
+
       }
 
       if (d->Vc[PRS][k][j][i] < (K*VACUUM*VACUUM)/(UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY)){
           /* Replace negative values with average pressure of gridpoints radially adjacent to the current point */
-          d->Vc[PRS][k][j][i] = (d->Vc[PRS][k][j][i+1]+d->Vc[PRS][k][j][i-1])/2.0;
+//        d->Vc[PRS][k][j][i] = (d->Vc[PRS][k][j][i+1]+d->Vc[PRS][k][j][i-1])/2.0;
+          printf("Low Pressure %f\n",d->Vc[PRS][k][j][i]);
+          d->Vc[PRS][k][j][i] = (K*VACUUM*VACUUM)/(UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
+          printf("Pressure corrected at %f\n",x1[i] );
       }
 
       if (x1[i] <= 1*(RMAX-RMIN)/(RGRID)){ /* Determined domain lower limit for accuracy
