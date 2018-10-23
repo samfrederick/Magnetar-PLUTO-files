@@ -46,7 +46,7 @@ ratio r / R such that (10000*x1)/ R = r / R.
 #define RHO_C 2.2e15 /* g cm^-3 */             /* Core density of star   */
 #define R 1.e6 /* cm */                        /* Radius of Star         */
 #define K 4.25e4 /* cm^5 g^-1 s^-2 */
-#define BMAX 1e13 /* gauss  := g^1/2 * cm^-1/2 * s */
+#define BMAX 1e15 /* gauss  := g^1/2 * cm^-1/2 * s */
 
 /* HARD CODED VALUES */
 #define RPOT 1.857595e20     /* Magnitude of the gravitational potential at r = R */
@@ -94,43 +94,43 @@ void Init (double *v, double x1, double x2, double x3)
   v[PRS] = (K*VACUUM*VACUUM)/(UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY); /*1.0e10 / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY)*/;
   v[TRC] = 0.0; /* Tracer (passive scalar, Q) */
 
-  // v[BX1] = (BMAX*cos(x2))/(x1*x1*x1);
-  // v[BX2] = (BMAX*sin(x2))/(2.0*x1*x1*x1);
-  // v[BX3] = 0;
-  //
-  // /* Normalization */
-  // v[BX1] = v[BX1] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
-  // v[BX2] = v[BX2] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
-  // v[BX3] = v[BX3] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
+  v[BX1] = (BMAX*cos(x2))/(x1*x1*x1);
+  v[BX2] = (BMAX*sin(x2))/(2.0*x1*x1*x1);
+  v[BX3] = 0;
+
+  /* Normalization */
+  v[BX1] = v[BX1] / (sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
+  v[BX2] = v[BX2] / (sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
+  v[BX3] = v[BX3] / (sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
 
 
   if ((x1 < 1.0) && (x1!= 0)){
-    // /*
-    // Adding Plurely Poloidal Magnetic Field (Haskell et al. 2008)
-    // */
-    //
-    // v[BX1] = CONST_PI*CONST_PI*CONST_PI*x1*x1*x1 +
-    // 3*(CONST_PI*CONST_PI*x1*x1 -2)*sin(CONST_PI*x1)+6.0*CONST_PI*x1*cos(CONST_PI*x1);
-    // v[BX1] = v[BX1]*(BMAX*cos(x2))/(CONST_PI*(CONST_PI*CONST_PI-6));
-    //
-    // v[BX2] = -2*CONST_PI*CONST_PI*CONST_PI*x1*x1*x1+
-    // 3*(CONST_PI*CONST_PI*x1*x1-2)*(sin(CONST_PI*x1)-CONST_PI*x1*cos(CONST_PI*x1));
-    // v[BX2] = v[BX2]*(BMAX*sin(x2))/(2.0*CONST_PI*(CONST_PI*CONST_PI-6));
-    //
-    // /* Poloidal Normalization */
-    // v[BX1] = v[BX1] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
-    // v[BX2] = v[BX2] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
-    //
-    //
-    // /*
-    // Purely Toroidal Field
-    // */
-    // v[BX3] = (BMAX*sin(CONST_PI*x1)*sin(x2))/CONST_PI;
-    // /*
-    // Toroidal Normalization
-    // */
-    // v[BX3] = v[BX3] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
-    //
+    /*
+    Adding Plurely Poloidal Magnetic Field (Haskell et al. 2008)
+    */
+
+    v[BX1] = CONST_PI*CONST_PI*CONST_PI*x1*x1*x1 +
+    3*(CONST_PI*CONST_PI*x1*x1 -2)*sin(CONST_PI*x1)+6.0*CONST_PI*x1*cos(CONST_PI*x1);
+    v[BX1] = v[BX1]*(BMAX*cos(x2))/(CONST_PI*(CONST_PI*CONST_PI-6));
+
+    v[BX2] = -2*CONST_PI*CONST_PI*CONST_PI*x1*x1*x1+
+    3*(CONST_PI*CONST_PI*x1*x1-2)*(sin(CONST_PI*x1)-CONST_PI*x1*cos(CONST_PI*x1));
+    v[BX2] = v[BX2]*(BMAX*sin(x2))/(2.0*CONST_PI*(CONST_PI*CONST_PI-6));
+
+    /* Poloidal Normalization */
+    v[BX1] = v[BX1] / (sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
+    v[BX2] = v[BX2] / (sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
+
+
+    /*
+    Purely Toroidal Field
+    */
+    v[BX3] = (BMAX*sin(CONST_PI*x1)*sin(x2))/CONST_PI;
+    /*
+    Toroidal Normalization
+    */
+    v[BX3] = v[BX3] / (sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
+
 
 
     /**********************************************************************/
@@ -153,6 +153,11 @@ void Init (double *v, double x1, double x2, double x3)
      /* Normalize values for density and pressure */
      v[RHO] = v[RHO] / UNIT_DENSITY;
      v[PRS] = v[PRS] / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
+
+     v[BX1] = 0;
+     v[BX2] = 0;
+     v[BX3] = 0;
+
   }
 }
 /* ********************************************************************* */
@@ -218,33 +223,7 @@ DOM_LOOP(k,j,i){
  //  *                 magnetic field
  //  *********************************************************************** */
  // {
- //   /*
- //   Adding Plurely Poloidal Magnetic Field (Haskell et al. 2008)
- //   */
- //
- //   v[BX1] = CONST_PI*CONST_PI*CONST_PI*x1*x1*x1 +
- //   3*(CONST_PI*CONST_PI*x1*x1 -2)*sin(CONST_PI*x1)+6.0*CONST_PI*x1*cos(CONST_PI*x1);
- //   v[BX1] = v[BX1]*(BMAX*cos(x2))/(CONST_PI*(CONST_PI*CONST_PI-6));
- //
- //   v[BX2] = -2*CONST_PI*CONST_PI*CONST_PI*x1*x1*x1+
- //   3*(CONST_PI*CONST_PI*x1*x1-2)*(sin(CONST_PI*x1)-CONST_PI*x1*cos(CONST_PI*x1));
- //   v[BX2] = v[BX2]*(BMAX*sin(x2))/(2.0*CONST_PI*(CONST_PI*CONST_PI-6));
- //
- //   /* Poloidal Normalization */
- //   v[BX1] = v[BX1] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
- //   v[BX2] = v[BX2] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
- //
- //
- //   /*
- //   Purely Toroidal Field
- //   */
- //   v[BX3] = (BMAX*sin(CONST_PI*x1)*sin(x2))/CONST_PI;
- //   /*
- //   Toroidal Normalization
- //   */
- //   v[BX3] = v[BX3] / sqrt(UNIT_DENSITY)*UNIT_VELOCITY;
- //
- //
+
  // }
 
 
@@ -331,6 +310,9 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
           d->Vc[PRS][k][j][i] = (K*VACUUM*VACUUM)/ (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
           d->flag[k][j][i]   |= FLAG_INTERNAL_BOUNDARY; /* These values are TIME INDEPENDENT */
       }
+      // if (x2[j] > 1.56) && (x2[j] < 1.58){
+      //   d->Vc[BX1][k][j][i] = 0.0;
+      // }
     }
   }
 
@@ -341,8 +323,9 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
         d->Vc[PRS][k][j][i] = K*RHO_C*RHO_C;
 
         /* Normalize values for density and pressure */
-        d->Vc[RHO][k][j][i] = d->Vc[RHO][k][j][i] / UNIT_DENSITY;
-        d->Vc[PRS][k][j][i] = d->Vc[PRS][k][j][i] / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
+        d->Vc[RHO][k][j][i] = 0.0;
+        d->Vc[PRS][k][j][i] = 0.0;
+        d->Vc[BX1][k][j][i] = 0.0;
         }
     }else if (box->vpos == X1FACE){
       BOX_LOOP(box,k,j,i){  }
@@ -356,9 +339,13 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
   if (side == X1_END){  /* -- X1_END boundary -- */
     if (box->vpos == CENTER) {
       BOX_LOOP(box,k,j,i){
-        // d->Vc[BX1][k][j][i] = (BMAX*cos(x2[j]))/(x1[i]*x1[i]*x1[i]);
-        // d->Vc[BX2][k][j][i] = (BMAX*sin(x2[j]))/(2.0*x1[i]*x1[i]*x1[i]);
-        // d->Vc[BX3][k][j][i] = 0.0;
+        d->Vc[BX1][k][j][i] = (BMAX*cos(x2[j]))/(RMAX*RMAX*RMAX);
+        d->Vc[BX2][k][j][i] = (BMAX*sin(x2[j]))/(2.0*RMAX*RMAX*RMAX);
+        d->Vc[BX3][k][j][i] = 0.0;
+
+        d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
+        d->Vc[BX2][k][j][i] = d->Vc[BX2][k][j][i] / (sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
+
         d->Vc[RHO][k][j][i] = (VACUUM) / UNIT_DENSITY;
         d->Vc[PRS][k][j][i] = (K*VACUUM*VACUUM)/ (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
 
@@ -372,33 +359,44 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
     }
   }
 
-  // if (side == X2_BEG){  /* -- X2_BEG boundary -- */
-  //   if (box->vpos == CENTER) {
-  //     BOX_LOOP(box,k,j,i){
-  //     d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
-  //     }
-  //   }else if (box->vpos == X1FACE){
-  //     BOX_LOOP(box,k,j,i){  }
-  //   }else if (box->vpos == X2FACE){
-  //     BOX_LOOP(box,k,j,i){  }
-  //   }else if (box->vpos == X3FACE){
-  //     BOX_LOOP(box,k,j,i){  }
-  //   }
-  // }
-  //
-  // if (side == X2_END){  /* -- X2_END boundary -- */
-  //   if (box->vpos == CENTER) {
-  //     BOX_LOOP(box,k,j,i){
-  //     d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
-  //     }
-  //   }else if (box->vpos == X1FACE){
-  //     BOX_LOOP(box,k,j,i){  }
-  //   }else if (box->vpos == X2FACE){
-  //     BOX_LOOP(box,k,j,i){  }
-  //   }else if (box->vpos == X3FACE){
-  //     BOX_LOOP(box,k,j,i){  }
-  //   }
-  // }
+  if (side == X2_BEG){  /* -- X2_BEG boundary -- */
+    if (box->vpos == CENTER) {
+      BOX_LOOP(box,k,j,i){
+      d->Vc[BX1][k][j][i] = CONST_PI*CONST_PI*CONST_PI*x1[i]*x1[i]*x1[i] +
+        3*(CONST_PI*CONST_PI*x1[i]*x1[i] -2)*sin(CONST_PI*x1[i])+6.0*CONST_PI*x1[i]*cos(CONST_PI*x1[i]);
+      d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i]*(BMAX*1)/(CONST_PI*(CONST_PI*CONST_PI-6));
+      d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
+
+      d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
+      d->Vc[BX3][k][j][i] = 0.0;
+      }
+    }else if (box->vpos == X1FACE){
+      BOX_LOOP(box,k,j,i){  }
+    }else if (box->vpos == X2FACE){
+      BOX_LOOP(box,k,j,i){  }
+    }else if (box->vpos == X3FACE){
+      BOX_LOOP(box,k,j,i){  }
+    }
+  }
+
+  if (side == X2_END){  /* -- X2_END boundary -- */
+    if (box->vpos == CENTER) {
+      BOX_LOOP(box,k,j,i){
+      d->Vc[BX1][k][j][i] = CONST_PI*CONST_PI*CONST_PI*x1[i]*x1[i]*x1[i] +
+        3*(CONST_PI*CONST_PI*x1[i]*x1[i] -2)*sin(CONST_PI*x1[i])+6.0*CONST_PI*x1[i]*cos(CONST_PI*x1[i]);
+      d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i]*(BMAX*(-1))/(CONST_PI*(CONST_PI*CONST_PI-6));
+      d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
+
+      d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
+      }
+    }else if (box->vpos == X1FACE){
+      BOX_LOOP(box,k,j,i){  }
+    }else if (box->vpos == X2FACE){
+      BOX_LOOP(box,k,j,i){  }
+    }else if (box->vpos == X3FACE){
+      BOX_LOOP(box,k,j,i){  }
+    }
+  }
 
   // if (side == X3_BEG){  /* -- X3_BEG boundary -- */
   //   if (box->vpos == CENTER) {
