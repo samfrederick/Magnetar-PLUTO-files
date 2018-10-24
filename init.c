@@ -111,11 +111,11 @@ void Init (double *v, double x1, double x2, double x3)
 
     v[BX1] = CONST_PI*CONST_PI*CONST_PI*x1*x1*x1 +
     3*(CONST_PI*CONST_PI*x1*x1 -2)*sin(CONST_PI*x1)+6.0*CONST_PI*x1*cos(CONST_PI*x1);
-    v[BX1] = v[BX1]*(BMAX*cos(x2))/(CONST_PI*(CONST_PI*CONST_PI-6));
+    v[BX1] = (v[BX1]*(BMAX*cos(x2)))/(CONST_PI*(CONST_PI*CONST_PI-6));
 
     v[BX2] = -2*CONST_PI*CONST_PI*CONST_PI*x1*x1*x1+
     3*(CONST_PI*CONST_PI*x1*x1-2)*(sin(CONST_PI*x1)-CONST_PI*x1*cos(CONST_PI*x1));
-    v[BX2] = v[BX2]*(BMAX*sin(x2))/(2.0*CONST_PI*(CONST_PI*CONST_PI-6));
+    v[BX2] = (v[BX2]*(BMAX*sin(x2)))/(2.0*CONST_PI*(CONST_PI*CONST_PI-6));
 
     /* Poloidal Normalization */
     v[BX1] = v[BX1] / (sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
@@ -190,23 +190,23 @@ x1 = grid->x[IDIR];
 x2 = grid->x[JDIR];
 x3 = grid->x[KDIR];
 
-DOM_LOOP(k,j,i){
+// DOM_LOOP(k,j,i){
+//
+//     rho = d->Vc[RHO][k][j][i];
+//     prs = d->Vc[PRS][k][j][i];
+//
+//     if ((x1[i] < 1.02) && (x1[i] > 0.98)){
+//       FILE *f;
+//       f = fopen("ANALYSIS.txt","w");
+//       if (f == NULL ){
+//           printf("Error opening file!\n");
+//           exit(1);
+//       }
+//       fprintf(f,"Radius: %12.6f Density: %12.6e  Pressure: %12.6e \n",x1[i],rho,prs);
+//       fclose(f);
 
-    rho = d->Vc[RHO][k][j][i];
-    prs = d->Vc[PRS][k][j][i];
-
-    if ((x1[i] < 1.02) && (x1[i] > 0.98)){
-      FILE *f;
-      f = fopen("ANALYSIS.txt","w");
-      if (f == NULL ){
-          printf("Error opening file!\n");
-          exit(1);
-      }
-      fprintf(f,"Radius: %12.6f Density: %12.6e  Pressure: %12.6e \n",x1[i],rho,prs);
-      fclose(f);
-
-    }
-}
+//  }
+// }
 
 
 }
@@ -257,35 +257,35 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
   x2 = grid->x[JDIR];
   x3 = grid->x[KDIR];
 
-  if (side == 0) {
-    TOT_LOOP(k,j,i){
-      if (d->Vc[RHO][k][j][i] < (VACUUM) / UNIT_DENSITY){
-          /* Replace negative values with vacuum density */
-            d->Vc[RHO][k][j][i] = (VACUUM) / UNIT_DENSITY;
-      }
-      if (d->Vc[PRS][k][j][i] < (K*VACUUM*VACUUM)/(UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY)){
-          /* Replace negative values with vacuum pressure */
-          //printf("Low Pressure %f\n",d->Vc[PRS][k][j][i]);
-          d->Vc[PRS][k][j][i] = (K*VACUUM*VACUUM)/(UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
-          //printf("Pressure corrected at %f\n",x1[i] );
-      }
-      if (x1[i] <= 1*(RMAX-RMIN)/(RGRID)){
-        /* Constraint on core density and pressure; time independent values */
-        d->Vc[RHO][k][j][i] = (RHO_C + VACUUM) / UNIT_DENSITY;
-        d->Vc[PRS][k][j][i] = (K*RHO_C*RHO_C)/ (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
-        d->flag[k][j][i]   |= FLAG_INTERNAL_BOUNDARY; /* These values are TIME INDEPENDENT */
-      }
-      if (x1[i] > 1.98 ){
-        /* Set density/pressure fixed at outermost boundary of simulation */
-          d->Vc[RHO][k][j][i] = (VACUUM) / UNIT_DENSITY;
-          d->Vc[PRS][k][j][i] = (K*VACUUM*VACUUM)/ (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
+    if (side == 0) {
+      TOT_LOOP(k,j,i){
+        if (d->Vc[RHO][k][j][i] < (VACUUM) / UNIT_DENSITY){
+            /* Replace negative values with vacuum density */
+              d->Vc[RHO][k][j][i] = (VACUUM) / UNIT_DENSITY;
+        }
+        if (d->Vc[PRS][k][j][i] < (K*VACUUM*VACUUM)/(UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY)){
+            /* Replace negative values with vacuum pressure */
+            //printf("Low Pressure %f\n",d->Vc[PRS][k][j][i]);
+            d->Vc[PRS][k][j][i] = (K*VACUUM*VACUUM)/(UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
+            //printf("Pressure corrected at %f\n",x1[i] );
+        }
+        if (x1[i] <= 1*(RMAX-RMIN)/(RGRID)){
+          /* Constraint on core density and pressure; time independent values */
+          d->Vc[RHO][k][j][i] = (RHO_C + VACUUM) / UNIT_DENSITY;
+          d->Vc[PRS][k][j][i] = (K*RHO_C*RHO_C)/ (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
           d->flag[k][j][i]   |= FLAG_INTERNAL_BOUNDARY; /* These values are TIME INDEPENDENT */
+        }
+        if (x1[i] > 1.98 ){
+          /* Set density/pressure fixed at outermost boundary of simulation */
+            d->Vc[RHO][k][j][i] = (VACUUM) / UNIT_DENSITY;
+            d->Vc[PRS][k][j][i] = (K*VACUUM*VACUUM)/ (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
+            d->flag[k][j][i]   |= FLAG_INTERNAL_BOUNDARY; /* These values are TIME INDEPENDENT */
+        }
+        // if (x2[j] > 1.56) && (x2[j] < 1.58){
+        //   d->Vc[BX1][k][j][i] = 0.0;
+        // }
       }
-      // if (x2[j] > 1.56) && (x2[j] < 1.58){
-      //   d->Vc[BX1][k][j][i] = 0.0;
-      // }
     }
-  }
 
   if (side == X1_BEG){  /* -- X1_BEG boundary -- */
     if (box->vpos == CENTER) {
@@ -294,9 +294,14 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
         d->Vc[PRS][k][j][i] = K*RHO_C*RHO_C;
 
         /* Normalize values for density and pressure */
-        d->Vc[RHO][k][j][i] = 0.0;
-        d->Vc[PRS][k][j][i] = 0.0;
+        d->Vc[RHO][k][j][i] = d->Vc[RHO][k][j][i] / UNIT_DENSITY;
+        d->Vc[PRS][k][j][i] = d->Vc[PRS][k][j][i] / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
+
+        /* B-field values */
         d->Vc[BX1][k][j][i] = 0.0;
+        d->Vc[BX2][k][j][i] = 0.0;
+        d->Vc[BX3][k][j][i] = 0.0;
+
         }
     }else if (box->vpos == X1FACE){
       BOX_LOOP(box,k,j,i){  }
@@ -333,13 +338,23 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
   if (side == X2_BEG){  /* -- X2_BEG boundary -- */
     if (box->vpos == CENTER) {
       BOX_LOOP(box,k,j,i){
-      d->Vc[BX1][k][j][i] = CONST_PI*CONST_PI*CONST_PI*x1[i]*x1[i]*x1[i] +
-        3*(CONST_PI*CONST_PI*x1[i]*x1[i] -2)*sin(CONST_PI*x1[i])+6.0*CONST_PI*x1[i]*cos(CONST_PI*x1[i]);
-      d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i]*(BMAX*1)/(CONST_PI*(CONST_PI*CONST_PI-6));
-      d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
+        if (x1[i] < 1.0){
+          d->Vc[BX1][k][j][i] = CONST_PI*CONST_PI*CONST_PI*x1[i]*x1[i]*x1[i] +
+            3*(CONST_PI*CONST_PI*x1[i]*x1[i] -2)*sin(CONST_PI*x1[i])+6.0*CONST_PI*x1[i]*cos(CONST_PI*x1[i]);
+          d->Vc[BX1][k][j][i] = (d->Vc[BX1][k][j][i]*(BMAX*1))/(CONST_PI*(CONST_PI*CONST_PI-6));
+          d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
 
-      d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
-      d->Vc[BX3][k][j][i] = 0.0;
+          d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
+          d->Vc[BX3][k][j][i] = 0.0;
+        }
+      else{
+        d->Vc[BX1][k][j][i] = (BMAX*1)/(x1[i]*x1[i]*x1[i]);
+        d->Vc[BX1][k][j][i] = (d->Vc[BX1][k][j][i])/(sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
+
+        d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
+        d->Vc[BX3][k][j][i] = 0.0;
+      }
+
       }
     }else if (box->vpos == X1FACE){
       BOX_LOOP(box,k,j,i){  }
@@ -353,12 +368,22 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
   if (side == X2_END){  /* -- X2_END boundary -- */
     if (box->vpos == CENTER) {
       BOX_LOOP(box,k,j,i){
-      d->Vc[BX1][k][j][i] = CONST_PI*CONST_PI*CONST_PI*x1[i]*x1[i]*x1[i] +
-        3*(CONST_PI*CONST_PI*x1[i]*x1[i] -2)*sin(CONST_PI*x1[i])+6.0*CONST_PI*x1[i]*cos(CONST_PI*x1[i]);
-      d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i]*(BMAX*(-1))/(CONST_PI*(CONST_PI*CONST_PI-6));
-      d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
+        if (x1[i] < 1.0){
+          d->Vc[BX1][k][j][i] = CONST_PI*CONST_PI*CONST_PI*x1[i]*x1[i]*x1[i] +
+            3*(CONST_PI*CONST_PI*x1[i]*x1[i] -2)*sin(CONST_PI*x1[i])+6.0*CONST_PI*x1[i]*cos(CONST_PI*x1[i]);
+          d->Vc[BX1][k][j][i] = (d->Vc[BX1][k][j][i]*(BMAX*(-1)))/(CONST_PI*(CONST_PI*CONST_PI-6));
+          d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
 
-      d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
+          d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
+          d->Vc[BX3][k][j][i] = 0.0;
+        }
+      else{
+        d->Vc[BX1][k][j][i] = (BMAX*(-1))/(x1[i]*x1[i]*x1[i]);
+        d->Vc[BX1][k][j][i] = (d->Vc[BX1][k][j][i])/(sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
+
+        d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
+        d->Vc[BX3][k][j][i] = 0.0;
+      }
       }
     }else if (box->vpos == X1FACE){
       BOX_LOOP(box,k,j,i){  }
