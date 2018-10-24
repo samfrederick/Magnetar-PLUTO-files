@@ -28,68 +28,68 @@ bx1list = list()
 bx2list = list()
 bx3list = list()
 
-x2 = 1.7*CONST_PI # Theta set to pi/4 
+x2 = 1.7*CONST_PI # Theta set to pi/4
 
 Bx1 = 0.0
 Bx2 = 0.0
 Bx3 = 0.0
 
 for x1 in r:
-    if x1 < 1.0: # NEED TO ADD CONDITION FOR R == 0! 
-    
+    if x1 < 1.0: # NEED TO ADD CONDITION FOR R == 0 TO init.c!
+
         Bx1 = CONST_PI*CONST_PI*CONST_PI*x1*x1*x1 + 3*(CONST_PI*CONST_PI*x1*x1 -2)*np.sin(CONST_PI*x1)+6.0*CONST_PI*x1*np.cos(CONST_PI*x1)
         Bx1 = Bx1*(BMAX*np.cos(x2))/(CONST_PI*(CONST_PI*CONST_PI-6))
-   
+
         Bx2 = -2*CONST_PI*CONST_PI*CONST_PI*x1*x1*x1+ 3*(CONST_PI*CONST_PI*x1*x1-2)*(np.sin(CONST_PI*x1)-CONST_PI*x1*np.cos(CONST_PI*x1))
         Bx2 = Bx2*(BMAX*np.sin(x2))/(2.0*CONST_PI*(CONST_PI*CONST_PI-6))
-    
- 
+
+
         Bx3 = (BMAX*np.sin(CONST_PI*x1)*np.sin(x2))/CONST_PI
-    
-    if x1 >= 1.0:    
+
+    if x1 >= 1.0:
         Bx1 = (BMAX*np.cos(x2))/(x1*x1*x1)
         Bx2 = (BMAX*np.sin(x2))/(2.0*x1*x1*x1)
-        Bx3 = 0        
-    if x1 > 2.0:
+        Bx3 = 0
+    if x1 > 2.0: # BOUNDARY CONDITION (X1_END)
         Bx1 = (BMAX*np.cos(x2))/(RMAX*RMAX*RMAX)
         Bx2 = (BMAX*np.sin(x2))/(2.0*RMAX*RMAX*RMAX)
-        Bx3 = 0.0       
-    if x2 == 0:
+        Bx3 = 0.0
+    if x2 == 0: # BOUNDARY CONDITION (X2_BEG)
         #need a condition for interior to star and exterior to star! B-field has different solution in these regions!
         if x1 < 1.0:
             Bx1 = CONST_PI*CONST_PI*CONST_PI*x1*x1*x1 + 3*(CONST_PI*CONST_PI*x1*x1 -2)*np.sin(CONST_PI*x1)+6.0*CONST_PI*x1*np.cos(CONST_PI*x1)
             Bx1 = Bx1*(BMAX*1)/(CONST_PI*(CONST_PI*CONST_PI-6))
-        
-            Bx2 = 0.0 
-            Bx3 = 0.0 
+
+            Bx2 = 0.0
+            Bx3 = 0.0
         else:
             Bx1 = (BMAX*1)/(x1*x1*x1)
-        
-            Bx2 = 0.0 
+
+            Bx2 = 0.0
             Bx3 = 0.0
-    if x2 == 2*CONST_PI:
+    if x2 == 2*CONST_PI: # BOUNDARY CONDITION (X2_END)
         #need a condition for interior to star and exterior to star! B-field has different solution in these regions!
         if x1 < 1.0:
             Bx1 = CONST_PI*CONST_PI*CONST_PI*x1*x1*x1 + 3*(CONST_PI*CONST_PI*x1*x1 -2)*np.sin(CONST_PI*x1)+6.0*CONST_PI*x1*np.cos(CONST_PI*x1)
             Bx1 = Bx1*(BMAX*-1)/(CONST_PI*(CONST_PI*CONST_PI-6))
-        
-            Bx2 = 0.0 
-            Bx3 = 0.0 
+
+            Bx2 = 0.0
+            Bx3 = 0.0
         else:
             Bx1 = (BMAX*-1)/(x1*x1*x1)
-        
-            Bx2 = 0.0 
-            Bx3 = 0.0        
-    
+
+            Bx2 = 0.0
+            Bx3 = 0.0
+
     Bx1 = Bx1 / (np.sqrt(UNIT_DENSITY)*UNIT_VELOCITY)
-    Bx2 = Bx2 / (np.sqrt(UNIT_DENSITY)*UNIT_VELOCITY)    
+    Bx2 = Bx2 / (np.sqrt(UNIT_DENSITY)*UNIT_VELOCITY)
     Bx3 = Bx3 / (np.sqrt(UNIT_DENSITY)*UNIT_VELOCITY)
 
-    
+
     bx1list.append(Bx1)
     bx2list.append(Bx2)
     bx3list.append(Bx3)
-    
+
 
 py.plot(r,bx1list,"bo-")
 py.plot(r,bx2list,"ro-")
