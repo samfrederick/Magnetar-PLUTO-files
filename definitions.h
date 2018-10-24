@@ -34,9 +34,9 @@
 #define  UNIT_VELOCITY                  1.e10
 #define  VTK_VECTOR_DUMP                YES
 #define  VTK_TIME_INFO                  YES
-#define  WARNING_MESSAGES               YES
+#define  WARNING_MESSAGES               NO
 #define  INTERNAL_BOUNDARY              YES
-#define  RMAX                           1.00
+#define  RMAX                           2.00
 #define  RMIN                           0.00
 #define  RGRID                          100
 
