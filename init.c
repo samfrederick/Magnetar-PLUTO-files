@@ -99,9 +99,9 @@ void Init (double *v, double x1, double x2, double x3)
   v[BX3] = 0;
 
   /* Normalization */
-  v[BX1] = v[BX1] / (sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
-  v[BX2] = v[BX2] / (sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
-  v[BX3] = v[BX3] / (sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
+  v[BX1] = v[BX1] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+  v[BX2] = v[BX2] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+  v[BX3] = v[BX3] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
 
 
   if ((x1 < 1.0) && (x1!= 0)){
@@ -118,8 +118,8 @@ void Init (double *v, double x1, double x2, double x3)
     v[BX2] = (v[BX2]*(BMAX*sin(x2)))/(2.0*CONST_PI*(CONST_PI*CONST_PI-6));
 
     /* Poloidal Normalization */
-    v[BX1] = v[BX1] / (sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
-    v[BX2] = v[BX2] / (sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
+    v[BX1] = v[BX1] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+    v[BX2] = v[BX2] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
 
 
     /*
@@ -129,7 +129,7 @@ void Init (double *v, double x1, double x2, double x3)
     /*
     Toroidal Normalization
     */
-    v[BX3] = v[BX3] / (sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
+    v[BX3] = v[BX3] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
 
 
 
@@ -319,8 +319,8 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
         d->Vc[BX2][k][j][i] = (BMAX*sin(x2[j]))/(2.0*RMAX*RMAX*RMAX);
         d->Vc[BX3][k][j][i] = 0.0;
 
-        d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
-        d->Vc[BX2][k][j][i] = d->Vc[BX2][k][j][i] / (sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
+        d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+        d->Vc[BX2][k][j][i] = d->Vc[BX2][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
 
         d->Vc[RHO][k][j][i] = (VACUUM) / UNIT_DENSITY;
         d->Vc[PRS][k][j][i] = (K*VACUUM*VACUUM)/ (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
@@ -342,14 +342,14 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
           d->Vc[BX1][k][j][i] = CONST_PI*CONST_PI*CONST_PI*x1[i]*x1[i]*x1[i] +
             3*(CONST_PI*CONST_PI*x1[i]*x1[i] -2)*sin(CONST_PI*x1[i])+6.0*CONST_PI*x1[i]*cos(CONST_PI*x1[i]);
           d->Vc[BX1][k][j][i] = (d->Vc[BX1][k][j][i]*(BMAX*1))/(CONST_PI*(CONST_PI*CONST_PI-6));
-          d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
+          d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
 
           d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
           d->Vc[BX3][k][j][i] = 0.0;
         }
       else{
         d->Vc[BX1][k][j][i] = (BMAX*1)/(x1[i]*x1[i]*x1[i]);
-        d->Vc[BX1][k][j][i] = (d->Vc[BX1][k][j][i])/(sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
+        d->Vc[BX1][k][j][i] = (d->Vc[BX1][k][j][i])/(sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
 
         d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
         d->Vc[BX3][k][j][i] = 0.0;
@@ -372,14 +372,14 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
           d->Vc[BX1][k][j][i] = CONST_PI*CONST_PI*CONST_PI*x1[i]*x1[i]*x1[i] +
             3*(CONST_PI*CONST_PI*x1[i]*x1[i] -2)*sin(CONST_PI*x1[i])+6.0*CONST_PI*x1[i]*cos(CONST_PI*x1[i]);
           d->Vc[BX1][k][j][i] = (d->Vc[BX1][k][j][i]*(BMAX*(-1)))/(CONST_PI*(CONST_PI*CONST_PI-6));
-          d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
+          d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
 
           d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
           d->Vc[BX3][k][j][i] = 0.0;
         }
       else{
         d->Vc[BX1][k][j][i] = (BMAX*(-1))/(x1[i]*x1[i]*x1[i]);
-        d->Vc[BX1][k][j][i] = (d->Vc[BX1][k][j][i])/(sqrt(UNIT_DENSITY)*UNIT_VELOCITY);
+        d->Vc[BX1][k][j][i] = (d->Vc[BX1][k][j][i])/(sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
 
         d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
         d->Vc[BX3][k][j][i] = 0.0;
