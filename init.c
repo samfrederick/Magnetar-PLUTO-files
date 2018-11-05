@@ -259,6 +259,12 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
 
     if (side == 0) {
       TOT_LOOP(k,j,i){
+        if ((x1[i] >= 1.0) && (d->Vc[BX3][k][j][i]) > 0){
+          d->Vc[BX3][k][j][i] = 0.0;
+        }
+        if ((x1[i] > .98) && (x1[i] < 1.01)){
+          d->Vc[BX2][k][j][i] =  (d->Vc[BX2][k][j][i]+ d->Vc[BX2][k][j][i-1])/2;
+        }
         if (d->Vc[RHO][k][j][i] < (VACUUM) / UNIT_DENSITY){
             /* Replace negative values with vacuum density */
               d->Vc[RHO][k][j][i] = (VACUUM) / UNIT_DENSITY;
