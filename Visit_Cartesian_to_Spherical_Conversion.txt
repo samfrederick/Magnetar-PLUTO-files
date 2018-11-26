@@ -65,4 +65,4 @@ Bz:
 Mr*cos(theta)-Mt*sin(theta) // Magnitude of B-field in z-direction
 
 Magnetic_Field:
-{Vx,Vy,Vz}  // The magnetic field itself in vector form
+{Bx,By,Bz}  // The magnetic field itself in vector form
