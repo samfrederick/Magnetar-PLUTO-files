@@ -10,5 +10,4 @@ Subsequently, the user must type the command
 ```console
 user@computer:~$ ./pluto
 ```
-to run the code and create .vtk data files for visualizing in VisIt. 
-# Visit-Config-Files
+
