@@ -67,7 +67,7 @@ A header file specifying parameters for a given simulation. Most of these values
 ### *pluto.ini* 
 An initialization file which sets simulation attributes. Upon execution of the PLUTO Code via the command
 ```console
-user@computer: $PLUTO_DIR$ ./pluto
+user@computer:~/PLUTO$ ./pluto
 ```
 the code reads this initialization file to determine the specified simulation parameters.  
 
@@ -77,5 +77,5 @@ the code reads this initialization file to determine the specified simulation pa
 ### *Makerfile*
 In order to compile modifications to the code, the user must run the following command
 ```console
-user@computer: $PLUTO_DIR$ make
+user@computer:~/PLUTO$ make
 ```
