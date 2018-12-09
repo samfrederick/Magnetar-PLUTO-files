@@ -54,22 +54,15 @@ user@computer:~$ echo "set path = ($path /usr/local/visit/bin)" >> .cshrc
 ## Running Magnetar Simulations 
 The following files provide the core of each PLUTO simulation:
 * *definitions.h*
-* *pluto.ini*
 * *init.c*
 * *makefile*
+* *pluto.ini*
 
 *Additional in-depth information regarding the function and manipulation of each of these scripts is available via the PLUTO User Manual*
 
 ### *definitions.h* 
 A header file specifying parameters for a given simulation. Most of these values can be specified via *setup.py*, however, the user may specify additional simulation constraints which are detailed further in the PLUTO User Manual. 
 * The *definitions.h* file particular to these magnetar simulations uses PLUTO's magnetohydrodyanmic (MHD) module and specifies a 3-dimensional spherical computational domain.  
-
-### *pluto.ini* 
-An initialization file which sets simulation attributes. Upon execution of the PLUTO Code via the command
-```console
-user@computer:~/PLUTO$ ./pluto
-```
-the code reads this initialization file to determine the specified simulation parameters.  
 
 ### *init.c*
 
@@ -79,3 +72,9 @@ In order to compile modifications to the code, the user must run the following c
 ```console
 user@computer:~/PLUTO$ make
 ```
+### *pluto.ini* 
+An initialization file which sets simulation attributes. Upon execution of the PLUTO Code via the command
+```console
+user@computer:~/PLUTO$ ./pluto
+```
+the code reads this initialization file to determine the specified simulation parameters. This begins the process of computation.   
