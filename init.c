@@ -41,12 +41,12 @@ ratio r / R such that (10000*x1)/ R = r / R.
 /* ********************************************************************* */
 
 /* CONSTANTS */
-#define G_CONST  6.67e-8 /*cm^3 g^-1 s^-2 */   /* Gravitational constant */
-#define M_STAR  2.785e33 /* g */               /* Mass of Star           */
-#define RHO_C 2.2e15 /* g cm^-3 */             /* Core density of star   */
-#define R 1.e6 /* cm */                        /* Radius of Star         */
-#define K 4.25e4 /* cm^5 g^-1 s^-2 */
-#define BMAX 5e15 /* gauss  := g^1/2 * cm^-1/2 * s */
+#define G_CONST  6.67e-8 /*cm^3 g^-1 s^-2 */        /* Gravitational constant */
+#define M_STAR  2.785e33 /* g */                    /* Mass of Star           */
+#define RHO_C 2.2e15     /* g cm^-3 */              /* Core density of star   */
+#define R 1.e6           /* cm */                   /* Radius of Star         */
+#define K 4.25e4         /* cm^5 g^-1 s^-2 */
+#define BMAX 5e15        /* gauss  := g^1/2 * cm^-1/2 * s */
 
 /* HARD CODED VALUES */
 #define RPOT 1.857595e20     /* Magnitude of the gravitational potential at r = R */
@@ -91,7 +91,7 @@ void Init (double *v, double x1, double x2, double x3)
   v[VX2] = 0.0;
   v[VX3] = 0.0;
 
-  v[PRS] = (K*VACUUM*VACUUM)/(UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY); /*1.0e10 / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY)*/;
+  v[PRS] = (K*VACUUM*VACUUM)/(UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
   v[TRC] = 0.0; /* Tracer (passive scalar, Q) */
 
   v[BX1] = (BMAX*cos(x2))/(x1*x1*x1);
@@ -146,7 +146,8 @@ void Init (double *v, double x1, double x2, double x3)
     v[PRS] = v[PRS] / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
 
 
-  }else if(x1 == 0){ /* Density at center, this may be causing errors in simulation */
+  }
+  else if(x1 == 0){ /* Density at center, this may be causing errors in simulation */
      v[RHO] = RHO_C + VACUUM;/* Density at star core */
      v[PRS] = K*RHO_C*RHO_C;
 
