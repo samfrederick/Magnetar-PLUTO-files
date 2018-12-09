@@ -1,3 +1,12 @@
+"""
+Author: Sam Frederick
+Date: 10-15-18
+
+This script graphs density and pressure as functions of radius over the computational
+domain for (0<r<=2.) given equations specifying these variables for r = 0, r < 1.0,
+and r>= 1.0.
+"""
+
 import numpy as np
 import pylab as py
 
@@ -24,21 +33,21 @@ for x1 in r:
     if x1 < 1.0 and x1 != 0.0:
         rhoval = (RHO_C*np.sin(CONST_PI*x1))/(x1*CONST_PI) +VACUUM
         pressureval = K*rhoval*rhoval
-        
+
     elif x1 == 0:
         rhoval = RHO_C + VACUUM
         pressureval = K*RHO_C*RHO_C
-        
+
     elif x1 >= 1.0:
         rhoval = VACUUM;
         pressureval = (K*VACUUM*VACUUM);
-        
+
     rhoval = rhoval / UNIT_DENSITY
-    pressureval = pressureval / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY)  
-    
+    pressureval = pressureval / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY)
+
     rho.append(rhoval)
-    pressure.append(pressureval) 
-    
+    pressure.append(pressureval)
+
 
 py.plot(r,rho,"bo-")
 #py.plot(r,pressure,"ro-")
