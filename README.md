@@ -5,7 +5,7 @@ This work is in active development during the 2018-2019 academic year for the co
 
 ## Dependencies 
 In order to utilize these files, the following packages must be installed:
- * PLUTO v4.30
+ * PLUTO v4.30. *The following are required to properly utilize PLUTO:*
  >* Python
  >* C Compiler 
  >* GNU Make
@@ -84,3 +84,10 @@ user@computer:~/PLUTO$ ./pluto
 ```
 the code reads this initialization file to determine the specified simulation parameters. This begins the process of computation.
 * The *pluto.ini* file particular to these simulations specifies a spherical domain: radially (0<r<=2.0) in normalized units of stellar radius, (0 < theta < pi), and ( 0 < phi < 2pi) where we use the physics convention specifying phi as the azimuthal angle. 
+
+## Data Visualization with VisIt
+The *pluto.ini* file particular to these simulations implements .vtk data files for writing simulation variables. This distinction can be changed in *pluto.ini*. Variables are either written as scalar values or vector-valued variables. Data are visualized by loading datasets into VisIt. Detailed information for use of VisIt is available via the VisIt User Manual: https://visit-sphinx-user-manual.readthedocs.io/en/latest/
+
+### Vector Coordinate Conversions 
+As data are imported into VisIt, the software assigns variables to gridpoints in cartesian coordinates. __*As an important distinction, this conflicts with how we specify vector-valued functions in our init.c via a spherical coordinate system.*__ Thus, in order to properly visualize vector-valued variables such as velocity and magnetic fields, we must convert vector components from spherical to cartesian coordinates. 
+* These coordinate transformations are described in the folder *"VisIt Config Files"* under the *"Vector_Correction_Expressions.xml"* file. The supplementing file *"Visit_Spherical_to_Cartesian_Conversion.txt"* provides additional background to this transformation process. 
