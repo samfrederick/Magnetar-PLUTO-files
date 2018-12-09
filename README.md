@@ -72,7 +72,7 @@ The init.c file collects most of the user-supplied functions useful for problem 
 * Boundary Conditions are specified in the UserDefBoundary() function. 
 * Gravitational Potential is assigned via the BodyForcePotential() function. 
 
-### *Makerfile*
+### *Makefile*
 In order to compile modifications to the code, the user must run the following command
 ```console
 user@computer:~/PLUTO$ make
