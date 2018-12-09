@@ -51,13 +51,23 @@ user@computer:~$ echo "set path = ($path /usr/local/visit/bin)" >> .cshrc
 
 *It is recommended for systems with NVidia graphics cards to update to the latest drivers. Failure to do so may result in frequent program crashes.*
 
-The four separate files: definitions.h, makefile, pluto.ini, and init.c are required for compiling the PLUTO code. 
-The code is compiled via the command: 
-```console 
-user@computer:~$ make 
-```
-Subsequently, the user must type the command 
+## Running Magnetar Simulations 
+The following files provide the core of each PLUTO simulation:
+* *definitions.h*
+* *pluto.ini*
+* *init.c*
+* *makefile*
+
+*Additional in-depth information regarding the function and manipulation of each of these scripts is available via the PLUTO User Manual*
+
+### *definitions.h* 
+A header file specifying parameters for a given simulation. Most of these values can be specified via *setup.py*, however, the user may specify additional simulation constraints which are detailed further in the PLUTO User Manual. 
+* The *definitions.h* file particular to these magnetar simulations uses PLUTO's magnetohydrodyanmic (MHD) module and specifies a 3-dimensional spherical computational domain.  
+
+### *pluto.ini* 
+An initialization file which sets simulation attributes. Upon execution of the PLUTO Code via the command
 ```console
 user@computer:~$ ./pluto
 ```
+the code reads this initialization file to determine the specified simulation parameters.  
 
