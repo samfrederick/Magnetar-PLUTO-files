@@ -67,7 +67,10 @@ A header file specifying parameters for a given simulation. Most of these values
 * The *definitions.h* file particular to these magnetar simulations uses PLUTO's magnetohydrodyanmic (MHD) module and specifies a 3-dimensional spherical computational domain.  
 
 ### *init.c*
-
+The init.c file collects most of the user-supplied functions useful for problem configuration. 
+* The *init.c* file particular to these simulations provide initialization for simulation variables, such as velocity, pressure, density, magnetic field components, etc. 
+* Boundary Conditions are specified in the UserDefBoundary() function. 
+* Gravitational Potential is assigned via the BodyForcePotential() function. 
 
 ### *Makerfile*
 In order to compile modifications to the code, the user must run the following command
