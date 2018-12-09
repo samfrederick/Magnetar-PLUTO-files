@@ -58,6 +58,8 @@ The following files provide the core of each PLUTO simulation:
 * *makefile*
 * *pluto.ini*
 
+#### These files are included in the folder *"Magnetar Main"*
+
 *Additional in-depth information regarding the function and manipulation of each of these scripts is available via the PLUTO User Manual*
 
 ### *definitions.h* 
