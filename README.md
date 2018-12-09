@@ -28,7 +28,7 @@ The python script "setup.py" included with PLUTO can be used to quickly configur
 
 To verify proper installation of PLUTO, it is recommended that the user run one of the various test problems included with the PLUTO base by navigating to:
 ```console
-user@computer:~$ $PLUTO_DIR/Test_Problems
+user@computer:~$ cd $PLUTO_DIR/Test_Problems
 ```
 More information including step-by-step guides to test problems is included in the PLUTO User Manual, available via:
 http://plutocode.ph.unito.it/files/userguide.pdf (See pages 6-9 for test problems)
@@ -67,7 +67,15 @@ A header file specifying parameters for a given simulation. Most of these values
 ### *pluto.ini* 
 An initialization file which sets simulation attributes. Upon execution of the PLUTO Code via the command
 ```console
-user@computer:~$ ./pluto
+user@computer: $PLUTO_DIR$ ./pluto
 ```
 the code reads this initialization file to determine the specified simulation parameters.  
 
+### *init.c*
+
+
+### *Makerfile*
+In order to compile modifications to the code, the user must run the following command
+```console
+user@computer: $PLUTO_DIR$ make
+```
