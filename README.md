@@ -77,4 +77,5 @@ An initialization file which sets simulation attributes. Upon execution of the P
 ```console
 user@computer:~/PLUTO$ ./pluto
 ```
-the code reads this initialization file to determine the specified simulation parameters. This begins the process of computation.   
+the code reads this initialization file to determine the specified simulation parameters. This begins the process of computation.
+* The *pluto.ini* file particular to these simulations specifies a spherical domain: radially (0<r<=2.0) in normalized units of stellar radius, (0 < theta < pi), and ( 0 < phi < 2pi) where we use the physics convention specifying phi as the azimuthal angle. 
