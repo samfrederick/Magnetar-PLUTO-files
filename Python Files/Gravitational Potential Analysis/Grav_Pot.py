@@ -45,4 +45,5 @@ py.plot(r,phivals,"bo-")
 py.title("Gravitational Potential (Phi) vs. Radius")
 py.ylabel("Gravitational Potential")
 py.xlabel("Radius")
+
 py.show()
