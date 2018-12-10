@@ -1,3 +1,19 @@
+"""
+B_field_analysis.py
+Author: Sam Frederick
+Date: 10-14-18
+
+PURPOSE:
+This script utilizes magnetic field component equations provided via Haskell
+et al. 2008 in order to verify requirement of continuity across computational
+domain boundaries.
+
+OUTPUT:
+Graphs r, theta, and phi B-field components in computational domain defined for
+(0.<r<=2.). 
+
+"""
+
 import numpy as np
 import pylab as py
 
