@@ -88,8 +88,18 @@ void Init (double *v, double x1, double x2, double x3)
   /* Global Initialization of state variables */
   v[RHO] = VACUUM / UNIT_DENSITY; /* Vacuum density surrounding star */
   v[VX1] = 0.0;
-  v[VX2] = 0.0;
-  v[VX3] = 0.0;
+  if ((x1< 1.0) && (x2 < (65*CONST_PI)/100) && (x2 > (35*CONST_PI)/100)){
+    v[VX2] = ((3*cos(x2)*cos(x2)-1)*(2*cos(2*x3)))/(sin(x2));
+    v[VX3] = cos(x2)*sin(x2)*cos(2*x3);
+  }else{
+    v[VX2] = 0.0;
+    v[VX3] = 0.0;
+  }
+
+  v[VX1] = v[VX1] / UNIT_VELOCITY;
+  v[VX2] = v[VX2] / UNIT_VELOCITY;
+  v[VX3] = v[VX3] / UNIT_VELOCITY;
+
 
   v[PRS] = (K*VACUUM*VACUUM)/(UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY); /*1.0e10 / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY)*/;
   v[TRC] = 0.0; /* Tracer (passive scalar, Q) */
