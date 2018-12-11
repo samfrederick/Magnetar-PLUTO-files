@@ -40,6 +40,9 @@ Visit may be downloaded from the following link: https://wci.llnl.gov/simulation
 
 Installation for Windows and Mac is fairly straightforward, as .exe and .dmg installer programs are provided for the respective operating system. 
 
+### 3. Repository Files
+Files downloaded from this repository may be unzipped directly into one's PLUTO directory. Alternatively, one may prefer to use a "Working PLUTO directory" to delineate user-added simulations from default programs. 
+
 #### Installing VisIt on Unix Systems 
 * Run the VisIt install script. The script for v2.13.3 is available at the following link: http://portal.nersc.gov/project/visit/releases/2.13.3/visit-install2_13_3 
 
@@ -75,12 +78,12 @@ The init.c file collects most of the user-supplied functions useful for problem 
 ### *Makefile*
 In order to compile modifications to the code, the user must run the following command
 ```console
-user@computer:~/PLUTO$ make
+user@computer:~/PLUTO/Magnetar_Main$ make
 ```
 ### *pluto.ini* 
 An initialization file which sets simulation attributes. Upon execution of the PLUTO Code via the command
 ```console
-user@computer:~/PLUTO$ ./pluto
+user@computer:~/PLUTO/Magnetar_Main$ ./pluto
 ```
 the code reads this initialization file to determine the specified simulation parameters. This begins the process of computation.
 * The *pluto.ini* file particular to these simulations specifies a spherical domain: radially (0<r<=2.0) in normalized units of stellar radius, (0 < theta < pi), and ( 0 < phi < 2pi) where we use the physics convention specifying phi as the azimuthal angle. 
