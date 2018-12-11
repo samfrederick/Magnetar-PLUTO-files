@@ -3,12 +3,22 @@ This repository provides files for modeling magnetar structure in PLUTO, an astr
 
 This work is in active development during the 2018-2019 academic year for the completion of an honors thesis in physics from Davidson College. 
 
+## File Structure
+* __Autogen files__ - Files that are automatically generated during PLUTO simulations
+* __Documents and .Tex files__ - Documents detailing boundary conditions and state equations for neutron star simulations
+* __Magnetar_Main__ - Includes the principle files for simulating magnetar structure in PLUTO
+* __Media__ - Photos and videos documenting progress of thesis research
+  * __Photos__
+  * __Videos__
+* __Python files__ - Basic scripts for assisting research in plotting stucture of gravitational potential and b-field. Also includes script *Condition_Grid_Analysis.py* for analyzing whether radial points in the computational domain will be will-behaved with respect to relative condition numbers for b-field component equations. 
+* __VisIt Config Files__ - Contains .xml files for configuring vector plots and streamline attributes. Additionally, *"Vector_Correction_Expressions.xml"* contains expressions which convert vector-valued variables in spherical coordinates to cartesian coordinates. These files can be imported directly into a user's VisIt directory. 
+
 ## Dependencies 
 In order to utilize these files, the following packages must be installed:
  * PLUTO v4.30. *The following are required to properly utilize PLUTO:*
- >* Python
- >* C Compiler 
- >* GNU Make
+   * Python
+   * C Compiler 
+   * GNU Make
 * Visualiztion software utility: Numerous options are compatable with PLUTO including Gnuplot, IDL, pyPLUTO, Mathematica, Para View, or VisIt. 
 
 The code provided in this repository is largely written in C, with the exception of a few python scripts written in 2.7 under the folder "Python Files". 
@@ -19,9 +29,9 @@ The code provided in this repository is largely written in C, with the exception
 
 The PLUTO Code must be downloaded from the following link: http://plutocode.ph.unito.it/download.html. 
 
-Download and extract the file to your home directory. It is recommended to create the enivronment variable "PLUTO_DIR" so that the user can quickly access the PLUTO directory. In bash, this is accomplished via the command:
+Download and extract the file to your home directory. It is recommended to create the enivronment variable "PLUTO_DIR" so that the user can quickly access the PLUTO directory. In bash, this is accomplished by adding the variable to the user's .bashrc file via the command:
 ```console
-user@computer:~$ export PLUTO_DIR=/home/user/PLUTO
+user@computer:~$ export PLUTO_DIR=/path/to/PLUTO
 ```
 
 The python script "setup.py" included with PLUTO can be used to quickly configure simulation parameters. Settings are modified by arrow keys and selected using "Enter". 
@@ -43,9 +53,9 @@ Installation for Windows and Mac is fairly straightforward, as .exe and .dmg ins
 #### Installing VisIt on Unix Systems 
 * Run the VisIt install script. The script for v2.13.3 is available at the following link: http://portal.nersc.gov/project/visit/releases/2.13.3/visit-install2_13_3 
 
-* Add a bin directory after the location of the installed directory, i.e ( /user/local/visit/bin ). This directory will contain the script responsible for launching VisIt. This may be accomplished by adding it to the users .cshrc folder:
+* Add a bin directory after the location of the installed directory, i.e ( /user/local/visit/bin ). This directory will contain the script responsible for launching VisIt. This may be accomplished by adding it to the users .bashrc folder:
 ```console
-user@computer:~$ echo "set path = ($path /usr/local/visit/bin)" >> .cshrc
+user@computer:~$ export path=/usr/local/visit/bin
 ```
 *More details regarding VisIt installation is available at the following link:* http://portal.nersc.gov/project/visit/releases/2.13.3/INSTALL_NOTES
 
@@ -54,14 +64,17 @@ user@computer:~$ echo "set path = ($path /usr/local/visit/bin)" >> .cshrc
 ### 3. Repository Files
 Files downloaded from this repository may be unzipped directly into one's PLUTO directory. Alternatively, one may prefer to use a "Working PLUTO directory" to delineate user-added simulations from default programs.
 
-## Running Magnetar Simulations 
+## Running Magnetar Simulations
+This repository details simulation of highly magnetic pulsars via the PLUTO code. This is primarily accomplished by building both a structural stellar model and magnetic field model. These simulation components are contained within the following files:
+
+#### These files are included in the folder *"Magnetar_Main"*
 The following files provide the core of each PLUTO simulation:
 * *definitions.h*
 * *init.c*
 * *makefile*
 * *pluto.ini*
 
-#### These files are included in the folder *"Magnetar_Main"*
+
 
 *Additional in-depth information regarding the function and manipulation of each of these scripts is available via the PLUTO User Manual*
 
