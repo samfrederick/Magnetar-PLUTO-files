@@ -40,9 +40,6 @@ Visit may be downloaded from the following link: https://wci.llnl.gov/simulation
 
 Installation for Windows and Mac is fairly straightforward, as .exe and .dmg installer programs are provided for the respective operating system. 
 
-### 3. Repository Files
-Files downloaded from this repository may be unzipped directly into one's PLUTO directory. Alternatively, one may prefer to use a "Working PLUTO directory" to delineate user-added simulations from default programs. 
-
 #### Installing VisIt on Unix Systems 
 * Run the VisIt install script. The script for v2.13.3 is available at the following link: http://portal.nersc.gov/project/visit/releases/2.13.3/visit-install2_13_3 
 
@@ -53,6 +50,9 @@ user@computer:~$ echo "set path = ($path /usr/local/visit/bin)" >> .cshrc
 *More details regarding VisIt installation is available at the following link:* http://portal.nersc.gov/project/visit/releases/2.13.3/INSTALL_NOTES
 
 *It is recommended for systems with NVidia graphics cards to update to the latest drivers. Failure to do so may result in frequent program crashes.*
+
+### 3. Repository Files
+Files downloaded from this repository may be unzipped directly into one's PLUTO directory. Alternatively, one may prefer to use a "Working PLUTO directory" to delineate user-added simulations from default programs.
 
 ## Running Magnetar Simulations 
 The following files provide the core of each PLUTO simulation:
