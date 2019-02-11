@@ -80,11 +80,10 @@ for x1 in r:
         Bx3 = (Lambda*CONST_PI*A(x1)*np.sin(x2))/(x1*R*R)
 
     else:
-        Bx1 = (2*A(0.001)*cos(0.001))/((0.001*R)*(0.001*R))
-        Bx2 = (-dA(0.001)*sin(0.001))/(0.001*R)
+        Bx1 = (2*A(0.001)*np.cos(0.001))/((0.001*R)*(0.001*R))
+        Bx2 = (-dA(0.001)*np.sin(0.001))/(0.001*R)
         Bx3 = 0
 
-    /* Normalization */
     Bx1 = Bx1 / (np.sqrt(UNIT_DENSITY)*UNIT_VELOCITY)
     Bx2 = Bx2 / (np.sqrt(UNIT_DENSITY)*UNIT_VELOCITY)
     Bx3 = Bx3 / (np.sqrt(UNIT_DENSITY)*UNIT_VELOCITY)
