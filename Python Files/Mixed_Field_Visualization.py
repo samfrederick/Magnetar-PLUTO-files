@@ -57,6 +57,15 @@ def A(x1):
 
     return (Aval)
 
+def dA(x1):
+    if x1 != 0 and x1 != 2.0:
+      D_Aval = (A(x1+h) - A(x1-h))/(2*h)  /* Central Difference Approx */
+    else
+      D_Aval = 0     /* Forward Differnce Approx */
+
+
+
+  return D_Aval
 
 
 for x1 in r:
