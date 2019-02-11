@@ -1,7 +1,7 @@
 """
 Mixed_Field_Visualization.py
 Author: Sam Frederick
-
+2-11-19
 
 """
 
@@ -33,7 +33,7 @@ rout = np.linspace(1,2,30)
 r = np.concatenate((rin,rout),axis=0)
 rghost = [2.01]
 r = np.concatenate((r,rghost),axis=0)
-print r
+#print r
 Alist = list()
 bx1list = list()
 bx2list = list()
