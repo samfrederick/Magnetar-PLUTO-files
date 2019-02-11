@@ -17,6 +17,7 @@
 #include <math.h>
 
 double A(double x1);
+double dA(double x1);
 /*
 
 FOREWORD (9-7-18):
@@ -42,19 +43,23 @@ ratio r / R such that (10000*x1)/ R = r / R.
 
 /* ********************************************************************* */
 
-/* CONSTANTS */
+/* PHYSICAL CONSTANTS */
 #define G_CONST  6.67e-8 /*cm^3 g^-1 s^-2 */        /* Gravitational constant */
 #define M_STAR  2.785e33 /* g */                    /* Mass of Star           */
 #define RHO_C 2.2e15     /* g cm^-3 */              /* Core density of star   */
 #define R 1.e6           /* cm */                   /* Radius of Star         */
-#define K 4.25e4         /* cm^5 g^-1 s^-2 */
-#define BMAX 5e15        /* gauss  := g^1/2 * cm^-1/2 * s */
-#define Lambda 2.362    /* First Eigenvalue for mixed Haskell Equations */
+#define K 4.25e4         /* cm^5 g^-1 s^-2                                    */
+#define BMAX 5e15        /* gauss  := g^1/2 * cm^-1/2 * s                     */
+#define Lambda 2.362     /* First Eigenvalue for mixed Haskell Equations      */
+#define VACUUM 1e8       /* Vacuum 'density' for purposes of calculation      */
 
 /* HARD CODED VALUES */
-#define RPOT 1.857595e20     /* Magnitude of the gravitational potential at r = R */
-#define GPRSQ 1.4674e20      /* G x rho_c x R^2                                   */
-#define VACUUM 1e8           /* Vacuum 'density' for purposes of calculation      */
+#define RPOT 1.857595e20    /* Magnitude of the gravitational potential at r = R */
+#define GPRSQ 1.4674e20     /* G x rho_c x R^2                                   */
+
+/* COMPUTATIONAL CONSTANTS*/
+#define h 1e-4           /* Finite difference step-size                       */
+
 
 /* ********************************************************************* */
 void Init (double *v, double x1, double x2, double x3)
@@ -115,45 +120,22 @@ void Init (double *v, double x1, double x2, double x3)
   v[PRS] = (K*VACUUM*VACUUM)/(UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
   v[TRC] = 0.0; /* Tracer (passive scalar, Q) */
 
-  v[BX1] = (BMAX*cos(x2))/(x1*x1*x1);
-  v[BX2] = (BMAX*sin(x2))/(2.0*x1*x1*x1);
-  v[BX3] = 0;
 
-  /* Normalization */
-  v[BX1] = v[BX1] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
-  v[BX2] = v[BX2] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
-  v[BX3] = v[BX3] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+  /* Assign B-field Component Values (Haskell et al. 2008) */
+  if(x1 != 0)
+  {
+    v[BX1] = (2*A(x1)*cos(x2))/((x1*R)*(x1*R));
+    v[BX2] = (-dA(x1)*sin(x2))/(x1*R);
+    v[BX3] = (Lambda*CONST_PI*A(x1)*sin(x2))/(x1*R*R);
+
+    /* Normalization */
+    v[BX1] = v[BX1] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+    v[BX2] = v[BX2] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+    v[BX3] = v[BX3] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+  }
 
 
   if ((x1 < 1.0) && (x1!= 0)){
-    /*
-    Adding Plurely Poloidal Magnetic Field (Haskell et al. 2008)
-    */
-
-    v[BX1] = (2*A(x1)*cos(x2))/((x1*R)*(x1*R));
-
-    v[BX2] = -2*CONST_PI*CONST_PI*CONST_PI*x1*x1*x1+
-    3*(CONST_PI*CONST_PI*x1*x1-2)*(sin(CONST_PI*x1)-CONST_PI*x1*cos(CONST_PI*x1));
-    v[BX2] = (v[BX2]*(BMAX*sin(x2)))/(2.0*CONST_PI*(CONST_PI*CONST_PI-6));
-
-    /* Poloidal Normalization */
-    v[BX1] = v[BX1] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
-    v[BX2] = v[BX2] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
-
-
-    /*
-    Purely Toroidal Field
-    */
-    v[BX3] = (Lambda*CONST_PI*A(x1)*sin(x2))/(x1*R*R);
-    /*
-    Toroidal Normalization
-    */
-    v[BX3] = v[BX3] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
-
-
-
-    /**********************************************************************/
-
 
 
     /* Calcuate values for pressure and density using N = 1 polytrope EOS */
@@ -174,10 +156,14 @@ void Init (double *v, double x1, double x2, double x3)
      v[RHO] = v[RHO] / UNIT_DENSITY;
      v[PRS] = v[PRS] / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
 
-     v[BX1] = 0;
-     v[BX2] = 0;
+     v[BX1] = (2*A(0.001)*cos(0.001))/((0.001*R)*(0.001*R));;
+     v[BX2] = (-dA(0.001)*sin(0.001))/(0.001*R);
      v[BX3] = 0;
 
+     /* Normalization */
+     v[BX1] = v[BX1] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+     v[BX2] = v[BX2] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+     v[BX3] = v[BX3] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
   }
 }
 double A(double x1)
@@ -186,17 +172,41 @@ Stream Function via Haskell et al. 2008 p. 540  Mixed Field Equations
 */
 {
     double Aval;
-    Aval =
-    ((BMAX*R*R)/((Lambda*Lambda-1)*(Lambda*Lambda-1)*CONST_PI*x1))*
-    (2*CONST_PI*((Lambda*CONST_PI*x1*cos(Lambda*CONST_PI*x1)-sin(Lambda*CONST_PI*x1))/
-    (CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda))) +
-    ((1-Lambda*Lambda)*(CONST_PI*x1)*(CONST_PI*x1)-2)*sin(CONST_PI*x1) +
-    2*CONST_PI*x1*cos(CONST_PI*x1));
-
+    if (x1 != 0)
+    {
+      Aval =
+      ((BMAX*R*R)/((Lambda*Lambda-1)*(Lambda*Lambda-1)*CONST_PI*x1))*
+      (2*CONST_PI*((Lambda*CONST_PI*x1*cos(Lambda*CONST_PI*x1)-sin(Lambda*CONST_PI*x1))/
+      (CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda))) +
+      ((1-Lambda*Lambda)*(CONST_PI*x1)*(CONST_PI*x1)-2)*sin(CONST_PI*x1) +
+      2*CONST_PI*x1*cos(CONST_PI*x1));
+    }
+    else
+    {
+        Aval = 0;
+    }
     return Aval;
 
 }
+double dA(double x1)
+{
+/*
+Radial Derivative of Stream Function as defined above
 
+*/
+double D_Aval;
+if (x1 != 0)
+  {
+  D_Aval = (A(x1+h) - A(x1-h))/(2*h);  /* Central Difference Approx */
+  }
+else
+  {
+  D_Aval = 0;      /* Forward Differnce Approx */
+  }
+
+
+  return D_Aval;
+}
 /* ********************************************************************* */
 void InitDomain (Data *d, Grid *grid)
 /*!
