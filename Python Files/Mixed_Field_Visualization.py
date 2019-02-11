@@ -35,6 +35,7 @@ rghost = [2.01]
 r = np.concatenate((r,rghost),axis=0)
 #print r
 Alist = list()
+DAlist = list()
 bx1list = list()
 bx2list = list()
 bx3list = list()
@@ -47,30 +48,31 @@ Bx3 = 0.0
 
 def A(x1):
     if x1 != 0:
-      Aval = ((BMAX*R*R)/((Lambda*Lambda-1)*(Lambda*Lambda-1)*CONST_PI*x1))*  \
-      (2*CONST_PI*((Lambda*CONST_PI*x1*np.cos(Lambda*CONST_PI*x1)-np.sin(Lambda*CONST_PI*x1))/  \
-      (CONST_PI*Lambda*np.cos(CONST_PI*Lambda)-np.sin(CONST_PI*Lambda))) +  \
-      ((1-Lambda*Lambda)*(CONST_PI*x1)*(CONST_PI*x1)-2)*np.sin(CONST_PI*x1) +  \
-      2*CONST_PI*x1*np.cos(CONST_PI*x1))
+        Aval = ((BMAX*R*R)/((Lambda*Lambda-1)*(Lambda*Lambda-1)*CONST_PI*x1))*  \
+        (2*CONST_PI*((Lambda*CONST_PI*x1*np.cos(Lambda*CONST_PI*x1)-np.sin(Lambda*CONST_PI*x1))/  \
+        (CONST_PI*Lambda*np.cos(CONST_PI*Lambda)-np.sin(CONST_PI*Lambda))) +  \
+        ((1-Lambda*Lambda)*(CONST_PI*x1)*(CONST_PI*x1)-2)*np.sin(CONST_PI*x1) +  \
+        2*CONST_PI*x1*np.cos(CONST_PI*x1))
     else:
         Aval = 0
 
     return (Aval)
 
 def dA(x1):
-    if x1 != 0 and x1 != 2.0:
-      D_Aval = (A(x1+h) - A(x1-h))/(2*h)  /* Central Difference Approx */
-    else
-      D_Aval = 0     /* Forward Differnce Approx */
+    if x1 != 0:
+        DAval = (A(x1+h) - A(x1-h))/(2*h)      
+    else:
+        DAval = 0
 
 
-
-  return D_Aval
+    return (DAval)
 
 
 for x1 in r:
     Aval = A(x1)
+    DAvalue = dA(x1)
     Alist.append(Aval)
+    DAlist.append(DAvalue)
 
 
 """
@@ -88,6 +90,7 @@ py.plot(r,bx2list,"ro-")
 py.plot(r,bx3list,"go-")
 """
 py.plot(r,Alist)
+py.plot(r,DAlist)
 #py.yscale("log")
 py.xlim(0,2.1)
 #py.ylim(-1,1)
