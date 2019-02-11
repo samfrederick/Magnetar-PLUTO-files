@@ -47,6 +47,7 @@ ratio r / R such that (10000*x1)/ R = r / R.
 #define R 1.e6           /* cm */                   /* Radius of Star         */
 #define K 4.25e4         /* cm^5 g^-1 s^-2 */
 #define BMAX 5e15        /* gauss  := g^1/2 * cm^-1/2 * s */
+# define Lambda 2.362    /* First Eigenvalue for mixed Haskell Equations */
 
 /* HARD CODED VALUES */
 #define RPOT 1.857595e20     /* Magnitude of the gravitational potential at r = R */
@@ -88,6 +89,11 @@ void Init (double *v, double x1, double x2, double x3)
   /* Global Initialization of state variables */
   v[RHO] = VACUUM / UNIT_DENSITY; /* Vacuum density surrounding star */
   v[VX1] = 0.0;
+  v[VX2] = 0.0;
+  v[VX3] = 0.0;
+
+
+  /* Comment out velocity perturbations, 2-10-19
   if ((x1< 1.0) && (x2 < (65*CONST_PI)/100) && (x2 > (35*CONST_PI)/100)){
     v[VX2] = ((3*cos(x2)*cos(x2)-1)*(2*cos(2*x3)))/(sin(x2));
     v[VX3] = cos(x2)*sin(x2)*cos(2*x3);
@@ -95,6 +101,9 @@ void Init (double *v, double x1, double x2, double x3)
     v[VX2] = 0.0;
     v[VX3] = 0.0;
   }
+  */
+
+
 
   v[VX1] = v[VX1] / UNIT_VELOCITY;
   v[VX2] = v[VX2] / UNIT_VELOCITY;
@@ -119,9 +128,7 @@ void Init (double *v, double x1, double x2, double x3)
     Adding Plurely Poloidal Magnetic Field (Haskell et al. 2008)
     */
 
-    v[BX1] = CONST_PI*CONST_PI*CONST_PI*x1*x1*x1 +
-    3*(CONST_PI*CONST_PI*x1*x1 -2)*sin(CONST_PI*x1)+6.0*CONST_PI*x1*cos(CONST_PI*x1);
-    v[BX1] = (v[BX1]*(BMAX*cos(x2)))/(CONST_PI*(CONST_PI*CONST_PI-6));
+    v[BX1] = (2*A(x1)*cos(x2))/((x1*R)*(x1*R));
 
     v[BX2] = -2*CONST_PI*CONST_PI*CONST_PI*x1*x1*x1+
     3*(CONST_PI*CONST_PI*x1*x1-2)*(sin(CONST_PI*x1)-CONST_PI*x1*cos(CONST_PI*x1));
@@ -135,7 +142,7 @@ void Init (double *v, double x1, double x2, double x3)
     /*
     Purely Toroidal Field
     */
-    v[BX3] = (BMAX*sin(CONST_PI*x1)*sin(x2))/CONST_PI;
+    v[BX3] = (Lambda*CONST_PI*A(x1)*sin(x2))/(x1*R*R);
     /*
     Toroidal Normalization
     */
@@ -171,6 +178,23 @@ void Init (double *v, double x1, double x2, double x3)
 
   }
 }
+double A(double x1)
+/*
+Stream Function via Haskell et al. 2008 p. 540  Mixed Field Equations
+*/
+{
+double Aval;
+Aval =
+       ((Bmax*R*R)/((Lambda*Lambda-1)*(Lambda*Lambda-1)*CONST_PI*x1))*
+       (2*CONST_PI*((Lambda*CONST_PI*x1*cos(Lambda*CONST_PI*x1)-sin(Lambda*CONST_PI*x1))/
+       (CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda))) +
+       ((1-Lambda*Lambda)*(CONST_PI*x1)*(CONST_PI*x1)-2)*sin(CONST_PI*x1) +
+       2*CONST_PI*x1*cos(CONST_PI*x1));
+
+      return Aval;
+
+}
+
 /* ********************************************************************* */
 void InitDomain (Data *d, Grid *grid)
 /*!
@@ -395,7 +419,7 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
 
           d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
           d->Vc[BX3][k][j][i] = 0.0;
-        }
+        }double
       else{
         d->Vc[BX1][k][j][i] = (BMAX*(-1))/(x1[i]*x1[i]*x1[i]);
         d->Vc[BX1][k][j][i] = (d->Vc[BX1][k][j][i])/(sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
