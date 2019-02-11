@@ -60,7 +60,7 @@ def A(x1):
 
 def dA(x1):
     if x1 != 0:
-        DAval = (A(x1+h) - A(x1-h))/(2*h)      
+        DAval = (A(x1+h) - A(x1-h))/(2*h)
     else:
         DAval = 0
 
@@ -74,8 +74,17 @@ for x1 in r:
     Alist.append(Aval)
     DAlist.append(DAvalue)
 
+    if x1 != 0:
+        Bx1 = (2*A(x1)*np.cos(x2))/((x1*R)*(x1*R))
+        Bx2 = (-dA(x1)*np.sin(x2))/(x1*R)
+        Bx3 = (Lambda*CONST_PI*A(x1)*np.sin(x2))/(x1*R*R)
 
-"""
+    else:
+        Bx1 = (2*A(0.001)*cos(0.001))/((0.001*R)*(0.001*R))
+        Bx2 = (-dA(0.001)*sin(0.001))/(0.001*R)
+        Bx3 = 0
+
+    /* Normalization */
     Bx1 = Bx1 / (np.sqrt(UNIT_DENSITY)*UNIT_VELOCITY)
     Bx2 = Bx2 / (np.sqrt(UNIT_DENSITY)*UNIT_VELOCITY)
     Bx3 = Bx3 / (np.sqrt(UNIT_DENSITY)*UNIT_VELOCITY)
@@ -85,12 +94,14 @@ for x1 in r:
     bx3list.append(Bx3)
 
 
+
 py.plot(r,bx1list,"bo-")
 py.plot(r,bx2list,"ro-")
 py.plot(r,bx3list,"go-")
 """
 py.plot(r,Alist)
 py.plot(r,DAlist)
+"""
 #py.yscale("log")
 py.xlim(0,2.1)
 #py.ylim(-1,1)
