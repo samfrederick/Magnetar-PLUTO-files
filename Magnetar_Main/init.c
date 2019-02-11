@@ -156,8 +156,8 @@ void Init (double *v, double x1, double x2, double x3)
      v[RHO] = v[RHO] / UNIT_DENSITY;
      v[PRS] = v[PRS] / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
 
-     v[BX1] = (2*A(0.001)*cos(0.001))/((0.001*R)*(0.001*R));;
-     v[BX2] = (-dA(0.001)*sin(0.001))/(0.001*R);
+     v[BX1] = (2*A(0.001)*cos(x2))/((0.001*R)*(0.001*R));
+     v[BX2] = (-dA(0.001)*sin(x2))/(0.001*R);
      v[BX3] = 0;
 
      /* Normalization */
