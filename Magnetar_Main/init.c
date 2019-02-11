@@ -15,6 +15,8 @@
 #include "pluto.h"
 #include <stdio.h>
 #include <math.h>
+
+double A(double x1);
 /*
 
 FOREWORD (9-7-18):
@@ -47,7 +49,7 @@ ratio r / R such that (10000*x1)/ R = r / R.
 #define R 1.e6           /* cm */                   /* Radius of Star         */
 #define K 4.25e4         /* cm^5 g^-1 s^-2 */
 #define BMAX 5e15        /* gauss  := g^1/2 * cm^-1/2 * s */
-# define Lambda 2.362    /* First Eigenvalue for mixed Haskell Equations */
+#define Lambda 2.362    /* First Eigenvalue for mixed Haskell Equations */
 
 /* HARD CODED VALUES */
 #define RPOT 1.857595e20     /* Magnitude of the gravitational potential at r = R */
@@ -183,15 +185,15 @@ double A(double x1)
 Stream Function via Haskell et al. 2008 p. 540  Mixed Field Equations
 */
 {
-double Aval;
-Aval =
-       ((Bmax*R*R)/((Lambda*Lambda-1)*(Lambda*Lambda-1)*CONST_PI*x1))*
-       (2*CONST_PI*((Lambda*CONST_PI*x1*cos(Lambda*CONST_PI*x1)-sin(Lambda*CONST_PI*x1))/
-       (CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda))) +
-       ((1-Lambda*Lambda)*(CONST_PI*x1)*(CONST_PI*x1)-2)*sin(CONST_PI*x1) +
-       2*CONST_PI*x1*cos(CONST_PI*x1));
+    double Aval;
+    Aval =
+    ((BMAX*R*R)/((Lambda*Lambda-1)*(Lambda*Lambda-1)*CONST_PI*x1))*
+    (2*CONST_PI*((Lambda*CONST_PI*x1*cos(Lambda*CONST_PI*x1)-sin(Lambda*CONST_PI*x1))/
+    (CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda))) +
+    ((1-Lambda*Lambda)*(CONST_PI*x1)*(CONST_PI*x1)-2)*sin(CONST_PI*x1) +
+    2*CONST_PI*x1*cos(CONST_PI*x1));
 
-      return Aval;
+    return Aval;
 
 }
 
@@ -419,7 +421,7 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
 
           d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
           d->Vc[BX3][k][j][i] = 0.0;
-        }double
+        }
       else{
         d->Vc[BX1][k][j][i] = (BMAX*(-1))/(x1[i]*x1[i]*x1[i]);
         d->Vc[BX1][k][j][i] = (d->Vc[BX1][k][j][i])/(sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
