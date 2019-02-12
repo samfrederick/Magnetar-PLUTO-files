@@ -121,22 +121,20 @@ void Init (double *v, double x1, double x2, double x3)
   v[TRC] = 0.0; /* Tracer (passive scalar, Q) */
 
 
-  /* Assign B-field Component Values (Haskell et al. 2008) */
-  if(x1 != 0)
+
+
+
+  if ((x1 < 1.0) && (x1!= 0))
   {
+    /* Assign B-field Component Values (Haskell et al. 2008) */
     v[BX1] = (2*A(x1)*cos(x2))/((x1*R)*(x1*R));
-    v[BX2] = (-dA(x1)*sin(x2))/(x1*R);
+    v[BX2] = (-dA(x1)*sin(x2))/(x1*R*R);
     v[BX3] = (Lambda*CONST_PI*A(x1)*sin(x2))/(x1*R*R);
 
     /* Normalization */
     v[BX1] = v[BX1] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
     v[BX2] = v[BX2] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
     v[BX3] = v[BX3] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
-  }
-
-
-  if ((x1 < 1.0) && (x1!= 0)){
-
 
     /* Calcuate values for pressure and density using N = 1 polytrope EOS */
     v[RHO] = (RHO_C*sin(CONST_PI*x1))/(x1*CONST_PI) + VACUUM;
@@ -156,8 +154,8 @@ void Init (double *v, double x1, double x2, double x3)
      v[RHO] = v[RHO] / UNIT_DENSITY;
      v[PRS] = v[PRS] / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
 
-     v[BX1] = (2*A(0.001)*cos(0.001))/((0.001*R)*(0.001*R));;
-     v[BX2] = (-dA(0.001)*sin(0.001))/(0.001*R);
+     v[BX1] = (2*A(0.001)*cos(x2))/((0.001*R)*(0.001*R));
+     v[BX2] = (-dA(0.001)*sin(x2))/(0.001*R);
      v[BX3] = 0;
 
      /* Normalization */
