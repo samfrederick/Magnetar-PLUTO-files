@@ -3,6 +3,12 @@ Mixed_Field_Visualization.py
 Author: Sam Frederick
 2-11-19
 
+This script graphs mixed magnetic field component equations from 
+Haskell et al. (2008). The function A(r) is called the stream 
+function, and its derivative is the function dA(r). This function 
+and its derivative appear in the field component equations: Br, 
+Btheta, and Bphi. 
+
 """
 
 import numpy as np
