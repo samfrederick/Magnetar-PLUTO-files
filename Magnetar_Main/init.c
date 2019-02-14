@@ -49,9 +49,9 @@ ratio r / R such that (10000*x1)/ R = r / R.
 #define RHO_C 2.2e15     /* g cm^-3 */              /* Core density of star   */
 #define R 1.e6           /* cm */                   /* Radius of Star         */
 #define K 4.25e4         /* cm^5 g^-1 s^-2                                    */
-#define BMAX 5e15        /* gauss  := g^1/2 * cm^-1/2 * s                     */
+#define BMAX 4e14        /* gauss  := g^1/2 * cm^-1/2 * s                     */
 #define Lambda 2.362     /* First Eigenvalue for mixed Haskell Equations      */
-#define VACUUM 1e8       /* Vacuum 'density' for purposes of calculation      */
+#define VACUUM 1e6       /* Vacuum 'density' for purposes of calculation      */
 
 /* HARD CODED VALUES */
 #define RPOT 1.857595e20    /* Magnitude of the gravitational potential at r = R */
