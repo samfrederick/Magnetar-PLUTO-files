@@ -16,8 +16,6 @@
 #include <stdio.h>
 #include <math.h>
 
-double A(double x1);
-double dA(double x1);
 /*
 
 FOREWORD (9-7-18):
@@ -49,7 +47,7 @@ by 10000 to 'normalize' the ratio r / R such that (10000*x1)/ R = r / R.
 #define RHO_C 2.2e15     /* g cm^-3       */        /* Core density of star   */
 #define R 1.e6           /* cm            */        /* Radius of Star         */
 #define K 4.25e4         /* cm^5 g^-1 s^-2*/        /* Coeff. for density eqn.*/
-#define BMAX 4e14        /* gauss  := g^1/2 * cm^-1/2 * s                     */
+#define BMAX 1e14        /* gauss  := g^1/2 * cm^-1/2 * s                     */
 #define Lambda 2.362     /* First Eigenvalue for mixed Haskell Equations      */
 
 /* HARD CODED VALUES */
