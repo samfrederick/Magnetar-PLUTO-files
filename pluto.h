@@ -1,13 +1,20 @@
 /* ///////////////////////////////////////////////////////////////////// */
-/*! 
-  \file  
+/*!
+  \file
   \brief PLUTO main header file.
 
-  Contains basic macro definitions, structure definitions and global 
+  Contains basic macro definitions, structure definitions and global
   variable declarations used by the code.
 
   \author A. Mignone (mignone@ph.unito.it)
   \date   Feb 21, 2018
+
+----------------------------------------------------------------------------
+  Commment 2-14-19:
+Edited by Sam Frederick to include function definitions for expressions
+necessary for implementation of the mixed poloidal and toroidal magnetic field
+for an n = 1 polytrope as determined by Haskell et al. (2008).
+
 */
 /* ///////////////////////////////////////////////////////////////////// */
 #ifndef PLUTO_H
@@ -67,8 +74,8 @@
 #define SEMI_IMPLICIT             10  /* -- Used for dust time stepping -- */
 
 #define EXPLICIT             1 /* -- just a number different from 0 !!!  -- */
-#define SUPER_TIME_STEPPING  2 /* -- just a number different from EXPLICIT -- */ 
-#define RK_CHEBYSHEV         4  
+#define SUPER_TIME_STEPPING  2 /* -- just a number different from EXPLICIT -- */
+#define RK_CHEBYSHEV         4
 #define RK_LEGENDRE          8
 
 #define IMEX        2   /* Any number different from EXPLICIT (=1) */
@@ -97,7 +104,7 @@
 #define VTK_VECTOR  5  /* -- any number but NOT 1  -- */
 
 #define MAX_OUTPUT_TYPES 16    /* The max number of allowed data formats
-                                  including fluid and particles */     
+                                  including fluid and particles */
 #define MAX_OUTPUT_VARS  64    /* The maximum nuber of variables that can be
                                   dumped to disk for a single format. */
 
@@ -125,11 +132,11 @@
 #define RMHD          5
 #define CR_TRANSPORT  6
 
-/*  ----  SET LABELS FOR DIV.B Control  ----  
-          If you move them to the MHD header, 
+/*  ----  SET LABELS FOR DIV.B Control  ----
+          If you move them to the MHD header,
           definitions.h (which is included before)
           cannot correctly use them                */
-        
+
 #define EIGHT_WAVES            1
 #define DIV_CLEANING           2
 #define CONSTRAINED_TRANSPORT  3
@@ -137,21 +144,21 @@
 /*  ----  SET LABELS FOR BODY_FORCE  ----
     Please do not change them since they are
     used in bitwise operations                */
-   
+
 #define VECTOR     4   /* corresponds to  100 in binary  */
 #define POTENTIAL  8   /* corresponds to 1000 in binary  */
 
 /* ---- Boundary condition labels  ----  */
 
 #define OUTFLOW          1  /* any number except 0 !! */
-#define REFLECTIVE       2 
+#define REFLECTIVE       2
 #define AXISYMMETRIC     3
 #define EQTSYMMETRIC     4
 #define PERIODIC         5
 #define SHEARING         6
 #define USERDEF          7
 
-/*! \name Labels identifying different boundary and domain regions. 
+/*! \name Labels identifying different boundary and domain regions.
    These are useful in Boundary() and when setting RBox structures
    in different points of the code.
 */
@@ -168,18 +175,18 @@
 
 /* ---- LABELS FOR IMAGE SLICING ---- */
 
-#define X12_PLANE       3  
+#define X12_PLANE       3
 #define X13_PLANE       5
 #define X23_PLANE       6
 
 /*! \name Bit flag labels.
     The following macros define the bits that can be turned on or off
-    in an unsigned char (= 1 byte = 8 bits) variable. 
-    Different bit flags allow to enable or disable certain actions in 
+    in an unsigned char (= 1 byte = 8 bits) variable.
+    Different bit flags allow to enable or disable certain actions in
     a given cell at different points in the code, see also flag.c.
-    The 3D unsigned char \c ***flag array is used for bookeeping, in each zone 
+    The 3D unsigned char \c ***flag array is used for bookeeping, in each zone
     (i,j,k), which bits are actually switched on or off.
-    A simple bitwise operation is used to enable a flag, e.g., 
+    A simple bitwise operation is used to enable a flag, e.g.,
     <tt> flag[k][j][i] |= FLAG_XXX </tt>.
     For instance, by turning the ::FLAG_HLL bit on, we have
     <tt> flag = 00000100 </tt>, while by also enabling the ::FLAG_SPLIT_CELL
@@ -195,10 +202,10 @@
 #define FLAG_ENTROPY     8  /**< Update pressure using entropy equation. */
 #define FLAG_SPLIT_CELL  16 /**< Zone is covered by a finer level (AMR only). */
 #define FLAG_INTERNAL_BOUNDARY   32  /**< Zone belongs to an internal boundary
-                                          region and should be excluded from 
+                                          region and should be excluded from
                                           being updated in time              */
-#define FLAG_CONS2PRIM_FAIL      64    
-#define FLAG_BIT8         128  
+#define FLAG_CONS2PRIM_FAIL      64
+#define FLAG_BIT8         128
 /**@} */
 
 #define IDIR     0     /*   This sequence (0,1,2) should */
@@ -214,7 +221,7 @@
 #define X3FACE  3  /* -- Means (i, j, k+1/2)     -- */
 #define X1EDGE  4  /* -- Means (i, j+1/2, k+1/2) -- */
 #define X2EDGE  5  /* -- Means (i+1/2, j, k+1/2) -- */
-#define X3EDGE  6  /* -- Means (i+1/2, j+1/2, k) -- */ 
+#define X3EDGE  6  /* -- Means (i+1/2, j+1/2, k) -- */
 
 #define CELL_CENTER    50  /* really needed ? */
 #define FACE_CENTER    51
@@ -246,7 +253,7 @@
 /* ---- limiter labels ---- */
 
 #define FLAT_LIM          1
-#define MINMOD_LIM        2 
+#define MINMOD_LIM        2
 #define VANALBADA_LIM     3
 #define OSPRE_LIM         4
 #define UMIST_LIM         5
@@ -299,14 +306,14 @@
 /* *******************************************************************
     Set default values of fine-tuning macro-define constants.
     This section of the code is for general-purpose macros although
-    other may exists elsewhere. 
+    other may exists elsewhere.
    ******************************************************************* */
 
 #ifndef AMBIPOLAR_DIFFUSION
  #define AMBIPOLAR_DIFFUSION NO
 #endif
 
-#ifndef ASSIGN_VECTOR_POTENTIAL 
+#ifndef ASSIGN_VECTOR_POTENTIAL
  #define ASSIGN_VECTOR_POTENTIAL   NO
 #endif
 
@@ -324,17 +331,17 @@
  #ifndef CHOMBO_LOGR
   #define CHOMBO_LOGR NO
  #endif
- 
+
 /* --------------------------------------------------------------------
-    By default we enable angular momentum conservation only if the 
-    entropy swtich is enabled.  
+    By default we enable angular momentum conservation only if the
+    entropy swtich is enabled.
     Otherwise angular momentum conservation is not enforced during
     refluxing / prolongation / restriction operations since this has
     been shown to lead to the appearance of negative pressures.
-    (Simultaneous energy and angular momentum conservation in Chombo 
+    (Simultaneous energy and angular momentum conservation in Chombo
      does not seem to be vary robust)
    -------------------------------------------------------------------- */
-   
+
  #ifndef CHOMBO_CONS_AM
   #if (GEOMETRY == CYLINDRICAL) && (COMPONENTS == 3) && (ENTROPY_SWITCH)
    #define CHOMBO_CONS_AM YES
@@ -360,7 +367,7 @@
 
 #ifndef ENTROPY_SWITCH
  #define ENTROPY_SWITCH  NO
-#endif 
+#endif
 
 #ifndef EOS
  #define EOS  -1
@@ -370,10 +377,10 @@
  #define HALL_MHD          NO
 #endif
 
-#ifndef INITIAL_SMOOTHING        
+#ifndef INITIAL_SMOOTHING
  #define INITIAL_SMOOTHING  NO  /**< Assign initial conditions by averaging
                                      multiple values inside the cell */
-                     
+
 #endif
 
 #ifndef INTERNAL_BOUNDARY
@@ -388,9 +395,9 @@
  #define RECONSTRUCT_4VEL   NO  /**< When set to YES, reconstruct 4-velocity
                                      rather than 3-velocity (only for RHD and
                                      RMHD physics modules)  */
-#endif  
+#endif
 
-#ifndef RESISTIVITY 
+#ifndef RESISTIVITY
  #define RESISTIVITY   NO
 #endif
 
@@ -438,35 +445,35 @@
     Set HAVE_ENERGY to YES if an energy equation exists
    -------------------------------------------------------------------- */
 
-#if (EOS == IDEAL) || (EOS == PVTE_LAW) || (EOS == TAUB)  
+#if (EOS == IDEAL) || (EOS == PVTE_LAW) || (EOS == TAUB)
  #define HAVE_ENERGY       YES
 #else
  #define HAVE_ENERGY       NO
 #endif
 
-/*! Define the conversion constant between dimensionless 
+/*! Define the conversion constant between dimensionless
     temperature prs/rho and physical temperature in Kelvin,
     T = (prs/rho)*KELVIN*mu                                   */
-#define KELVIN (UNIT_VELOCITY*UNIT_VELOCITY*CONST_amu/CONST_kB) 
+#define KELVIN (UNIT_VELOCITY*UNIT_VELOCITY*CONST_amu/CONST_kB)
 
 /* ******************************************************
     Debug switches
    ****************************************************** */
- 
+
 /* -- CHECK_EIGENVECTORS: used in eigenv.c in HD/, MHD/, RHD/
-      to check orthogonality and the correctness through 
+      to check orthogonality and the correctness through
       the relation the A = L*\Lambda*R  -- */
 
 #ifndef CHECK_EIGENVECTORS
  #define CHECK_EIGENVECTORS     NO
 #endif
 
-/* -- CHECK_CONSERVATIVE_VAR: used in RHD/mappers.c to 
+/* -- CHECK_CONSERVATIVE_VAR: used in RHD/mappers.c to
       check that conservative vars are physical -- */
 
 #define CHECK_CONSERVATIVE_VAR  NO
 
-/* -- CHECK_DIVB_CONDITION: used in MHD/CT/ct.c 
+/* -- CHECK_DIVB_CONDITION: used in MHD/CT/ct.c
       to check if div.B = 0 -- */
 
 #ifndef CHECK_DIVB_CONDITION
@@ -483,7 +490,7 @@
 
 /* -- Select Primitive / Conservative form of Hancock scheme -- */
 
-#if TIME_STEPPING == HANCOCK 
+#if TIME_STEPPING == HANCOCK
  #ifndef PRIMITIVE_HANCOCK
   #if (PHYSICS == MHD) && (defined PARTICLES) && (PARTICLES_TYPE == COSMIC_RAYS)
    #define PRIMITIVE_HANCOCK   NO
@@ -491,21 +498,21 @@
    #define PRIMITIVE_HANCOCK   NO
   #else
    #define PRIMITIVE_HANCOCK   YES
-  #endif   
- #endif   
+  #endif
+ #endif
 #endif
 
 /* *********************************************************************
     Diffusion operators (HD and MHD only):
     PARABOLIC_FLUX is the bitwise OR combination of all operators, each
     being either one of NO, EXPLICIT (1st bit), STS (2nd bit),
-    RKL (3rd bit). 
+    RKL (3rd bit).
     It can take the following values
 
       00   --> no diffusion operator is being used
       01   --> there's at least one explicit diffusion operator and
                no sts.
-               
+
       10   --> there's at least one sts diffusion operator and
                no explicit one.
       11   --> mixed: there is at least one explicit and sts operator
@@ -513,7 +520,7 @@
 
 #if PHYSICS == HD || PHYSICS == MHD
  #define PARABOLIC_FLUX (RESISTIVITY|THERMAL_CONDUCTION|VISCOSITY)
-#else 
+#else
  #define PARABOLIC_FLUX NO
 #endif
 
@@ -534,7 +541,7 @@
      Recurrent types
      Note: when using Finite Difference Schemes, the
           "Riemann Solver" function computes the fluxes
-           with high order interpolants. 
+           with high order interpolants.
    ***************************************************** */
 
 typedef double real;
@@ -560,7 +567,7 @@ typedef double ****Data_Arr;
 
     - \c NTRACER (user-supplied)
     - \c NIONS chemical fractions (added by cooling modules)
-    - Entropy 
+    - Entropy
 
     In total, there are <tt>NSCL = NIONS+NTRACER+(ENTROPY</tt> passive
     scalar to be advected.
@@ -596,11 +603,11 @@ typedef double ****Data_Arr;
     - \c NFLX: number of equations defining the system of conservation laws.
       For example, for the HD module, it consists of density, momentum and energy.
                 It is defined in the physics module header file mod_defs.h.
-    - \c NIONS: number of chemical species; defined in the cooling modules 
+    - \c NIONS: number of chemical species; defined in the cooling modules
                 cooling.h, if present.
     - \c NTRACER: number of user-defined tracers; defined in the problem
                   directory header file definitions.h
-    \verbatim  
+    \verbatim
            NFLX    NIONS    NTRACER    ENTR    NDUST_FLUID
                    <---------------------->
                               NSCL
@@ -621,7 +628,7 @@ typedef double ****Data_Arr;
 #define NVAR_LOOP(n)     for ((n) = NVAR;   (n)--;       )
 
 /* ********************************************************
-    Keep on adding module header files 
+    Keep on adding module header files
    ******************************************************** */
 
 
@@ -649,7 +656,7 @@ typedef double ****Data_Arr;
  #include "MHD/ShearingBox/shearingbox.h"   /* Shearing box header file */
 #endif
 
-#if THERMAL_CONDUCTION != NO 
+#if THERMAL_CONDUCTION != NO
  #include "Thermal_Conduction/tc.h" /* Thermal conduction header file */
 #endif
 
@@ -658,14 +665,14 @@ typedef double ****Data_Arr;
 #endif
 
 #include "States/plm_coeffs.h"      /* PLM header file */
-#if RECONSTRUCTION == PARABOLIC 
+#if RECONSTRUCTION == PARABOLIC
  #include "States/ppm_coeffs.h"     /* PPM header file */
 #endif
 #include "Math_Tools/math_tools.h"  /* Math tools header file */
 
 /* *********************************************************************
     Define mass fractions (H_MASS_FRAC and He_MASS_FRAC).
-    
+
     For H2_COOL,  Proto-Solar Mass Fractions for Hydrogen
     and Helium  (Lodders, ApJ 591, 2003 )  are used.
 
@@ -686,39 +693,39 @@ typedef double ****Data_Arr;
   #define He_MASS_FRAC      0.2741
 #endif
 
-#define Z_MASS_FRAC (1.0 - H_MASS_FRAC - He_MASS_FRAC)  
+#define Z_MASS_FRAC (1.0 - H_MASS_FRAC - He_MASS_FRAC)
 #define FRAC_He     (He_MASS_FRAC/CONST_AHe*CONST_AH/H_MASS_FRAC)
 #define FRAC_Z      (Z_MASS_FRAC /CONST_AZ *CONST_AH/H_MASS_FRAC)
 
 /* -- IF_XXXX() Macros for simpler coding -- */
-  
+
 #if DUST_FLUID == YES
  #define IF_DUST_FLUID(a)  a
-#else 
- #define IF_DUST_FLUID(a)  
+#else
+ #define IF_DUST_FLUID(a)
 #endif
 
 #if HAVE_ENERGY
  #define IF_ENERGY(a)  a
-#else 
- #define IF_ENERGY(a)  
+#else
+ #define IF_ENERGY(a)
 #endif
 
 #if (defined FARGO) && (!defined SHEARINGBOX)
  #define IF_FARGO(a)  a
-#else 
- #define IF_FARGO(a)  
+#else
+ #define IF_FARGO(a)
 #endif
 
 #if ROTATING_FRAME == YES
  #define IF_ROTATING_FRAME(a)  a
-#else 
- #define IF_ROTATING_FRAME(a)  
+#else
+ #define IF_ROTATING_FRAME(a)
 #endif
 
 /* ----------------------------------------------------------
     Include module header files: EOS
-    [This section should be placed before, but NVAR 
+    [This section should be placed before, but NVAR
      wouldn't be defined. Need to fix this at some point]
    ---------------------------------------------------------- */
 
