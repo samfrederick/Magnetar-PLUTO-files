@@ -7,7 +7,7 @@
   for problem configuration.
   It is automatically searched for by the makefile.
 
-  \ author: Sam Frederick, Davidson College
+  \ author: Sam Frederick, Davidson College '19
   \ date created: 8-27-18, work in progress.
 */
 /* ///////////////////////////////////////////////////////////////////// */
@@ -16,8 +16,6 @@
 #include <stdio.h>
 #include <math.h>
 
-double A(double x1);
-double dA(double x1);
 /*
 
 FOREWORD (9-7-18):
@@ -30,35 +28,35 @@ chosen numerical methods for computation.
 The radius r, which will be referred to in the code as 'x1' is a value that
 ranges from {0 < r < C} where C is the outermost boundary of the computational
 domain specified in line 3 of the pluto.ini file. The domain of the star is
-defined by {0 < r < 1}. There are numerous points in the code where we make
-reference in both equations of state and potential to r / R. We must be
-quite careful in our understanding of this value, as we can not simply use the
-r specified prior as 'x1' in this ratio. Say we're computing the value of this
-ratio at r = 8e5 cm  = 8000 km, where the radius of the star is 1e6 cm =
-10000 km. We want this ratio to be 8000 km / 10000 km  = 0.8. NOT 0.8 / 100000 km
-as I mistakenly have previously specified. This means that if we seek to use the
-domain {0 < x1 < 2}, we need to multiply this value by 10000 to 'normalize' the
-ratio r / R such that (10000*x1)/ R = r / R.
+defined by {0 < r < 1}, where R = 1 is the radius of the star. There are numerous
+points in the code where we make reference in both equations of state and
+potential to r / R. We must be quite careful in our understanding of this value,
+as we can not simply use the r specified prior as 'x1' in this ratio. Say we're
+computing the value of this ratio at r = 8e5 cm  = 8000 km, where the radius of
+the star is 1e6 cm =10000 km. We want this ratio to be 8000 km / 10000 km
+= 0.8. NOT 0.8 / 100000 km as I mistakenly have previously specified. This means
+that if we seek to use the domain {0 < x1 < 2}, we need to multiply this value
+by 10000 to 'normalize' the ratio r / R such that (10000*x1)/ R = r / R.
 
 
 /* ********************************************************************* */
 
 /* PHYSICAL CONSTANTS */
 #define G_CONST  6.67e-8 /*cm^3 g^-1 s^-2 */        /* Gravitational constant */
-#define M_STAR  2.785e33 /* g */                    /* Mass of Star           */
-#define RHO_C 2.2e15     /* g cm^-3 */              /* Core density of star   */
-#define R 1.e6           /* cm */                   /* Radius of Star         */
-#define K 4.25e4         /* cm^5 g^-1 s^-2                                    */
-#define BMAX 5e15        /* gauss  := g^1/2 * cm^-1/2 * s                     */
+#define M_STAR  2.785e33 /* g             */        /* Mass of Star           */
+#define RHO_C 2.2e15     /* g cm^-3       */        /* Core density of star   */
+#define R 1.e6           /* cm            */        /* Radius of Star         */
+#define K 4.25e4         /* cm^5 g^-1 s^-2*/        /* Coeff. for density eqn.*/
+#define BMAX 1e14        /* gauss  := g^1/2 * cm^-1/2 * s                     */
 #define Lambda 2.362     /* First Eigenvalue for mixed Haskell Equations      */
-#define VACUUM 1e8       /* Vacuum 'density' for purposes of calculation      */
 
 /* HARD CODED VALUES */
-#define RPOT 1.857595e20    /* Magnitude of the gravitational potential at r = R */
-#define GPRSQ 1.4674e20     /* G x rho_c x R^2                                   */
+#define RPOT 1.857595e20 /* Magnitude of the gravitational potential at r = R */
+#define GPRSQ 1.4674e20  /* G x rho_c x R^2                                   */
 
 /* COMPUTATIONAL CONSTANTS*/
 #define h 1e-4           /* Finite difference step-size                       */
+#define VACUUM 1e6       /* g cm^-3, Vacuum 'density', for comput. stability  */
 
 
 /* ********************************************************************* */
@@ -111,19 +109,17 @@ void Init (double *v, double x1, double x2, double x3)
   */
 
 
-
+  /* Velocity component normalization */
   v[VX1] = v[VX1] / UNIT_VELOCITY;
   v[VX2] = v[VX2] / UNIT_VELOCITY;
   v[VX3] = v[VX3] / UNIT_VELOCITY;
 
-
+  /* Assign "vacuum pressure" exterior to star */
   v[PRS] = (K*VACUUM*VACUUM)/(UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
   v[TRC] = 0.0; /* Tracer (passive scalar, Q) */
 
 
-
-
-
+  /* Assign physical attributes for stellar interior */
   if ((x1 < 1.0) && (x1!= 0))
   {
     /* Assign B-field Component Values (Haskell et al. 2008) */
@@ -146,28 +142,40 @@ void Init (double *v, double x1, double x2, double x3)
 
 
   }
-  else if(x1 == 0){ /* Density at center, this may be causing errors in simulation */
-     v[RHO] = RHO_C + VACUUM;/* Density at star core */
-     v[PRS] = K*RHO_C*RHO_C;
+  /* Assign physical attributes for stellar core */
+  else if(x1 == 0){
+     v[RHO] = RHO_C + VACUUM; /* Density at stellar core  */
+     v[PRS] = K*RHO_C*RHO_C;  /* Pressure at stellar core */
 
      /* Normalize values for density and pressure */
      v[RHO] = v[RHO] / UNIT_DENSITY;
      v[PRS] = v[PRS] / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
 
+     /* Assign B-field components at core */
      v[BX1] = (2*A(0.001)*cos(x2))/((0.001*R)*(0.001*R));
      v[BX2] = (-dA(0.001)*sin(x2))/(0.001*R);
      v[BX3] = 0;
 
-     /* Normalization */
+     /* B-field Normalization */
      v[BX1] = v[BX1] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
      v[BX2] = v[BX2] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
      v[BX3] = v[BX3] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
   }
 }
+/* ********************************************************************* */
 double A(double x1)
 /*
 Stream Function via Haskell et al. 2008 p. 540  Mixed Field Equations
-*/
+
+The stream function is a mathematical tool appearing in the definition of the
+field component equations.
+
+To be specific, the stream function is defined as S(r, theta) = A(r)sin^2(theta).
+Therefore, what we are computing is actually the stream function divided by
+sin^2(theta). We make this choice because A(r), not S(r, theta) appers explicitly
+in the expressions for the field component functions on pg. 540 of Haskell et al.
+
+/* ********************************************************************* */
 {
     double Aval;
     if (x1 != 0)
@@ -186,12 +194,13 @@ Stream Function via Haskell et al. 2008 p. 540  Mixed Field Equations
     return Aval;
 
 }
+/* ********************************************************************* */
 double dA(double x1)
 {
 /*
 Radial Derivative of Stream Function as defined above
 
-*/
+/* ********************************************************************* */
 double D_Aval;
 if (x1 != 0)
   {
