@@ -238,6 +238,7 @@ void Analysis (const Data *d, Grid *grid)
  *
  *********************************************************************** */
 {
+
 int i,j,k;
 double  *x1, *x2, *x3,rho,prs;
 
@@ -245,16 +246,16 @@ x1 = grid->x[IDIR];
 x2 = grid->x[JDIR];
 x3 = grid->x[KDIR];
 
+rho = d->Vc[RHO][k][j][i];
+prs = d->Vc[PRS][k][j][i];
+
 FILE *f = fopen("ANALYSIS.txt","w");
 
 DOM_LOOP(k,j,i){
 
-    rho = d->Vc[RHO][k][j][i];
-    prs = d->Vc[PRS][k][j][i];
+    if (rho > (VACUUM / UNIT_DENSITY) ){
 
-    if (rho > (1e15 / UNIT_DENSITY) ){
-
-      printf("Stuff is happening! %.5e\n",rho);
+      //printf("Stuff is happening! %.5e\n",rho);
 
       if (f == NULL)
       {
@@ -262,8 +263,9 @@ DOM_LOOP(k,j,i){
           exit(1);
       }
 
-      fprintf(f,"Density at r =%f, theta = %f,phi = %f\n",*x1,*x2,*x3);
-      fprintf(f,"%.5e\n",rho);
+      fprintf(f,"Density at r =%f, theta = %f,phi = %f\n",x1[i],x2[j],x3[k]);
+
+      //fprintf(f,"%.5e\n",rho);
       // if (f == NULL ){
       //     printf("Error opening file!\n");
       //     exit(1);
