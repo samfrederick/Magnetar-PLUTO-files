@@ -244,23 +244,25 @@ x1 = grid->x[IDIR];
 x2 = grid->x[JDIR];
 x3 = grid->x[KDIR];
 
-// DOM_LOOP(k,j,i){
-//
-//     rho = d->Vc[RHO][k][j][i];
-//     prs = d->Vc[PRS][k][j][i];
-//
-//     if ((x1[i] < 1.02) && (x1[i] > 0.98)){
-//       FILE *f;
-//       f = fopen("ANALYSIS.txt","w");
-//       if (f == NULL ){
-//           printf("Error opening file!\n");
-//           exit(1);
-//       }
-//       fprintf(f,"Radius: %12.6f Density: %12.6e  Pressure: %12.6e \n",x1[i],rho,prs);
-//       fclose(f);
+DOM_LOOP(k,j,i){
 
-//  }
-// }
+    rho = d->Vc[RHO][k][j][i];
+    prs = d->Vc[PRS][k][j][i];
+
+    if (rho > 1e15){
+      FILE *f;
+      f = fopen("ANALYSIS.txt","a");
+      printf("This is a test\n");
+      printf("%d",&rho);
+      // if (f == NULL ){
+      //     printf("Error opening file!\n");
+      //     exit(1);
+      // }
+      // fprintf(f,"Radius: %12.6f Density: %12.6e  Pressure: %12.6e \n",x1[i],rho,prs);
+      fclose(f);
+
+ }
+}
 
 
 }
