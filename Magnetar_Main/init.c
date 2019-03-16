@@ -49,7 +49,7 @@ by 10000 to 'normalize' the ratio r / R such that (10000*x1)/ R = r / R.
 #define R 1.e6           /* cm            */        /* Radius of Star         */
 #define K 4.25e4         /* cm^5 g^-1 s^-2*/        /* Coeff. for density eqn.*/
 #define BMAX 1e14        /* gauss  := g^1/2 * cm^-1/2 * s                     */
-#define Lambda 2.362     /* First Eigenvalue for mixed Haskell Equations      */
+#define Lambda 1000.59     /* First Eigenvalue for mixed Haskell Equations      */
 
 /* HARD CODED VALUES */
 #define RPOT 1.857595e20 /* Magnitude of the gravitational potential at r = R */
@@ -229,131 +229,133 @@ void InitDomain (Data *d, Grid *grid)
 
 }
 /* ********************************************************************* */
-double simpsonzz (int no, double min, double max)
-/*!
-*  Perform simpsons approximation for integration of Izzint
-* Credit given to the following for publicly posting code:
-*								                                                       *
-*  taken from: "Projects in Computational Physics" by Landau and Paez  *
-*	       copyrighted by John Wiley and Sons, New York                  *
-*                                                                      *
-*  written by: students in PH465/565, Computational Physics,           *
-*	       at Oregon State University                                    *
-*              code copyrighted by RH Landau                           *
-*  supported by: US National Science Foundation, Northwest Alliance    *
-*                for Computational Science and Engineering (NACSE),    *
-*                US Department of Energy 	                             *
-*								                                                       *
-*  UNIX (DEC OSF, IBM AIX): cc integ.c -lm                             *
-*    			                                                             *
-*/
-{
-int n;
-double interval, sum=0.0, x;
-
-interval = ((max-min))/(no-1);
-
-for (n=2; n<no; n+=2)           /* loop for odd points      */
-   {
-       x = interval * (n-1);
-       sum += 4 * Izzint(x);
-   }
-   for (n=3; n<no; n+=2)        /* loop for even points     */
-   {
-      x = interval * (n-1);
-      sum += 2 * Izzint(x);
-   }
-   sum +=  Izzint(min) + Izzint(max);	 	  /* add first and last value */
-   sum *= interval/3.;        	/* then multilpy by interval*/
-
-   return (sum);
-
-}
-/* ********************************************************************* */
-double simpsonxx (int no, double min, double max)
-/*!
-*  Perform simpsons approximation for integration of Ixxint
-* Credit given to the following for publicly posting code:
-*								                                                       *
-*  taken from: "Projects in Computational Physics" by Landau and Paez  *
-*	       copyrighted by John Wiley and Sons, New York                  *
-*                                                                      *
-*  written by: students in PH465/565, Computational Physics,           *
-*	       at Oregon State University                                    *
-*              code copyrighted by RH Landau                           *
-*  supported by: US National Science Foundation, Northwest Alliance    *
-*                for Computational Science and Engineering (NACSE),    *
-*                US Department of Energy 	                             *
-*								                                                       *
-*  UNIX (DEC OSF, IBM AIX): cc integ.c -lm                             *
-*    			                                                             *
-**************************************************************************/
-{
-int n;
-double interval, sum=0.0, x;
-
-interval = ((max-min))/(no-1);
-
-for (n=2; n<no; n+=2)           /* loop for odd points      */
-   {
-       x = interval * (n-1);
-       sum += 4 * Ixxint(x);
-   }
-   for (n=3; n<no; n+=2)        /* loop for even points     */
-   {
-      x = interval * (n-1);
-      sum += 2 * Ixxint(x);
-   }
-   sum +=  Ixxint(min) + Ixxint(max);	 	  /* add first and last value */
-   sum *= interval/3.;        	/* then multilpy by interval*/
-
-   return (sum);
-
-}
-/* ********************************************************************* */
-double Izzint(const Data *d, Grid *grid)
-/*!
- *  Integrand for Izz moment of inertia
- *
- *
- *********************************************************************** */
-{
-  int i,j,k;
-  double  *x1, *x2, *x3,rho,prs,dv;
-
-  x1 = grid->x[IDIR];
-  x2 = grid->x[JDIR];
-  x3 = grid->x[KDIR];
-
-  rho = d->Vc[RHO][k][j][i];
-
-  dv = (1/100.0)(CONST_PI/20.0)(CONST_PI/(40.0))
-  
-  return ((rho*((x1*sin(x2)*cos(x3)*(x1*sin(x2)*sin(x3)))+((x1*sin(x2)*sin(x3))*(x1*sin(x2)*sin(x3))))*x1*x1*sin(x2))*dv);
-
-}
-/* ********************************************************************* */
-double Ixxint(const Data *d, Grid *grid)
-/*!
- *  Integrand for Ixx moment of inertia
- *
- *
- *********************************************************************** */
-{
-  int i,j,k;
-  double  *x1, *x2, *x3,rho,prs,dv;
-
-  x1 = grid->x[IDIR];
-  x2 = grid->x[JDIR];
-  x3 = grid->x[KDIR];
-
-  rho = d->Vc[RHO][k][j][i];
-
-  dv = (1/100.0)(CONST_PI/20.0)(CONST_PI/(40.0))
-
-  return ((rho*((x1*sin(x2)*sin(x3)*(x1*sin(x2)*sin(x3)))+((x1*cos(x2))*(x1*cos(x2))))*x1*x1*sin(x2))*dv);
-
-}
+// double simpsonzz (int no, double min, double max)
+// /*!
+// *  Perform simpsons approximation for integration of Izzint
+// * Credit given to the following for publicly posting code:
+// *								                                                       *
+// *  taken from: "Projects in Computational Physics" by Landau and Paez  *
+// *	       copyrighted by John Wiley and Sons, New York                  *
+// *                                                                      *
+// *  written by: students in PH465/565, Computational Physics,           *
+// *	       at Oregon State University                                    *
+// *              code copyrighted by RH Landau                           *
+// *  supported by: US National Science Foundation, Northwest Alliance    *
+// *                for Computational Science and Engineering (NACSE),    *
+// *                US Department of Energy 	                             *
+// *								                                                       *
+// *  UNIX (DEC OSF, IBM AIX): cc integ.c -lm                             *
+// *    			                                                             *
+// */
+// {
+// int n;
+// double interval, sum=0.0, x;
+//
+// interval = ((max-min))/(no-1);
+//
+// for (n=2; n<no; n+=2)           /* loop for odd points      */
+//    {
+//        x = interval * (n-1);
+//        sum += 4 * Izzint(x);
+//    }
+//    for (n=3; n<no; n+=2)        /* loop for even points     */
+//    {
+//       x = interval * (n-1);
+//       sum += 2 * Izzint(x);
+//    }
+//    sum +=  Izzint(min) + Izzint(max);	 	  /* add first and last value */
+//    sum *= interval/3.;        	/* then multilpy by interval*/
+//
+//    return (sum);
+//
+// }
+// /* ********************************************************************* */
+// double simpsonxx (int no, double min, double max)
+// /*!
+// *  Perform simpsons approximation for integration of Ixxint
+// * Credit given to the following for publicly posting code:
+// *								                                                       *
+// *  taken from: "Projects in Computational Physics" by Landau and Paez  *
+// *	       copyrighted by John Wiley and Sons, New York                  *
+// *                                                                      *
+// *  written by: students in PH465/565, Computational Physics,           *
+// *	       at Oregon State University                                    *
+// *              code copyrighted by RH Landau                           *
+// *  supported by: US National Science Foundation, Northwest Alliance    *
+// *                for Computational Science and Engineering (NACSE),    *
+// *                US Department of Energy 	                             *
+// *								                                                       *
+// *  UNIX (DEC OSF, IBM AIX): cc integ.c -lm                             *
+// *    			                                                             *
+// **************************************************************************/
+// {
+// int n;
+// double interval, sum=0.0, x;
+//
+// interval = ((max-min))/(no-1);
+//
+// for (n=2; n<no; n+=2)           /* loop for odd points      */
+//    {
+//        x = interval * (n-1);
+//        sum += 4 * Ixxint(x);
+//    }
+//    for (n=3; n<no; n+=2)        /* loop for even points     */
+//    {
+//       x = interval * (n-1);
+//       sum += 2 * Ixxint(x);
+//    }
+//    sum +=  Ixxint(min) + Ixxint(max);	 	  /* add first and last value */
+//    sum *= interval/3.;        	/* then multilpy by interval*/
+//
+//    return (sum);
+//
+// }
+// /* ********************************************************************* */
+// double Izzint(const Data *d, Grid *grid)
+// /*!
+//  *  Integrand for Izz moment of inertia
+//  *
+//  *
+//  *********************************************************************** */
+// {
+//   int i,j,k;
+//   double  *x1, *x2, *x3,rho,prs,dv;
+//
+//   x1 = grid->x[IDIR];
+//   x2 = grid->x[JDIR];
+//   x3 = grid->x[KDIR];
+//
+//   rho = d->Vc[RHO][k][j][i];
+//
+//   dv = (1/100.0)(CONST_PI/20.0)(CONST_PI/(40.0));
+//
+//   return ((rho*((x1[i]*sin(x2[j])*cos(x3[k])*(x1[i]*sin(x2[j])*sin(x3[k])))+
+//   ((x1[i]*sin(x2[j])*sin(x3[k]))*(x1[i]*sin(x2[j])*sin(x3[k]))))*x1[i]*x1[i]*sin(x2[j]))*dv);
+//
+// }
+// /* ********************************************************************* */
+// double Ixxint(const Data *d, Grid *grid)
+// /*!
+//  *  Integrand for Ixx moment of inertia
+//  *
+//  *
+//  *********************************************************************** */
+// {
+//   int i,j,k;
+//   double  *x1, *x2, *x3,rho,prs,dv;
+//
+//   x1 = grid->x[IDIR];
+//   x2 = grid->x[JDIR];
+//   x3 = grid->x[KDIR];
+//
+//   rho = d->Vc[RHO][k][j][i];
+//
+//   dv = (1/100.0)(CONST_PI/20.0)(CONST_PI/(40.0));
+//
+//   return ((rho*((x1[i]*sin(x2[j])*sin(x3[k])*(x1[i]*sin(x2[j])*sin(x3[k])))+
+//   ((x1[i]*cos(x2[j]))*(x1[i]*cos(x2[j]))))*x1[i]*x1[i]*sin(x2[j]))*dv);
+//
+// }
 /* ********************************************************************* */
 void Analysis (const Data *d, Grid *grid)
 /*!
@@ -366,41 +368,67 @@ void Analysis (const Data *d, Grid *grid)
 {
 
 int i,j,k;
-double  *x1, *x2, *x3,rho,prs;
+double  *x1, *x2, *x3,rho,prs,Ixx,Izz,diff,Bt,Btsquare;
+double *dr, *dt, *dp, dV;
+double rgrid, tgrid, pgrid,Bphi;
 
 x1 = grid->x[IDIR];
 x2 = grid->x[JDIR];
 x3 = grid->x[KDIR];
 
+dr = grid->dx[IDIR];
+dt = grid->dx[JDIR];
+dp = grid->dx[KDIR];
+
 rho = d->Vc[RHO][k][j][i];
 prs = d->Vc[PRS][k][j][i];
+Bphi = d->Vc[BX3][k][j][i];
+FILE *f = fopen("ANALYSIS.txt","a");
 
-FILE *f = fopen("ANALYSIS.txt","w");
+rgrid = 100.0;
+tgrid = 20.0;
+pgrid = 20.0;
 
-DOM_LOOP(k,j,i){
+//Ixx = simpsonxx(100,0,1)
+Ixx = 0.0;
+//Izz = simpsonzz(100,0,1)
+Izz = 0.0;
+Bt = 0.0;
 
-    if (rho > (VACUUM / UNIT_DENSITY) ){
+ DOM_LOOP(k,j,i){
 
-      //printf("Stuff is happening! %.5e\n",rho);
+     dV = x1[i]*x1[i]*sin(x2[j])*dr[i]*dt[j]*dp[k];
 
-      if (f == NULL)
-      {
-          printf("Error opening file!\n");
-          exit(1);
-      }
+     if (rho > (VACUUM / UNIT_DENSITY) ){
+//
+//       //printf("Stuff is happening! %.5e\n",rho);
+//
 
-      fprintf(f,"Density at r =%f, theta = %f,phi = %f\n",x1[i],x2[j],x3[k]);
-      simpson(100,)
-      //fprintf(f,"%.5e\n",rho);
-      // if (f == NULL ){
-      //     printf("Error opening file!\n");
-      //     exit(1);
-      // }
-      // fprintf(f,"Radius: %12.6f Density: %12.6e  Pressure: %12.6e \n",x1[i],rho,prs);
-
-
+       if (f == NULL)
+       {
+           printf("Error opening file!\n");
+           exit(1);
+       }
+       Bt = Bt + (d->Vc[BX3][k][j][i]*d->Vc[BX3][k][j][i])*dV;
+       Izz = Izz +  d->Vc[PRS][k][j][i]*(pow(x1[i]*sin(x2[j])*sin(x3[k]),2)+pow(x1[i]*cos(x2[j]),2))*dV;
+       Ixx = Ixx +  d->Vc[PRS][k][j][i]*(pow(x1[i]*sin(x2[j])*cos(x3[k]),2)+pow(x1[i]*sin(x2[j])*sin(x3[k]),2))*dV;
+//       fprintf(f,"Density at r =%f, theta = %f,phi = %f\n",x1[i],x2[j],x3[k]);
+//
+//       //fprintf(f,"%.5e\n",rho);
+//       // if (f == NULL ){
+//       //     printf("Error opening file!\n");
+//       //     exit(1);
+//       // }
+//       // fprintf(f,"Radius: %12.6f Density: %12.6e  Pressure: %12.6e \n",x1[i],rho,prs);
+//
+//
  }
 }
+Btsquare = Bt;
+Izz = 2*Izz;
+Ixx = 2*Ixx;
+diff = Izz-Ixx;
+fprintf(f,"Izz =%.8e ,Ixx=%.8e Difference=%.8e, Btsquare=%.8e\n",Izz,Ixx,diff,Btsquare);
 
 fclose(f);
 
