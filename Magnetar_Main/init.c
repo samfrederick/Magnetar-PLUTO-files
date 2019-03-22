@@ -49,7 +49,7 @@ by 10000 to 'normalize' the ratio r / R such that (10000*x1)/ R = r / R.
 #define R 1.e6           /* cm            */        /* Radius of Star         */
 #define K 4.25e4         /* cm^5 g^-1 s^-2*/        /* Coeff. for density eqn.*/
 #define BMAX 1e14        /* gauss  := g^1/2 * cm^-1/2 * s                     */
-#define Lambda 1000.59     /* First Eigenvalue for mixed Haskell Equations      */
+#define Lambda 2.3619    /* First Eigenvalue for mixed Haskell Equations      */
 
 /* HARD CODED VALUES */
 #define RPOT 1.857595e20 /* Magnitude of the gravitational potential at r = R */
@@ -383,10 +383,11 @@ dp = grid->dx[KDIR];
 rho = d->Vc[RHO][k][j][i];
 prs = d->Vc[PRS][k][j][i];
 Bphi = d->Vc[BX3][k][j][i];
-FILE *f = fopen("ANALYSIS.txt","a");
+
+
 
 rgrid = 100.0;
-tgrid = 20.0;
+tgrid = 40.0;
 pgrid = 20.0;
 
 //Ixx = simpsonxx(100,0,1)
@@ -404,11 +405,7 @@ Bt = 0.0;
 //       //printf("Stuff is happening! %.5e\n",rho);
 //
 
-       if (f == NULL)
-       {
-           printf("Error opening file!\n");
-           exit(1);
-       }
+
        Bt = Bt + (d->Vc[BX3][k][j][i]*d->Vc[BX3][k][j][i])*dV;
        Izz = Izz +  d->Vc[PRS][k][j][i]*(pow(x1[i]*sin(x2[j])*sin(x3[k]),2)+pow(x1[i]*cos(x2[j]),2))*dV;
        Ixx = Ixx +  d->Vc[PRS][k][j][i]*(pow(x1[i]*sin(x2[j])*cos(x3[k]),2)+pow(x1[i]*sin(x2[j])*sin(x3[k]),2))*dV;
@@ -424,14 +421,36 @@ Bt = 0.0;
 //
  }
 }
+
 Btsquare = Bt;
 Izz = 2*Izz;
 Ixx = 2*Ixx;
 diff = Izz-Ixx;
-fprintf(f,"Izz =%.8e ,Ixx=%.8e Difference=%.8e, Btsquare=%.8e\n",Izz,Ixx,diff,Btsquare);
 
+
+if (prank == 0){
+  char fname[512];
+  static double tpos = -1.0;
+  FILE *f;
+
+if (g_stepNumber==0){
+   f = fopen("ANALYSIS.txt","w");
+   fprintf(f,"%7s  %12s  %12s  %12s     %12s\n","t","dt","Izz","Ixx","Izz-Ixx");
+}else{
+  if (tpos < 0.0){
+    char sline[512];
+    f = fopen("ANALYSIS.txt","r");
+    while (fgets(sline,512,f)) {}
+    sscanf(sline, "%lf\n",&tpos);
+    fclose(f);
+  }
+  f = fopen("ANALYSIS.txt","a");
+}
+if (g_time > tpos){
+  fprintf(f,"%12.6e  %12.6e  %12.6e  %12.6e  %12.6e \n",g_time,g_dt,Izz,Ixx,diff);
+}
 fclose(f);
-
+}
 
 }
 /* ********************************************************************* */
@@ -483,13 +502,15 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
 
     if (side == 0) {
       TOT_LOOP(k,j,i){
-        if ((x1[i] >= 1.0) && (d->Vc[BX3][k][j][i]) != 0.0){
+        if ((x1[i] >= 1.0) /*&& (d->Vc[BX3][k][j][i]) != 0.0)*/{
           d->Vc[BX3][k][j][i] = 0.0;
+          d->Vc[BX2][k][j][i] = 0.0;
+          d->Vc[BX1][k][j][i] = 0.0;
           d->flag[k][j][i]   |= FLAG_INTERNAL_BOUNDARY;
         }
-        if ((x1[i] > .98) && (x1[i] < 1.01)){
-          d->Vc[BX2][k][j][i] =  (d->Vc[BX2][k][j][i]+ d->Vc[BX2][k][j][i-1])/2;
-          d->Vc[BX1][k][j][i] =  (d->Vc[BX1][k][j][i]+ d->Vc[BX1][k][j][i-1])/2;
+        //if ((x1[i] > .98) && (x1[i] < 1.01)){
+        //  d->Vc[BX2][k][j][i] =  (d->Vc[BX2][k][j][i]+ d->Vc[BX2][k][j][i-1])/2;
+        //  d->Vc[BX1][k][j][i] =  (d->Vc[BX1][k][j][i]+ d->Vc[BX1][k][j][i-1])/2;
         }
         if (d->Vc[RHO][k][j][i] < (VACUUM) / UNIT_DENSITY){
             /* Replace negative values with vacuum density */
@@ -530,9 +551,21 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
         d->Vc[PRS][k][j][i] = d->Vc[PRS][k][j][i] / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
 
         /* B-field values */
-        d->Vc[BX1][k][j][i] = 0.0;
-        d->Vc[BX2][k][j][i] = 0.0;
+        d->Vc[BX1][k][j][i] = -2*CONST_PI*CONST_PI*BMAX*cos(x2[j])(2*CONST_PI*pow(Lambda,3)+
+        (1-3*Lambda*Lambda)sin(CONST_PI*Lambda)+CONST_PI*(3*Lambda*Lambda-1)*Lambda*cos(CONST_PI*Lambda));
+        d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (3*pow((Lambda*Lambda-1),2)*(CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda)));
+
+        d->Vc[BX2][k][j][i] = 2*CONST_PI*CONST_PI*BMAX*sin(x2[j])(2*CONST_PI*pow(Lambda,3)+
+        (1-3*Lambda*Lambda)sin(CONST_PI*Lambda)+CONST_PI*(3*Lambda*Lambda-1)*Lambda*cos(CONST_PI*Lambda));
+        d->Vc[BX2][k][j][i] = d->Vc[BX2][k][j][i] / (3*pow((Lambda*Lambda-1),2)*(CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda)));
+
         d->Vc[BX3][k][j][i] = 0.0;
+
+        /* Normalize values for Bfield */
+        d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+        d->Vc[BX2][k][j][i] = d->Vc[BX2][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+        d->Vc[BX3][k][j][i] = d->Vc[BX3][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+
 
         }
     }else if (box->vpos == X1FACE){
@@ -547,13 +580,18 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
   if (side == X1_END){  /* -- X1_END boundary -- */
     if (box->vpos == CENTER) {
       BOX_LOOP(box,k,j,i){
-        d->Vc[BX1][k][j][i] = (BMAX*cos(x2[j]))/(RMAX*RMAX*RMAX);
-        d->Vc[BX2][k][j][i] = (BMAX*sin(x2[j]))/(2.0*RMAX*RMAX*RMAX);
+
+        /* B-field values */
+        d->Vc[BX1][k][j][i] = 0.0;
+        d->Vc[BX2][k][j][i] = 0.0;
         d->Vc[BX3][k][j][i] = 0.0;
 
+        /* Normalize values for Bfield */
         d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
         d->Vc[BX2][k][j][i] = d->Vc[BX2][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+        d->Vc[BX3][k][j][i] = d->Vc[BX3][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
 
+        /* Set and normalize density and pressure and vacuum values */
         d->Vc[RHO][k][j][i] = (VACUUM) / UNIT_DENSITY;
         d->Vc[PRS][k][j][i] = (K*VACUUM*VACUUM)/ (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
 
@@ -571,20 +609,32 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
     if (box->vpos == CENTER) {
       BOX_LOOP(box,k,j,i){
         if (x1[i] < 1.0){
-          d->Vc[BX1][k][j][i] = CONST_PI*CONST_PI*CONST_PI*x1[i]*x1[i]*x1[i] +
-            3*(CONST_PI*CONST_PI*x1[i]*x1[i] -2)*sin(CONST_PI*x1[i])+6.0*CONST_PI*x1[i]*cos(CONST_PI*x1[i]);
-          d->Vc[BX1][k][j][i] = (d->Vc[BX1][k][j][i]*(BMAX*1))/(CONST_PI*(CONST_PI*CONST_PI-6));
-          d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
 
+          /* B-field values interior to star along theta axis*/
+          d->Vc[BX1][k][j][i] = (-CONST_PI*CONST_PI*(Lambda*Lambda-1)*x1[i]*x1[i]-2)*sin(CONST_PI*x1[i])+
+          ((2*CONST_PI)/(CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda)))*
+          (CONST_PI*Lambda*x1[i]*cos(CONST_PI*Lambda*x1[i])-sin(CONST_PI*Lambda*x1[i]))+
+          2*CONST_PI*x1[i]*cos(CONST_PI*x1[i]);
+          d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i]*((2*BMAX)/(CONST_PI*pow((Lambda*Lambda-1),2)*pow(x1[i],3)));
           d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
           d->Vc[BX3][k][j][i] = 0.0;
+
+          /* Normalize values for Bfield */
+          d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+          d->Vc[BX2][k][j][i] = d->Vc[BX2][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+          d->Vc[BX3][k][j][i] = d->Vc[BX3][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
         }
       else{
-        d->Vc[BX1][k][j][i] = (BMAX*1)/(x1[i]*x1[i]*x1[i]);
-        d->Vc[BX1][k][j][i] = (d->Vc[BX1][k][j][i])/(sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
 
+        /* B-field values exterior to star along theta axis*/
+        d->Vc[BX1][k][j][i] = 0.0;
         d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
         d->Vc[BX3][k][j][i] = 0.0;
+
+        /* Normalize values for Bfield */
+        d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+        d->Vc[BX2][k][j][i] = d->Vc[BX2][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+        d->Vc[BX3][k][j][i] = d->Vc[BX3][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
       }
 
       }
@@ -601,20 +651,32 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
     if (box->vpos == CENTER) {
       BOX_LOOP(box,k,j,i){
         if (x1[i] < 1.0){
-          d->Vc[BX1][k][j][i] = CONST_PI*CONST_PI*CONST_PI*x1[i]*x1[i]*x1[i] +
-            3*(CONST_PI*CONST_PI*x1[i]*x1[i] -2)*sin(CONST_PI*x1[i])+6.0*CONST_PI*x1[i]*cos(CONST_PI*x1[i]);
-          d->Vc[BX1][k][j][i] = (d->Vc[BX1][k][j][i]*(BMAX*(-1)))/(CONST_PI*(CONST_PI*CONST_PI-6));
-          d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
 
+          /* B-field values interior to star along theta axis*/
+          d->Vc[BX1][k][j][i] = (-CONST_PI*CONST_PI*(Lambda*Lambda-1)*x1[i]*x1[i]-2)*sin(CONST_PI*x1[i])+
+          ((2*CONST_PI)/(CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda)))*
+          (CONST_PI*Lambda*x1[i]*cos(CONST_PI*Lambda*x1[i])-sin(CONST_PI*Lambda*x1[i]))+
+          2*CONST_PI*x1[i]*cos(CONST_PI*x1[i]);
+          d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i]*((-2*BMAX)/(CONST_PI*pow((Lambda*Lambda-1),2)*pow(x1[i],3)));
           d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
           d->Vc[BX3][k][j][i] = 0.0;
+
+          /* Normalize values for Bfield */
+          d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+          d->Vc[BX2][k][j][i] = d->Vc[BX2][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+          d->Vc[BX3][k][j][i] = d->Vc[BX3][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
         }
       else{
-        d->Vc[BX1][k][j][i] = (BMAX*(-1))/(x1[i]*x1[i]*x1[i]);
-        d->Vc[BX1][k][j][i] = (d->Vc[BX1][k][j][i])/(sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
 
+        /* B-field values exterior to star along theta axis*/
+        d->Vc[BX1][k][j][i] = 0.0;
         d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
         d->Vc[BX3][k][j][i] = 0.0;
+
+        /* Normalize values for Bfield */
+        d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+        d->Vc[BX2][k][j][i] = d->Vc[BX2][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+        d->Vc[BX3][k][j][i] = d->Vc[BX3][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
       }
       }
     }else if (box->vpos == X1FACE){
