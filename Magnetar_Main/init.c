@@ -502,7 +502,7 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
 
     if (side == 0) {
       TOT_LOOP(k,j,i){
-        if ((x1[i] >= 1.0) /*&& (d->Vc[BX3][k][j][i]) != 0.0)*/{
+        if ((x1[i] >= 1.0) /*&& (d->Vc[BX3][k][j][i]) != 0.0*/){
           d->Vc[BX3][k][j][i] = 0.0;
           d->Vc[BX2][k][j][i] = 0.0;
           d->Vc[BX1][k][j][i] = 0.0;
@@ -538,7 +538,6 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
         //   d->Vc[BX1][k][j][i] = 0.0;
         // }
       }
-    }
 
   if (side == X1_BEG){  /* -- X1_BEG boundary -- */
     if (box->vpos == CENTER) {
@@ -552,11 +551,11 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
 
         /* B-field values */
         d->Vc[BX1][k][j][i] = -2*CONST_PI*CONST_PI*BMAX*cos(x2[j])(2*CONST_PI*pow(Lambda,3)+
-        (1-3*Lambda*Lambda)sin(CONST_PI*Lambda)+CONST_PI*(3*Lambda*Lambda-1)*Lambda*cos(CONST_PI*Lambda));
+        (1-3*Lambda*Lambda)*sin(CONST_PI*Lambda)+CONST_PI*(3*Lambda*Lambda-1)*Lambda*cos(CONST_PI*Lambda));
         d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (3*pow((Lambda*Lambda-1),2)*(CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda)));
 
         d->Vc[BX2][k][j][i] = 2*CONST_PI*CONST_PI*BMAX*sin(x2[j])(2*CONST_PI*pow(Lambda,3)+
-        (1-3*Lambda*Lambda)sin(CONST_PI*Lambda)+CONST_PI*(3*Lambda*Lambda-1)*Lambda*cos(CONST_PI*Lambda));
+        (1-3*Lambda*Lambda)*sin(CONST_PI*Lambda)+CONST_PI*(3*Lambda*Lambda-1)*Lambda*cos(CONST_PI*Lambda));
         d->Vc[BX2][k][j][i] = d->Vc[BX2][k][j][i] / (3*pow((Lambda*Lambda-1),2)*(CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda)));
 
         d->Vc[BX3][k][j][i] = 0.0;
