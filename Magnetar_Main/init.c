@@ -48,7 +48,7 @@ by 10000 to 'normalize' the ratio r / R such that (10000*x1)/ R = r / R.
 #define RHO_C 2.2e15     /* g cm^-3       */        /* Core density of star   */
 #define R 1.e6           /* cm            */        /* Radius of Star         */
 #define K 4.25e4         /* cm^5 g^-1 s^-2*/        /* Coeff. for density eqn.*/
-#define BMAX 1e14        /* gauss  := g^1/2 * cm^-1/2 * s                     */
+#define BMAX 1e17        /* gauss  := g^1/2 * cm^-1/2 * s                     */
 #define Lambda 2.3619    /* First Eigenvalue for mixed Haskell Equations      */
 
 /* HARD CODED VALUES */
@@ -153,8 +153,13 @@ void Init (double *v, double x1, double x2, double x3)
      v[PRS] = v[PRS] / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
 
      /* Assign B-field components at core */
-     v[BX1] = (2*A(0.001)*cos(x2))/((0.001*R)*(0.001*R));
-     v[BX2] = (-dA(0.001)*sin(x2))/(0.001*R);
+     v[BX1] = -2*CONST_PI*CONST_PI*BMAX*cos(x2)*(2*CONST_PI*pow(Lambda,3)+
+     (1-3*Lambda*Lambda)*sin(CONST_PI*Lambda)+CONST_PI*(3*Lambda*Lambda-1)*Lambda*cos(CONST_PI*Lambda));
+     v[BX1] = v[BX1] / (3*pow((Lambda*Lambda-1),2)*(CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda)));
+
+     v[BX2] = 2*CONST_PI*CONST_PI*BMAX*sin(x2)*(2*CONST_PI*pow(Lambda,3)+
+     (1-3*Lambda*Lambda)*sin(CONST_PI*Lambda)+CONST_PI*(3*Lambda*Lambda-1)*Lambda*cos(CONST_PI*Lambda));
+     v[BX2]  = v[BX2]  / (3*pow((Lambda*Lambda-1),2)*(CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda)));
      v[BX3] = 0;
 
      /* B-field Normalization */
@@ -508,9 +513,9 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
           d->Vc[BX1][k][j][i] = 0.0;
           d->flag[k][j][i]   |= FLAG_INTERNAL_BOUNDARY;
         }
-        //if ((x1[i] > .98) && (x1[i] < 1.01)){
-        //  d->Vc[BX2][k][j][i] =  (d->Vc[BX2][k][j][i]+ d->Vc[BX2][k][j][i-1])/2;
-        //  d->Vc[BX1][k][j][i] =  (d->Vc[BX1][k][j][i]+ d->Vc[BX1][k][j][i-1])/2;
+        if ((x1[i] > .98) && (x1[i] < 1.01)){
+          d->Vc[BX2][k][j][i] =  (d->Vc[BX2][k][j][i]+ d->Vc[BX2][k][j][i-1])/2;
+          d->Vc[BX1][k][j][i] =  (d->Vc[BX1][k][j][i]+ d->Vc[BX1][k][j][i-1])/2;
         }
         if (d->Vc[RHO][k][j][i] < (VACUUM) / UNIT_DENSITY){
             /* Replace negative values with vacuum density */
@@ -527,7 +532,10 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
           d->Vc[RHO][k][j][i] = (RHO_C + VACUUM) / UNIT_DENSITY;
           d->Vc[PRS][k][j][i] = (K*RHO_C*RHO_C)/ (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
           d->flag[k][j][i]   |= FLAG_INTERNAL_BOUNDARY; /* These values are TIME INDEPENDENT */
-        }
+         }
+        //if (d->Vc[RHO][k][j][i] > 2.5e15/UNIT_DENSITY){
+        //   d->Vc[RHO][k][j][i] = 2.5e15/UNIT_DENSITY;
+        // }
         if (x1[i] > 1.98 ){
           /* Set density/pressure fixed at outermost boundary of simulation */
             d->Vc[RHO][k][j][i] = (VACUUM) / UNIT_DENSITY;
@@ -538,6 +546,7 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
         //   d->Vc[BX1][k][j][i] = 0.0;
         // }
       }
+    }
 
   if (side == X1_BEG){  /* -- X1_BEG boundary -- */
     if (box->vpos == CENTER) {
@@ -550,11 +559,11 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
         d->Vc[PRS][k][j][i] = d->Vc[PRS][k][j][i] / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
 
         /* B-field values */
-        d->Vc[BX1][k][j][i] = -2*CONST_PI*CONST_PI*BMAX*cos(x2[j])(2*CONST_PI*pow(Lambda,3)+
+        d->Vc[BX1][k][j][i] = -2*CONST_PI*CONST_PI*BMAX*cos(x2[j])*(2*CONST_PI*pow(Lambda,3)+
         (1-3*Lambda*Lambda)*sin(CONST_PI*Lambda)+CONST_PI*(3*Lambda*Lambda-1)*Lambda*cos(CONST_PI*Lambda));
         d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (3*pow((Lambda*Lambda-1),2)*(CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda)));
 
-        d->Vc[BX2][k][j][i] = 2*CONST_PI*CONST_PI*BMAX*sin(x2[j])(2*CONST_PI*pow(Lambda,3)+
+        d->Vc[BX2][k][j][i] = 2*CONST_PI*CONST_PI*BMAX*sin(x2[j])*(2*CONST_PI*pow(Lambda,3)+
         (1-3*Lambda*Lambda)*sin(CONST_PI*Lambda)+CONST_PI*(3*Lambda*Lambda-1)*Lambda*cos(CONST_PI*Lambda));
         d->Vc[BX2][k][j][i] = d->Vc[BX2][k][j][i] / (3*pow((Lambda*Lambda-1),2)*(CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda)));
 
