@@ -428,8 +428,6 @@ Bt = 0.0;
 }
 
 Btsquare = Bt;
-Izz = 2*Izz;
-Ixx = 2*Ixx;
 diff = Izz-Ixx;
 
 
@@ -757,12 +755,12 @@ double BodyForcePotential(double x1, double x2, double x3)
   /* similar normalization of computaitonal radius 'r' to be in proportion with R*/
    double phi;
 
-   if ((x1 < 1) && (x1 != 0)) { /* Potential interior to star except r = 0 */
+   if ((x1 <= 1) && (x1 != 0)) { /* Potential interior to star except r = 0 */
      phi = (-4*GPRSQ*sin(CONST_PI*x1))/(CONST_PI*CONST_PI*x1) - RPOT ; /* Factor of R has been taken out for first term
      denominator because of normalization*/
      phi = phi/(UNIT_VELOCITY*UNIT_VELOCITY);
    }
-   if (x1 >= 1){ /* Potential exterior to star */
+   if (x1 > 1){ /* Potential exterior to star */
      phi = -(G_CONST*M_STAR) / (R*x1);
      phi = phi/(UNIT_VELOCITY*UNIT_VELOCITY);
    }
