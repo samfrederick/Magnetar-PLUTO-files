@@ -3,6 +3,8 @@ This repository provides files for modeling magnetar structure in PLUTO, an astr
 
 This work is in active development during the 2018-2019 academic year for the completion of an honors thesis in physics from Davidson College. 
 
+This fork is for modifications for MNRAS revisions
+
 ## File Structure
 * __Autogen files__ - Files that are automatically generated during PLUTO simulations
 * __Documents and .Tex files__ - Documents detailing boundary conditions and state equations for neutron star simulations
