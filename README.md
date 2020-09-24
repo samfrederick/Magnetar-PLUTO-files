@@ -1,7 +1,7 @@
 # Magnetar-PLUTO-files
 This repository provides files for modeling magnetar structure in PLUTO, an astrophysical dynamics software package.
 
-This fork is associated with our paper Modeling Magnetohydrodynamic Equilibrium in Magnetars with Applications to Continuous Gravitational Wave Production at ![arXiv](https://arxiv.org/abs/2002.02619).
+This fork is associated with our paper Modeling Magnetohydrodynamic Equilibrium in Magnetars with Applications to Continuous Gravitational Wave Production at https://arxiv.org/abs/2002.02619.
 
 [![DOI](https://zenodo.org/badge/298370663.svg)](https://zenodo.org/badge/latestdoi/298370663)
 
