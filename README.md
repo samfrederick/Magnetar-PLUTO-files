@@ -1,9 +1,10 @@
 # Magnetar-PLUTO-files
-This repository provides files for modeling magnetar structure in PLUTO, an astrophysical dynamics software package.   
+This repository provides files for modeling magnetar structure in PLUTO, an astrophysical dynamics software package.
 
-This work is in active development during the 2018-2019 academic year for the completion of an honors thesis in physics from Davidson College. 
+This fork is associated with our paper Modeling Magnetohydrodynamic Equilibrium in Magnetars with Applications to Continuous Gravitational Wave Production at ![arXiv](https://arxiv.org/abs/2002.02619).
 
-This fork is for modifications for MNRAS revisions
+[![DOI](https://zenodo.org/badge/298370663.svg)](https://zenodo.org/badge/latestdoi/298370663)
+
 
 ## File Structure
 * __Autogen files__ - Files that are automatically generated during PLUTO simulations
