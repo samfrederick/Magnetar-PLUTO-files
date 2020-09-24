@@ -9,9 +9,6 @@ This fork is for modifications for MNRAS revisions
 * __Autogen files__ - Files that are automatically generated during PLUTO simulations
 * __Documents and .Tex files__ - Documents detailing boundary conditions and state equations for neutron star simulations
 * __Magnetar_Main__ - Includes the principle files for simulating magnetar structure in PLUTO
-* __Media__ - Photos and videos documenting progress of thesis research
-  * __Photos__
-  * __Videos__
 * __Python files__ - Basic scripts for assisting research in plotting stucture of gravitational potential and b-field. Also includes script *Condition_Grid_Analysis.py* for analyzing whether radial points in the computational domain will be will-behaved with respect to relative condition numbers for b-field component equations. 
 * __VisIt Config Files__ - Contains .xml files for configuring vector plots and streamline attributes. Additionally, *"Vector_Correction_Expressions.xml"* contains expressions which convert vector-valued variables in spherical coordinates to cartesian coordinates. These files can be imported directly into a user's VisIt directory. 
 
