@@ -118,7 +118,7 @@ void Init (double *v, double x1, double x2, double x3)
 
 
   /* Assign physical attributes for stellar interior */
-  if ((x1 < 1.0) && (x1!= 0))
+  if ((x1 < 1.0) && (x1 != 0))
   {
     /* Assign B-field Component Values (Haskell et al. 2008) */
     v[BX1] = (2*A(x1)*cos(x2))/((x1*R)*(x1*R));
@@ -140,6 +140,27 @@ void Init (double *v, double x1, double x2, double x3)
 
 
   }
+  /* External B field */
+  else if(x1 > 1.0){
+    /* Assign B-field Component Values (Kuhn 2017) */
+    v[BX1] = BMAX*R*R*R*cos(x2)/(x1*x1*x1);
+    v[BX2] = BMAX*R*R*R*sin(x2)/(2*x1*x1*x1);
+    v[BX3] = 0;
+
+    /* Normalization */
+    v[BX1] = v[BX1] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+    v[BX2] = v[BX2] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+    v[BX3] = v[BX3] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+
+    /* Calcuate values for pressure and density using N = 1 polytrope EOS */
+    v[RHO] = (RHO_C*sin(CONST_PI*x1))/(x1*CONST_PI) + VACUUM;
+    v[PRS] = K*v[RHO]*v[RHO];
+
+    /* Normalize values for density and pressure */
+    v[RHO] = v[RHO] / UNIT_DENSITY; /* Converting to UNITLESS computational values */
+    v[PRS] = v[PRS] / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
+  }
+
   /* Assign physical attributes for stellar core */
   else if(x1 == 0){
      v[RHO] = RHO_C + VACUUM; /* Density at stellar core  */
