@@ -94,7 +94,7 @@ void Init (double *v, double x1, double x2, double x3)
   v[VX1] = 0.0;
   v[VX2] = 0.0;
   v[VX3] = 0.0;
-
+  /* MPK -- edit this to include external magnetic field */
 
   /* Comment out velocity perturbations, 2-10-19
   if ((x1< 1.0) && (x2 < (65*CONST_PI)/100) && (x2 > (35*CONST_PI)/100)){
