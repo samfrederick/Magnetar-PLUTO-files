@@ -40,7 +40,7 @@ by 10000 to 'normalize' the ratio r / R such that (10000*x1)/ R = r / R.
 #include <stdlib.h>
 
 /* PHYSICAL CONSTANTS */
-#define G_CONST  6.67e-8 /*cm^3 g^-1 s^-2 */        /* Gravitational constant */
+#define G_CONST  6.67e-8 /* cm^3 g^-1 s^-2*/        /* Gravitational constant */
 #define M_STAR  2.785e33 /* g             */        /* Mass of Star           */
 #define RHO_C 2.2e15     /* g cm^-3       */        /* Core density of star   */
 #define R 1.e6           /* cm            */        /* Radius of Star         */
@@ -85,16 +85,35 @@ void Init (double *v, double x1, double x2, double x3)
  *
  *********************************************************************** */
 {
-  /* */
-  g_gamma = 2.0; /* Ratio of specific heats for an ideal gas, specifically
-  defined for N = 1 polytrope [USING IDEAL EOS] */
+  int i, j, k;
+  double r, theta, phi, r_star;
+
+  #if GEOMETRY == CARTESIAN
+   r = sqrt(x1*x1 + x2*x2 + x3*x3);
+   #if DIMENSIONS == 3
+    theta = atan2(sqrt(x1*x1 + x2*x2), x3);
+    phi = atan2(x2, x1);
+   #elif DIMENSIONS == 2
+    r = sqrt(x1*x1 + x2*x2);
+    theta = (CONST_PI / 2) - atan2(x2, x1);
+   #endif
+  #elif GEOMETRY == POLAR
+   r = x1;
+   theta = x2;
+  #elif GEOMETRY == SPHERICAL
+   r = x1;
+   theta = x2;
+   phi = x3;
+  #endif
+
+  r_star = 1.0;
+  //g_gamma = 1.6666;
 
   /* Global Initialization of state variables */
   v[RHO] = VACUUM / UNIT_DENSITY; /* Vacuum density surrounding star */
   v[VX1] = 0.0;
   v[VX2] = 0.0;
   v[VX3] = 0.0;
-
 
   /* Comment out velocity perturbations, 2-10-19
   if ((x1< 1.0) && (x2 < (65*CONST_PI)/100) && (x2 > (35*CONST_PI)/100)){
@@ -106,7 +125,6 @@ void Init (double *v, double x1, double x2, double x3)
   }
   */
 
-
   /* Velocity component normalization */
   v[VX1] = v[VX1] / UNIT_VELOCITY;
   v[VX2] = v[VX2] / UNIT_VELOCITY;
@@ -116,57 +134,65 @@ void Init (double *v, double x1, double x2, double x3)
   v[PRS] = (K*VACUUM*VACUUM)/(UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
   v[TRC] = 0.0; /* Tracer (passive scalar, Q) */
 
-
   /* Assign physical attributes for stellar interior */
-  if ((x1 < 1.0) && (x1!= 0))
+  if ((r < r_star) && (r != 0))
   {
-    /* Assign B-field Component Values (Haskell et al. 2008) */
-    v[BX1] = (2*A(x1)*cos(x2))/((x1*R)*(x1*R));
-    v[BX2] = (-dA(x1)*sin(x2))/(x1*R*R);
-    v[BX3] = (Lambda*CONST_PI*A(x1)*sin(x2))/(x1*R*R);
+    #if PHYSICS == MHD || PHYSICS == RMHD
 
-    /* Normalization */
-    v[BX1] = v[BX1] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
-    v[BX2] = v[BX2] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
-    v[BX3] = v[BX3] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+     /* Assign B-field Component Values (Haskell et al. 2008) */
+     v[BX1] = (2*A(r)*cos(theta))/((r*R)*(r*R));
+     v[BX2] = (-dA(r)*sin(theta))/(r*R*R);
+     v[BX3] = (Lambda*CONST_PI*A(r)*sin(theta))/(r*R*R);
+
+     /* Normalization */
+     v[BX1] = v[BX1] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+     v[BX2] = v[BX2] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+     v[BX3] = v[BX3] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+    #endif
 
     /* Calcuate values for pressure and density using N = 1 polytrope EOS */
-    v[RHO] = (RHO_C*sin(CONST_PI*x1))/(x1*CONST_PI) + VACUUM;
+    v[RHO] = (RHO_C*sin(CONST_PI*r))/(r*CONST_PI);
     v[PRS] = K*v[RHO]*v[RHO];
 
     /* Normalize values for density and pressure */
     v[RHO] = v[RHO] / UNIT_DENSITY; /* Converting to UNITLESS computational values */
     v[PRS] = v[PRS] / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
-
-
   }
+
   /* Assign physical attributes for stellar core */
-  else if(x1 == 0){
-     v[RHO] = RHO_C + VACUUM; /* Density at stellar core  */
-     v[PRS] = K*RHO_C*RHO_C;  /* Pressure at stellar core */
 
-     /* Normalize values for density and pressure */
-     v[RHO] = v[RHO] / UNIT_DENSITY;
-     v[PRS] = v[PRS] / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
+  else if(r == 0)
+  {
+    #if PHYSICS == MHD || PHYSICS == RMHD
 
-     /* Assign B-field components at core */
-     v[BX1] = -2*CONST_PI*CONST_PI*BMAX*cos(x2)*(2*CONST_PI*pow(Lambda,3)+
-     (1-3*Lambda*Lambda)*sin(CONST_PI*Lambda)+CONST_PI*(3*Lambda*Lambda-1)*Lambda*cos(CONST_PI*Lambda));
-     v[BX1] = v[BX1] / (3*pow((Lambda*Lambda-1),2)*(CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda)));
+      /* Assign B-field components at core */
+      v[BX1] = -2*CONST_PI*CONST_PI*BMAX*cos(theta)*(2*CONST_PI*pow(Lambda,3)+
+      (1-3*Lambda*Lambda)*sin(CONST_PI*Lambda)+CONST_PI*(3*Lambda*Lambda-1)*Lambda*cos(CONST_PI*Lambda));
+      v[BX1] = v[BX1] / (3*pow((Lambda*Lambda-1),2)*(CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda)));
 
-     v[BX2] = 2*CONST_PI*CONST_PI*BMAX*sin(x2)*(2*CONST_PI*pow(Lambda,3)+
-     (1-3*Lambda*Lambda)*sin(CONST_PI*Lambda)+CONST_PI*(3*Lambda*Lambda-1)*Lambda*cos(CONST_PI*Lambda));
-     v[BX2]  = v[BX2]  / (3*pow((Lambda*Lambda-1),2)*(CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda)));
-     v[BX3] = 0;
+      v[BX2] = 2*CONST_PI*CONST_PI*BMAX*sin(theta)*(2*CONST_PI*pow(Lambda,3)+
+      (1-3*Lambda*Lambda)*sin(CONST_PI*Lambda)+CONST_PI*(3*Lambda*Lambda-1)*Lambda*cos(CONST_PI*Lambda));
+      v[BX2]  = v[BX2]  / (3*pow((Lambda*Lambda-1),2)*(CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda)));
+      v[BX3] = 0;
 
-     /* B-field Normalization */
-     v[BX1] = v[BX1] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
-     v[BX2] = v[BX2] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
-     v[BX3] = v[BX3] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+
+      /* B-field Normalization */
+      v[BX1] = v[BX1] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+      v[BX2] = v[BX2] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+      v[BX3] = v[BX3] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+    #endif
+
+    v[RHO] = RHO_C; /* Density at stellar core  */
+    v[PRS] = K*RHO_C*RHO_C;  /* Pressure at stellar core */
+
+    /* Normalize values for density and pressure */
+    v[RHO] = v[RHO] / UNIT_DENSITY;
+    v[PRS] = v[PRS] / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
   }
 }
+
 /* ********************************************************************* */
-double A(double x1)
+double A(double r)
 /*
 Stream Function via Haskell et al. 2008 p. 540  Mixed Field Equations
 
@@ -180,43 +206,45 @@ in the expressions for the field component functions on pg. 540 of Haskell et al
 
 /* ********************************************************************* */
 {
-    double Aval;
-    if (x1 != 0)
+  double Aval;
+  if (r != 0)
     {
       Aval =
-      ((BMAX*R*R)/((Lambda*Lambda-1)*(Lambda*Lambda-1)*CONST_PI*x1))*
-      (2*CONST_PI*((Lambda*CONST_PI*x1*cos(Lambda*CONST_PI*x1)-sin(Lambda*CONST_PI*x1))/
+      ((BMAX*R*R)/((Lambda*Lambda-1)*(Lambda*Lambda-1)*CONST_PI*r))*
+      (2*CONST_PI*((Lambda*CONST_PI*r*cos(Lambda*CONST_PI*r)-sin(Lambda*CONST_PI*r))/
       (CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda))) +
-      ((1-Lambda*Lambda)*(CONST_PI*x1)*(CONST_PI*x1)-2)*sin(CONST_PI*x1) +
-      2*CONST_PI*x1*cos(CONST_PI*x1));
+      ((1-Lambda*Lambda)*(CONST_PI*r)*(CONST_PI*r)-2)*sin(CONST_PI*r) +
+      2*CONST_PI*r*cos(CONST_PI*r));
     }
-    else
+  else
     {
-        Aval = 0;
+      Aval = 0;
     }
-    return Aval;
 
+  return Aval;
 }
+
 /* ********************************************************************* */
-double dA(double x1)
-{
+double dA(double r)
 /*
 Radial Derivative of Stream Function as defined above
 
 /* ********************************************************************* */
-double D_Aval;
-if (x1 != 0)
-  {
-  D_Aval = (A(x1+h) - A(x1-h))/(2*h);  /* Central Difference Approx */
-  }
-else
-  {
-  D_Aval = 0;      /* Forward Differnce Approx */
-  }
+{
+  double D_Aval;
 
+  if (r != 0)
+    {
+      D_Aval = (A(r+h) - A(r-h))/(2*h);  /* Central Difference Approx */
+    }
+  else
+    {
+      D_Aval = 0;      /* Forward Differnce Approx */
+    }
 
   return D_Aval;
 }
+
 /* ********************************************************************* */
 void InitDomain (Data *d, Grid *grid)
 /*!
@@ -241,7 +269,7 @@ void Analysis (const Data *d, Grid *grid)
  *
  *********************************************************************** */
 {
-
+/*
 int i,j,k;
 double  *x1, *x2, *x3,rho,prs,Ixx,Izz,diff,Bt,Btsquare;
 double *dr, *dt, *dp, dV;
@@ -288,8 +316,9 @@ Bt = 0.0;
 //       // }
 //       // fprintf(f,"Radius: %12.6f Density: %12.6e  Pressure: %12.6e \n",x1[i],rho,prs);
 //
-*/
+
  }
+
 }
 
 Btsquare = Bt;
@@ -319,6 +348,8 @@ if (g_time > tpos){
 }
 fclose(f);
 }
+
+*/
 
 }
 /* ********************************************************************* */
@@ -361,6 +392,7 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
  *
  *********************************************************************** */
 {
+
   int   i, j, k, nv;
   double  *x1, *x2, *x3;
 
@@ -371,14 +403,18 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
     if (side == 0) {
       TOT_LOOP(k,j,i){
         if ((x1[i] >= 1.0) /*&& (d->Vc[BX3][k][j][i]) != 0.0*/){
-          d->Vc[BX3][k][j][i] = 0.0;
-          d->Vc[BX2][k][j][i] = 0.0;
-          d->Vc[BX1][k][j][i] = 0.0;
+          #if PHYSICS == MHD || PHYSICS == RMHD
+           d->Vc[BX3][k][j][i] = 0.0;
+           d->Vc[BX2][k][j][i] = 0.0;
+           d->Vc[BX1][k][j][i] = 0.0;
+          #endif
           d->flag[k][j][i]   |= FLAG_INTERNAL_BOUNDARY;
         }
         if ((x1[i] > .98) && (x1[i] < 1.01)){
-          d->Vc[BX2][k][j][i] =  (d->Vc[BX2][k][j][i]+ d->Vc[BX2][k][j][i-1])/2;
-          d->Vc[BX1][k][j][i] =  (d->Vc[BX1][k][j][i]+ d->Vc[BX1][k][j][i-1])/2;
+          #if PHYSICS == MHD || PHYSICS == RMHD
+           d->Vc[BX2][k][j][i] =  (d->Vc[BX2][k][j][i]+ d->Vc[BX2][k][j][i-1])/2;
+           d->Vc[BX1][k][j][i] =  (d->Vc[BX1][k][j][i]+ d->Vc[BX1][k][j][i-1])/2;
+          #endif
         }
         if (d->Vc[RHO][k][j][i] < (VACUUM) / UNIT_DENSITY){
             /* Replace negative values with vacuum density */
@@ -421,22 +457,23 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
         d->Vc[RHO][k][j][i] = d->Vc[RHO][k][j][i] / UNIT_DENSITY;
         d->Vc[PRS][k][j][i] = d->Vc[PRS][k][j][i] / (UNIT_DENSITY*UNIT_VELOCITY*UNIT_VELOCITY);
 
-        /* B-field values */
-        d->Vc[BX1][k][j][i] = -2*CONST_PI*CONST_PI*BMAX*cos(x2[j])*(2*CONST_PI*pow(Lambda,3)+
-        (1-3*Lambda*Lambda)*sin(CONST_PI*Lambda)+CONST_PI*(3*Lambda*Lambda-1)*Lambda*cos(CONST_PI*Lambda));
-        d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (3*pow((Lambda*Lambda-1),2)*(CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda)));
+        #if PHYSICS == MHD || PHYSICS == RMHD
+         /* B-field values */
+         d->Vc[BX1][k][j][i] = -2*CONST_PI*CONST_PI*BMAX*cos(x2[j])*(2*CONST_PI*pow(Lambda,3)+
+         (1-3*Lambda*Lambda)*sin(CONST_PI*Lambda)+CONST_PI*(3*Lambda*Lambda-1)*Lambda*cos(CONST_PI*Lambda));
+         d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (3*pow((Lambda*Lambda-1),2)*(CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda)));
 
-        d->Vc[BX2][k][j][i] = 2*CONST_PI*CONST_PI*BMAX*sin(x2[j])*(2*CONST_PI*pow(Lambda,3)+
-        (1-3*Lambda*Lambda)*sin(CONST_PI*Lambda)+CONST_PI*(3*Lambda*Lambda-1)*Lambda*cos(CONST_PI*Lambda));
-        d->Vc[BX2][k][j][i] = d->Vc[BX2][k][j][i] / (3*pow((Lambda*Lambda-1),2)*(CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda)));
+         d->Vc[BX2][k][j][i] = 2*CONST_PI*CONST_PI*BMAX*sin(x2[j])*(2*CONST_PI*pow(Lambda,3)+
+         (1-3*Lambda*Lambda)*sin(CONST_PI*Lambda)+CONST_PI*(3*Lambda*Lambda-1)*Lambda*cos(CONST_PI*Lambda));
+         d->Vc[BX2][k][j][i] = d->Vc[BX2][k][j][i] / (3*pow((Lambda*Lambda-1),2)*(CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda)));
 
-        d->Vc[BX3][k][j][i] = 0.0;
+         d->Vc[BX3][k][j][i] = 0.0;
 
-        /* Normalize values for Bfield */
-        d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
-        d->Vc[BX2][k][j][i] = d->Vc[BX2][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
-        d->Vc[BX3][k][j][i] = d->Vc[BX3][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
-
+         /* Normalize values for Bfield */
+         d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+         d->Vc[BX2][k][j][i] = d->Vc[BX2][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+         d->Vc[BX3][k][j][i] = d->Vc[BX3][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+        #endif
 
         }
     }else if (box->vpos == X1FACE){
@@ -452,15 +489,17 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
     if (box->vpos == CENTER) {
       BOX_LOOP(box,k,j,i){
 
-        /* B-field values */
-        d->Vc[BX1][k][j][i] = 0.0;
-        d->Vc[BX2][k][j][i] = 0.0;
-        d->Vc[BX3][k][j][i] = 0.0;
+        #if PHYSICS == MHD || PHYSICS == RMHD
+         /* B-field values */
+         d->Vc[BX1][k][j][i] = 0.0;
+         d->Vc[BX2][k][j][i] = 0.0;
+         d->Vc[BX3][k][j][i] = 0.0;
 
-        /* Normalize values for Bfield */
-        d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
-        d->Vc[BX2][k][j][i] = d->Vc[BX2][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
-        d->Vc[BX3][k][j][i] = d->Vc[BX3][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+         /* Normalize values for Bfield */
+         d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+         d->Vc[BX2][k][j][i] = d->Vc[BX2][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+         d->Vc[BX3][k][j][i] = d->Vc[BX3][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+        #endif
 
         /* Set and normalize density and pressure and vacuum values */
         d->Vc[RHO][k][j][i] = (VACUUM) / UNIT_DENSITY;
@@ -481,31 +520,35 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
       BOX_LOOP(box,k,j,i){
         if (x1[i] < 1.0){
 
-          /* B-field values interior to star along theta axis*/
-          d->Vc[BX1][k][j][i] = (-CONST_PI*CONST_PI*(Lambda*Lambda-1)*x1[i]*x1[i]-2)*sin(CONST_PI*x1[i])+
-          ((2*CONST_PI)/(CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda)))*
-          (CONST_PI*Lambda*x1[i]*cos(CONST_PI*Lambda*x1[i])-sin(CONST_PI*Lambda*x1[i]))+
-          2*CONST_PI*x1[i]*cos(CONST_PI*x1[i]);
-          d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i]*((2*BMAX)/(CONST_PI*pow((Lambda*Lambda-1),2)*pow(x1[i],3)));
-          d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
-          d->Vc[BX3][k][j][i] = 0.0;
+          #if PHYSICS == MHD || PHYSICS == RMHD
+           /* B-field values interior to star along theta axis*/
+           d->Vc[BX1][k][j][i] = (-CONST_PI*CONST_PI*(Lambda*Lambda-1)*x1[i]*x1[i]-2)*sin(CONST_PI*x1[i])+
+           ((2*CONST_PI)/(CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda)))*
+           (CONST_PI*Lambda*x1[i]*cos(CONST_PI*Lambda*x1[i])-sin(CONST_PI*Lambda*x1[i]))+
+           2*CONST_PI*x1[i]*cos(CONST_PI*x1[i]);
+           d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i]*((2*BMAX)/(CONST_PI*pow((Lambda*Lambda-1),2)*pow(x1[i],3)));
+           d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
+           d->Vc[BX3][k][j][i] = 0.0;
 
-          /* Normalize values for Bfield */
-          d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
-          d->Vc[BX2][k][j][i] = d->Vc[BX2][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
-          d->Vc[BX3][k][j][i] = d->Vc[BX3][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+           /* Normalize values for Bfield */
+           d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+           d->Vc[BX2][k][j][i] = d->Vc[BX2][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+           d->Vc[BX3][k][j][i] = d->Vc[BX3][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+          #endif
         }
       else{
 
-        /* B-field values exterior to star along theta axis*/
-        d->Vc[BX1][k][j][i] = 0.0;
-        d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
-        d->Vc[BX3][k][j][i] = 0.0;
+        #if PHYSICS == MHD || PHYSICS == RMHD
+         /* B-field values exterior to star along theta axis*/
+         d->Vc[BX1][k][j][i] = 0.0;
+         d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
+         d->Vc[BX3][k][j][i] = 0.0;
 
-        /* Normalize values for Bfield */
-        d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
-        d->Vc[BX2][k][j][i] = d->Vc[BX2][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
-        d->Vc[BX3][k][j][i] = d->Vc[BX3][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+         /* Normalize values for Bfield */
+         d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+         d->Vc[BX2][k][j][i] = d->Vc[BX2][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+         d->Vc[BX3][k][j][i] = d->Vc[BX3][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+        #endif
       }
 
       }
@@ -523,31 +566,35 @@ void UserDefBoundary (const Data *d, RBox *box, int side, Grid *grid)
       BOX_LOOP(box,k,j,i){
         if (x1[i] < 1.0){
 
-          /* B-field values interior to star along theta axis*/
-          d->Vc[BX1][k][j][i] = (-CONST_PI*CONST_PI*(Lambda*Lambda-1)*x1[i]*x1[i]-2)*sin(CONST_PI*x1[i])+
-          ((2*CONST_PI)/(CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda)))*
-          (CONST_PI*Lambda*x1[i]*cos(CONST_PI*Lambda*x1[i])-sin(CONST_PI*Lambda*x1[i]))+
-          2*CONST_PI*x1[i]*cos(CONST_PI*x1[i]);
-          d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i]*((-2*BMAX)/(CONST_PI*pow((Lambda*Lambda-1),2)*pow(x1[i],3)));
-          d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
-          d->Vc[BX3][k][j][i] = 0.0;
+          #if PHYSICS == MHD || PHYSICS == RMHD
+           /* B-field values interior to star along theta axis*/
+           d->Vc[BX1][k][j][i] = (-CONST_PI*CONST_PI*(Lambda*Lambda-1)*x1[i]*x1[i]-2)*sin(CONST_PI*x1[i])+
+           ((2*CONST_PI)/(CONST_PI*Lambda*cos(CONST_PI*Lambda)-sin(CONST_PI*Lambda)))*
+           (CONST_PI*Lambda*x1[i]*cos(CONST_PI*Lambda*x1[i])-sin(CONST_PI*Lambda*x1[i]))+
+           2*CONST_PI*x1[i]*cos(CONST_PI*x1[i]);
+           d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i]*((-2*BMAX)/(CONST_PI*pow((Lambda*Lambda-1),2)*pow(x1[i],3)));
+           d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
+           d->Vc[BX3][k][j][i] = 0.0;
 
-          /* Normalize values for Bfield */
-          d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
-          d->Vc[BX2][k][j][i] = d->Vc[BX2][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
-          d->Vc[BX3][k][j][i] = d->Vc[BX3][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+           /* Normalize values for Bfield */
+           d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+           d->Vc[BX2][k][j][i] = d->Vc[BX2][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+           d->Vc[BX3][k][j][i] = d->Vc[BX3][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+          #endif
         }
       else{
 
-        /* B-field values exterior to star along theta axis*/
-        d->Vc[BX1][k][j][i] = 0.0;
-        d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
-        d->Vc[BX3][k][j][i] = 0.0;
+        #if PHYSICS == MHD || PHYSICS == RMHD
+         /* B-field values exterior to star along theta axis*/
+         d->Vc[BX1][k][j][i] = 0.0;
+         d->Vc[BX2][k][j][i] = 0.0; /* No theta bfield component at central (theta) axis*/
+         d->Vc[BX3][k][j][i] = 0.0;
 
-        /* Normalize values for Bfield */
-        d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
-        d->Vc[BX2][k][j][i] = d->Vc[BX2][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
-        d->Vc[BX3][k][j][i] = d->Vc[BX3][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+         /* Normalize values for Bfield */
+         d->Vc[BX1][k][j][i] = d->Vc[BX1][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+         d->Vc[BX2][k][j][i] = d->Vc[BX2][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+         d->Vc[BX3][k][j][i] = d->Vc[BX3][k][j][i] / (sqrt(4*CONST_PI*UNIT_DENSITY)*UNIT_VELOCITY);
+        #endif
       }
       }
     }else if (box->vpos == X1FACE){
@@ -617,22 +664,49 @@ double BodyForcePotential(double x1, double x2, double x3)
  *
  *********************************************************************** */
 {
-  /* similar normalization of computaitonal radius 'r' to be in proportion with R*/
-   double phi;
+  /* similar normalization of computational 'r' to be in proportion with R*/
 
-   if ((x1 <= 1) && (x1 != 0)) { /* Potential interior to star except r = 0 */
-     phi = (-4*GPRSQ*sin(CONST_PI*x1))/(CONST_PI*CONST_PI*x1) - RPOT ; /* Factor of R has been taken out for first term
-     denominator because of normalization*/
-     phi = phi/(UNIT_VELOCITY*UNIT_VELOCITY);
-   }
-   if (x1 > 1){ /* Potential exterior to star */
-     phi = -(G_CONST*M_STAR) / (R*x1);
-     phi = phi/(UNIT_VELOCITY*UNIT_VELOCITY);
-   }
-   if (x1 == 0){ /* Potential at r = 0 */
-     phi = 4*G_CONST*RHO_C*(-(R*R)/(CONST_PI)-(M_STAR)/(4*R*RHO_C));
-     phi = phi/(UNIT_VELOCITY*UNIT_VELOCITY);
-   }
+  return gpot(x1, x2, x3);
+}
 
-  return phi;
+/* ********************************************************************* */
+double gpot(double x1, double x2, double x3)
+/*
+
+/* ********************************************************************* */
+{
+  double r, theta, phi, r_star, pot;
+  r_star = 1.0;
+
+  #if GEOMETRY == CARTESIAN
+   r = sqrt(x1*x1 + x2*x2 + x3*x3);
+   #if DIMENSIONS == 3
+    theta = atan2(sqrt(x1*x1 + x2*x2), x3);
+    phi = atan2(x2, x1);
+   #elif DIMENSIONS == 2
+    theta = atan2(x2, x1);
+   #endif
+  #elif GEOMETRY == POLAR
+   r = x1;
+   theta = x2;
+  #elif GEOMETRY == SPHERICAL
+   r = x1;
+   theta = x2;
+   phi = x3;
+  #endif
+
+
+  if ((r <= r_star) && (r != 0))
+  { /* Potential interior to star except r = 0 */
+    pot = (-4*GPRSQ*sin(CONST_PI*r))/(CONST_PI*CONST_PI*r) - RPOT ; /* Factor of R has been taken out for first term
+    denominator because of normalization*/
+    pot = pot/(UNIT_VELOCITY*UNIT_VELOCITY);
+  }
+  if (r > r_star)
+  { /* Potential exterior to star */
+    pot = -(G_CONST*M_STAR) / (R*r);
+    pot = pot/(UNIT_VELOCITY*UNIT_VELOCITY);
+  }
+
+  return pot/1.0;
 }
