@@ -44,20 +44,20 @@ More information including step-by-step guides to test problems is included in t
 http://plutocode.ph.unito.it/files/userguide.pdf (See pages 6-9 for test problems)
 
 ### 2. VisIt
-Although a varity of visualization software packages are compatable with PLUTO, this work has implemented VisIt v2.13.3, for which we provide detailed installation instructions. 
+Although a varity of visualization software packages are compatable with PLUTO, this work has implemented VisIt v3.1.4, for which we provide detailed installation instructions. 
 
 Visit may be downloaded from the following link: https://wci.llnl.gov/simulation/computer-codes/visit/executables
 
 Installation for Windows and Mac is fairly straightforward, as .exe and .dmg installer programs are provided for the respective operating system. 
 
 #### Installing VisIt on Unix-based Systems 
-* Run the VisIt install script. The script for v2.13.3 is available at the following link: http://portal.nersc.gov/project/visit/releases/2.13.3/visit-install2_13_3 
+* Run the VisIt install script. The script for v3.1.4 is available at the following link: https://github.com/visit-dav/visit/releases/download/v3.1.4/visit-install3_1_4
 
 * Add a bin directory after the location of the installed directory, i.e ( /user/local/visit/bin ). This directory will contain the script responsible for launching VisIt. This may be accomplished by adding it to the users .bashrc folder:
 ```console
 user@computer:~$ export path=/usr/local/visit/bin
 ```
-*More details regarding VisIt installation is available at the following link:* http://portal.nersc.gov/project/visit/releases/2.13.3/INSTALL_NOTES
+*More details regarding VisIt installation is available at the following link:* https://github.com/visit-dav/visit/releases/download/v3.1.4/INSTALL_NOTES.txt
 
 *It is recommended for systems with NVidia graphics cards to update to the latest drivers. Failure to do so may result in frequent program crashes.*
 
