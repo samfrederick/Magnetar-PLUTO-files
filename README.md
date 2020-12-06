@@ -15,7 +15,7 @@ This work is in active development during the 2018-2019 academic year for the co
 
 ## Dependencies 
 In order to utilize these files, the following packages must be installed:
- * PLUTO v4.30. *The following are required to properly utilize PLUTO:*
+ * PLUTO v4.40. *The following are required to properly utilize PLUTO:*
    * Python
    * C Compiler 
    * GNU Make
