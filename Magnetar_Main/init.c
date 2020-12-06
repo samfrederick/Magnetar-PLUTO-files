@@ -151,7 +151,7 @@ void Init (double *v, double x1, double x2, double x3)
     #endif
 
     /* Calcuate values for pressure and density using N = 1 polytrope EOS */
-    v[RHO] = (RHO_C*sin(CONST_PI*r))/(r*CONST_PI);
+    v[RHO] = (RHO_C*sin(CONST_PI*r))/(r*CONST_PI) + VACUUM;
     v[PRS] = K*v[RHO]*v[RHO];
 
     /* Normalize values for density and pressure */
