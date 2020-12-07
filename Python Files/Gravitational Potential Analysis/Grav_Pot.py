@@ -40,10 +40,14 @@ for i in r:
 #print len(phivals)
 #print len(r)
 
+font = {'family' : 'normal',
+        'size'   : 11}
 
-py.plot(r,phivals,"bo-")
-py.title("Gravitational Potential (Phi) vs. Radius")
-py.ylabel("Gravitational Potential")
-py.xlabel("Radius")
+py.rc('font', **font)
 
+py.plot(r,phivals,"bo-",markersize =3)
+py.title("Gravitational Potential $\\varphi(r)$ vs. Normalized Radius $(r/R)$")
+py.ylabel("$\\varphi(r)$")
+py.xlabel("Normalized Radius")
+py.grid()
 py.show()

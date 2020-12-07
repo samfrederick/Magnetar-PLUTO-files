@@ -39,12 +39,12 @@ rout = np.linspace(1,2,30)
 r = np.concatenate((rin,rout),axis=0)
 rghost = [2.01]
 r = np.concatenate((r,rghost),axis=0)
-print r
+#print r
 bx1list = list()
 bx2list = list()
 bx3list = list()
 
-x2 = 1.7*CONST_PI # Theta set to pi/4
+x2 = .25*CONST_PI # Theta set to pi/4
 
 Bx1 = 0.0
 Bx2 = 0.0
@@ -97,9 +97,9 @@ for x1 in r:
             Bx2 = 0.0
             Bx3 = 0.0
 
-    Bx1 = Bx1 / (np.sqrt(UNIT_DENSITY)*UNIT_VELOCITY)
-    Bx2 = Bx2 / (np.sqrt(UNIT_DENSITY)*UNIT_VELOCITY)
-    Bx3 = Bx3 / (np.sqrt(UNIT_DENSITY)*UNIT_VELOCITY)
+    #Bx1 = Bx1 / (np.sqrt(UNIT_DENSITY)*UNIT_VELOCITY)
+    #Bx2 = Bx2 / (np.sqrt(UNIT_DENSITY)*UNIT_VELOCITY)
+    #Bx3 = Bx3 / (np.sqrt(UNIT_DENSITY)*UNIT_VELOCITY)
 
 
     bx1list.append(Bx1)
@@ -107,12 +107,15 @@ for x1 in r:
     bx3list.append(Bx3)
 
 
-py.plot(r,bx1list,"bo-")
-py.plot(r,bx2list,"ro-")
-py.plot(r,bx3list,"go-")
+py.plot(r,bx1list,"bo-",label="Br")
+py.plot(r,bx2list,"ro-",label="Btheta")
+py.plot(r,bx3list,"go-",label="Bphi")
+
+
 #py.yscale("log")
 py.xlim(0,2.1)
 #py.ylim(-1,1)
-#py.ylabel("Log(Density)")
-#py.xlabel("Radius")
+py.legend(loc="upper right")
+py.ylabel("Field Strength")
+py.xlabel("Radius")
 py.show()
