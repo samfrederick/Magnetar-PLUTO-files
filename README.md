@@ -18,7 +18,7 @@ In order to utilize these files, the following packages must be installed:
    * Python
    * C Compiler 
    * GNU Make
-* Visualiztion software utility: Numerous options are compatable with PLUTO including Gnuplot, IDL, pyPLUTO, Mathematica, Para View, or VisIt. 
+* Visualiztion software utility: Numerous options are compatable with PLUTO including Gnuplot, IDL, pyPLUTO, Mathematica, Paraview, or VisIt. 
 
 The code provided in this repository is largely written in C, with the exception of a few python scripts written in 2.7 under the folder "Python Files". 
 
