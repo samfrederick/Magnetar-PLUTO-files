@@ -42,6 +42,8 @@ user@computer:~$ cd $PLUTO_DIR/Test_Problems
 More information including step-by-step guides to test problems is included in the PLUTO User Manual, available via:
 http://plutocode.ph.unito.it/files/userguide.pdf (See pages 6-9 for test problems)
 
+*Important!* In order run properly run magnetar simulations, files in the Place_in_PLUTO_Src_dir folder __must__ be copied to the PLUTO source code directory (something like `path_to_PLUTO_directory/Src`)
+
 ### 2. VisIt
 Although a varity of visualization software packages are compatable with PLUTO, this work has implemented VisIt v3.1.4, for which we provide detailed installation instructions. 
 
