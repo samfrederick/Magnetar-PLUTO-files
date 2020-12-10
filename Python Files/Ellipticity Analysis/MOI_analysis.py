@@ -42,12 +42,14 @@ data_path = '/media/sam/BE48068348063B23/Simulation_Results/201206/'
 extern_drive_path = '/media/sam/ASTRO_DATA/201206/'
 
 # Copy every tenth data file from data directory to external drive
-for a,b,c in os.walk(data_path):
-    for filename in c:
+for cwd, folders, files in os.walk(data_path):
+    for filename in files:
         if 'data' in filename:
             file_n = int(filename.replace('data.','').replace('.vtk',''))
             if file_n % 10 == 0:
-                sh.copyfile(data_path+filename, extern_drive_path+filename)
+                # Only write if file not in folder
+                if not os.path.exists(extern_drive_path+filename):
+                    sh.copyfile(data_path+filename, extern_drive_path+filename)
                 
 
 
