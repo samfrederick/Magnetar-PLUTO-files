@@ -41,8 +41,8 @@ def MOI_Import(filename):
     # Import comma delimited inertia tensor csv files
     if filename.endswith('.csv'):
         dataset = pd.read_csv(filename, 
-                              set_index=['t'])
-    
+                              index_col=('t'))
+
     # Compute ellipticity using Izz(t=0) for I_0 denominator term
     dataset['ellip'] = (dataset.Izz - dataset.Ixx)/(dataset.loc[0.0, 'Izz'])
 
@@ -70,6 +70,9 @@ def Plot_MOI_Ellip(df, savefig=False):
         plt.savefig('201206_MOI_ellip_'+today+'.png', dpi=300)
         plt.close()
 
+
+df = MOI_Import('201206_InertiaTensor.csv')
+Plot_MOI_Ellip(df, savefig=True)
 
 # -----------------------------------------------------------------------------
 data_path = '/media/sam/BE48068348063B23/Simulation_Results/201206/'
