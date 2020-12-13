@@ -56,10 +56,12 @@ def Plot_MOI_Ellip(df, savefig=False):
     axs[1].set_title('Stellar Ellipticity')
     axs[1].plot(df.index, df.ellip, c='purple')
     axs[1].legend(labels=['Ellipticity'])
-
+    axs[1].axhline(y=0, color='#949494', linestyle='--')
+    axs[1].set_ylim(-0.1, 0.1)
     if savefig:
         today = datetime.now().strftime('%Y%m%d_%H%M%S')
         plt.savefig('201206_MOI_ellip_'+today+'.png', dpi=300)
+        plt.close()
 
 
 # -----------------------------------------------------------------------------
