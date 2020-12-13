@@ -10,7 +10,7 @@ import os
 import shutil as sh
 import matplotlib.pyplot as plt
 import seaborn as sns
-
+from datetime import datetime
 sns.set_style('darkgrid')
 
 
@@ -58,7 +58,8 @@ def Plot_MOI_Ellip(df, savefig=False):
     axs[1].legend(labels=['Ellipticity'])
 
     if savefig:
-        plt.savefig('201206_MOI_ellip_201209.png', dpi=300)
+        today = datetime.now().strftime('%Y%m%d_%H%M%S')
+        plt.savefig('201206_MOI_ellip_'+today+'.png', dpi=300)
 
 
 # -----------------------------------------------------------------------------
