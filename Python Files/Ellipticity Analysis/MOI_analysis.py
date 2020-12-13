@@ -25,18 +25,24 @@ def MOI_Import(filename):
     Returns
     -------
     dataset : Pandas DataFrame
-        Dataset with principal moments of interia, ellipticity for each 
-        recorded timestamp in datafile.
+        Dataset with moment of inertia tensor component values.
+        Ellipticity is calculated for each recorded timestamp in datafile.
     """
-    # Read textfile as csv
-    dataset = pd.read_csv(filename,
-                          delimiter='\s+',
-                          header=0)
-
-    # Round the time column, set as index
-    dataset['t'] = round(dataset['t'], 4)
-    dataset = dataset.set_index('t', drop=True)
-
+    # Import .txt file with principal MOI values
+    if filename.endswith('.txt'):
+        dataset = pd.read_csv(filename,
+                              delimiter='\s+',
+                              header=0)
+        
+        # Round the time column, set as index
+        dataset['t'] = round(dataset['t'], 4)
+        dataset = dataset.set_index('t', drop=True)
+            
+    # Import comma delimited inertia tensor csv files
+    if filename.endswith('.csv'):
+        dataset = pd.read_csv(filename, 
+                              set_index=['t'])
+    
     # Compute ellipticity using Izz(t=0) for I_0 denominator term
     dataset['ellip'] = (dataset.Izz - dataset.Ixx)/(dataset.loc[0.0, 'Izz'])
 
@@ -51,13 +57,14 @@ def Plot_MOI_Ellip(df, savefig=False):
     
     axs[0].set_title('Principal Moments of Inertia')
     axs[0].plot(df.index, df.Ixx, df.index, df.Iyy, df.index, df.Izz)
-    
     axs[0].legend(labels=['Ixx', 'Iyy', 'Izz'])
+    
     axs[1].set_title('Stellar Ellipticity')
     axs[1].plot(df.index, df.ellip, c='purple')
     axs[1].legend(labels=['Ellipticity'])
     axs[1].axhline(y=0, color='#949494', linestyle='--')
     axs[1].set_ylim(-0.1, 0.1)
+
     if savefig:
         today = datetime.now().strftime('%Y%m%d_%H%M%S')
         plt.savefig('201206_MOI_ellip_'+today+'.png', dpi=300)
