@@ -88,9 +88,26 @@ def Differentiate(df, column, time_column):
 
     # Merge derivative values to staging dataframe
     deriv_df = pd.DataFrame(index=df[idx_name], columns=['d' + column])
-    deriv_df.iloc[0, 0] = head_deriv
-    deriv_df.iloc[-1, 0] = tail_deriv
-    deriv_df.iloc[1:-1, 0] = central_deriv[:]
+    
+    try:
+        deriv_df.iloc[0, 0] = head_deriv
+    except ValueError as e:
+        print('head:', e)
+        pass
+
+    try:
+        deriv_df.iloc[-1, 0] = tail_deriv
+    except ValueError as e:
+        print('tail:', e)
+        pass
+
+    try:
+        # Remove issue at t = 0.45 with duplicated index
+        central_deriv = central_deriv[~central_deriv.index.duplicated()]
+        deriv_df.iloc[1:-1, 0] = central_deriv[:]
+    except ValueError as e:
+        print('body:', e)
+        pass
 
     # Join derivative column with passed dataframe
     df = df.set_index(idx_name, drop=True)
@@ -113,7 +130,7 @@ def Plot_MOI_Ellip(df, savefig=False):
     axs[1].plot(df.index, df.ellip, c='purple')
     axs[1].legend(labels=['Ellipticity'])
     axs[1].axhline(y=0, color='#949494', linestyle='--')
-    axs[1].set_ylim(-0.1, 0.1)
+    axs[1].set_ylim(-0.15, 0.15)
 
     if savefig:
         today = datetime.now().strftime('%Y%m%d_%H%M%S')
@@ -136,7 +153,7 @@ for cwd, folders, files in os.walk(data_path):
     for filename in files:
         if 'data' in filename:
             file_n = int(filename.replace('data.', '').replace('.vtk', ''))
-            if file_n % 10 == 0:
+            if file_n % 50 == 0:
                 # Only write if file not in folder
                 if not os.path.exists(extern_drive_path+filename):
                     sh.copyfile(data_path+filename, extern_drive_path+filename)
