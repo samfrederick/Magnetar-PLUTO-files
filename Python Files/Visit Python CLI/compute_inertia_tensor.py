@@ -58,7 +58,7 @@ def DoublePrecisionQueryOverTime():
         tensor = GetQueryOutputValue()
      
         # Write time and inertia tensor to file
-        str = "%3.2e,%25.15e,%25.15e,%25.15e,%25.15e,%25.15e,%25.15e,%25.15e,%25.15e,%25.15e\n" \
+        str = "%4.3f,%25.15e,%25.15e,%25.15e,%25.15e,%25.15e,%25.15e,%25.15e,%25.15e,%25.15e\n" \
 	          %(t,tensor[0],tensor[1],tensor[2],tensor[3],
                 tensor[4],tensor[5],tensor[6],tensor[7],tensor[8])
         f.write(str)
