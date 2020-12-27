@@ -17,6 +17,7 @@ sns.set_style('darkgrid')
 data_path = '/media/sam/BE48068348063B23/Simulation_Results/201206/'
 extern_drive_path = '/media/sam/ASTRO_DATA/201206/'
 
+
 def MOI_Import(filename):
     """
     Parameters
@@ -45,6 +46,10 @@ def MOI_Import(filename):
 
     # Compute ellipticity using Izz(t=0) for I_0 denominator term
     dataset['ellip'] = (dataset.Izz - dataset.Ixx)/(dataset.loc[0.0, 'Izz'])
+
+    # Compute time derivative for ellipticity
+    dataset = Differentiate(dataset, column='ellip', time_column='t')
+    dataset = Differentiate(dataset, column='d_ellip', time_column='t')
 
     # Compute first time derivative of principal MOIs
     for moi in ['Ixx', 'Iyy', 'Izz']:
@@ -129,7 +134,7 @@ def Plot_Ellip_Timeseries(df, savefig=False):
 
     axs[0].set_title(r'Stellar Ellipticity ($\epsilon$)')
     axs[0].plot(df.index, df.ellip, c='#aa4ab0')
-    axs[0].legend(labels=[r'$\epsilon$'])
+    axs[0].legend(labels=[r'$\epsilon$'], loc='lower right')
     axs[0].axhline(y=0, color='#949494', linestyle='--')
     axs[0].set_ylim(-0.15, 0.15)
     axs[0].set_xlim(time_lims)
@@ -137,14 +142,14 @@ def Plot_Ellip_Timeseries(df, savefig=False):
     axs[1].set_title('First Derivative')
     axs[1].plot(df.index, df.d_ellip, c='#d6004c')
     axs[1].axhline(y=0, color='#949494', linestyle='--')
-    axs[1].legend(labels=[r'$\partial_t$ $\epsilon$'])
+    axs[1].legend(labels=[r'$\partial_t$ $\epsilon$'], loc='lower right')
     axs[1].set_ylim(-0.15, 0.15)
     axs[1].set_xlim(time_lims)
 
     axs[2].set_title('Second Derivative')
     axs[2].plot(df.index, df.d_d_ellip, c='#465aea')
     axs[2].axhline(y=0, color='#949494', linestyle='--')
-    axs[2].legend(labels=[r'$\partial^2_t$ $\epsilon$'])
+    axs[2].legend(labels=[r'$\partial^2_t$ $\epsilon$'], loc='lower right')
     axs[2].set_ylim(-1.5, 1.5)
     axs[2].set_xlim(time_lims)
     axs[2].set_xlabel('Time (s)')
