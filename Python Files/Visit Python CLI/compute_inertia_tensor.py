@@ -43,7 +43,7 @@ DrawPlots()
 nstates = TimeSliderGetNStates()
 
 
-def InertiaTensorQuery(filename):
+def InertiaTensorQuery():
     """
     Write inertia tensor to file in specified simulation
     steps.
@@ -51,30 +51,45 @@ def InertiaTensorQuery(filename):
     Function modified via:
     http://visitusers.org/index.php?title=Query_over_time
     """
-    f = open(filename, "w")
+    path = ('/Users/samfrederick/Documents/GitHub/Magnetar-PLUTO-files/'
+	 'Python Files/Ellipticity Analysis/201206_InertiaTensor.csv')
+
+    """
+    f = open(path, "w")
     f.write("t,Ixx,Ixy,Ixz,Iyx,Iyy,Iyz,Izx,Izy,Izz\n")
-
-    for tstate in range(0, nstates):
+    """
+    
+    # Open file and append new timestep data
+    with open(path, 'r+') as f:
+        i = 0
+        for l in f:
+            i += 1
+        file_len = i - 1 # number of rows with data
+        
+        for tstate in range(file_len, nstates):
      
-        # Get data file time
-        TimeSliderSetState(tstate)
-        Query("Time")
-        t = GetQueryOutputValue()
+            # Get data file time
+            TimeSliderSetState(tstate)
+            Query("Time")
+            t = GetQueryOutputValue()
 
-        # Compute inertia tensor for data file
-        Query("Moment of Inertia")
-        tsr = GetQueryOutputValue()  # tensor MOI values
+            # Compute inertia tensor for data file
+            Query("Moment of Inertia")
+            tsr = GetQueryOutputValue()  # tensor MOI values
      
-        # Write time and inertia tensor to file
-        str = "%4.3f,%25.15e,%25.15e,%25.15e,%25.15e,%25.15e,%25.15e,%25.15e,%25.15e,%25.15e\n" \
-	          %(t,tsr[0],tsr[1],tsr[2],tsr[3],tsr[4],tsr[5],tsr[6],tsr[7],tsr[8])
-        f.write(str)
+            # Write time and inertia tensor to file
+            str = ("%4.3f, %25.15e, %25.15e, %25.15e, %25.15e,"
+	               "%25.15e, %25.15e,%25.15e, %25.15e, %25.15e\n") \
+	             %(t, tsr[0], tsr[1], tsr[2], tsr[3], tsr[4],
+                   tsr[5], tsr[6], tsr[7], tsr[8])
+            f.write(str)
      
-        # Print every tenth state to console
-        if tstate % 10 == 0:
-            print "t=%3.2f"%(t)
+            # Print every tenth state to console
+            if tstate % 10 == 0:
+                print "t=%3.2f"%(t)
 
-    f.close()
+        f.close()
+        print "Complete"
 
 
-InertiaTensorQuery(filename="201206_InertiaTensor.csv")
+InertiaTensorQuery()
