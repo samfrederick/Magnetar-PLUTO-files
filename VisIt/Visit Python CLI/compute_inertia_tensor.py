@@ -52,7 +52,7 @@ def InertiaTensorQuery():
     http://visitusers.org/index.php?title=Query_over_time
     """
     path = ('/Users/samfrederick/Documents/GitHub/Magnetar-PLUTO-files/'
-	 'Python Files/Ellipticity Analysis/201206_InertiaTensor.csv')
+	 'Analysis/Ellipticity Analysis/201206_InertiaTensor.csv')
 
     """
     f = open(path, "w")
