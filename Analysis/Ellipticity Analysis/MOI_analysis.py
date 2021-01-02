@@ -153,10 +153,11 @@ def Copy_Data(path, destination):
 
 # -----------------------------------------------------------------------------
 
-#Copy_Data(path=data_path, destination=extern_drive_path)
-
-df = MOI_Import(folder +'/201206_InertiaTensor.csv')
-
-Plot_Ellip_Timeseries(df, savefig=True)
-
-Plot_MOI_Timeseries(df, savefig=True)
+if __name__ == '__main__':
+    #Copy_Data(path=data_path, destination=extern_drive_path)
+     
+    df = MOI_Import(folder +'/201206_InertiaTensor.csv')
+    
+    Plot_Ellip_Timeseries(df, savefig=True)
+    
+    Plot_MOI_Timeseries(df, savefig=True)
