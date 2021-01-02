@@ -8,14 +8,14 @@ Created on Sat Jan  2 09:53:01 2021
 analysis_dir = ('/Users/samfrederick/Documents/GitHub/'
                 'Magnetar-PLUTO-files/Analysis')
 import os
-os.chdir(analysis_dir)
-
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
 from datetime import datetime
 os.chdir(analysis_dir + '/Ellipticity Analysis')
 from MOI_analysis import MOI_Import
+
+os.chdir(analysis_dir + '/Angular Res Analysis')
 
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
