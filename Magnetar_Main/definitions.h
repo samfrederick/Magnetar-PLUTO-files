@@ -23,9 +23,9 @@
 #define  ROTATING_FRAME                 NO
 
 /* -- user-defined parameters (labels) -- */
-#define RMIN  0.0
-#define RMAX  1.0
-#define RGRID 100
+#define  RMIN                           0.0
+#define  RMAX                           1.1
+#define  RGRID                          100
 
 /* [Beg] user-defined constants (do not change this line) */
 
