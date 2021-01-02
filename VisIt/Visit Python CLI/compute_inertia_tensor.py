@@ -1,6 +1,6 @@
 """
 Author: Sam Frederick
-Date:  December 2020
+Date:  January 2021
 
 VisIt CLI Python command
 ------------------------
@@ -43,7 +43,7 @@ DrawPlots()
 nstates = TimeSliderGetNStates()
 
 
-def InertiaTensorQuery():
+def InertiaTensorQuery(path):
     """
     Write inertia tensor to file in specified simulation
     steps.
@@ -51,22 +51,25 @@ def InertiaTensorQuery():
     Function modified via:
     http://visitusers.org/index.php?title=Query_over_time
     """
-    path = ('/Users/samfrederick/Documents/GitHub/Magnetar-PLUTO-files/'
-	 'Analysis/Ellipticity Analysis/201206_InertiaTensor.csv')
-
-    """
-    f = open(path, "w")
-    f.write("t,Ixx,Ixy,Ixz,Iyx,Iyy,Iyz,Izx,Izy,Izz\n")
-    """
     
+    # Check if file exists. If not, create file with header.
+    try:
+        f = open(path, 'r+')
+    except IOError:
+        f = open(path, 'w+')
+        f.write("t,Ixx,Ixy,Ixz,Iyx,Iyy,Iyz,Izx,Izy,Izz\n")  
+    f.close() 
+
+
     # Open file and append new timestep data
     with open(path, 'r+') as f:
+
         i = 0
         for l in f:
             i += 1
         file_len = i - 1 # number of rows with data
-        
-        for tstate in range(file_len, nstates):
+
+        for tstate in range(file_len, nstates): #nstates
      
             # Get data file time
             TimeSliderSetState(tstate)
@@ -79,8 +82,8 @@ def InertiaTensorQuery():
      
             # Write time and inertia tensor to file
             str = ("%4.3f, %25.15e, %25.15e, %25.15e, %25.15e,"
-	               "%25.15e, %25.15e,%25.15e, %25.15e, %25.15e\n") \
-	             %(t, tsr[0], tsr[1], tsr[2], tsr[3], tsr[4],
+	         "%25.15e, %25.15e,%25.15e, %25.15e, %25.15e\n") \
+	       %(t, tsr[0], tsr[1], tsr[2], tsr[3], tsr[4],
                    tsr[5], tsr[6], tsr[7], tsr[8])
             f.write(str)
      
@@ -92,4 +95,14 @@ def InertiaTensorQuery():
         print "Complete"
 
 
-InertiaTensorQuery()
+# Path for 12/6/20 long-term simulation run
+#path = ('/Users/samfrederick/Documents/GitHub/Magnetar-PLUTO-files/'
+#	 'Analysis/Ellipticity Analysis/201206_InertiaTensor.csv')
+
+
+# Path for 1/1/21 run at Ntheta,phi = 8
+path = ('/Users/samfrederick/Angular_Resolution_Tests/'
+        'ntheta_8/InertiaTensorData.csv')
+
+InertiaTensorQuery(path)
+
