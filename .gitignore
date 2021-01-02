@@ -1,5 +1,6 @@
 
 *.pyc
+**/Analysis/Ellipticity Analysis/Older figures
 Analysis/.DS_Store
 Magnetar_Main/.DS_Store
 Magnetar_Main/makefile
