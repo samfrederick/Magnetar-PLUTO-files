@@ -5,11 +5,19 @@ Created on Mon Dec 28 19:38:30 2020
 
 @author: samfrederick
 """
-
 def VolumeAvgTotalBfield():
     path = ('/Users/samfrederick/Documents/GitHub/Magnetar-PLUTO-files/'
             'Analysis/Bfield Analysis/201206_VolAvg_Total_Bfield.csv')
     DeleteAllPlots()
+
+    # Check if file exists. If not, create file with header.
+    try:
+        f = open(path, 'r+')
+    except IOError:
+        f = open(path, 'w+')
+        f.write("t,BTotal_v_avg\n")  
+    f.close() 
+
     f = open(path, 'r+')
     
     # Create scalar b-field plot 
@@ -30,9 +38,6 @@ def VolumeAvgTotalBfield():
     DrawPlots()
     
     print 'Computing Volume Averaged Magnetic Field Strength'
-
-    # Compute Volume Averaged Total B-field -------------
-    #f.write("t,BTotal_v_avg\n")
 
     # Get the number of time steps
     nstates = TimeSliderGetNStates()
@@ -71,6 +76,16 @@ def VolumeAvgPoloidalBfield():
     path = ('/Users/samfrederick/Documents/GitHub/Magnetar-PLUTO-files/'
             'Analysis/Bfield Analysis/201206_VolAvg_Poloidal_Bfield.csv')
     DeleteAllPlots()
+
+
+    # Check if file exists. If not, create file with header.
+    try:
+        f = open(path, 'r+')
+    except IOError:
+        f = open(path, 'w+')
+        f.write("t,BPoloidal_v_avg\n")  
+    f.close() 
+
     f = open(path, 'r+')
     
     # Create scalar b-field plot 
@@ -91,9 +106,6 @@ def VolumeAvgPoloidalBfield():
     DrawPlots()
     
     print 'Computing Volume Averaged Magnetic Field Strength'
-
-    # Compute Volume Averaged Poloidal B-field -------------
-    #f.write("t,BPoloidal_v_avg\n")
 
     # Get the number of time steps
     nstates = TimeSliderGetNStates()
@@ -133,6 +145,15 @@ def VolumeAvgToroidalBfield():
     path = ('/Users/samfrederick/Documents/GitHub/Magnetar-PLUTO-files/'
             'Analysis/Bfield Analysis/201206_VolAvg_Toroidal_Bfield.csv')
     DeleteAllPlots()
+
+    # Check if file exists. If not, create file with header.
+    try:
+        f = open(path, 'r+')
+    except IOError:
+        f = open(path, 'w+')
+        f.write("t,BToroidal_v_avg\n")  
+    f.close() 
+
     f = open(path, 'r+')
     
     # Create scalar b-field plot 
@@ -154,12 +175,8 @@ def VolumeAvgToroidalBfield():
     
     print 'Computing Volume Averaged Magnetic Field Strength'
 
-    # Compute Volume Averaged Toroidal B-field -------------
-    #f.write("t,BToroidal_v_avg\n")
-
     # Get the number of time steps
     nstates = TimeSliderGetNStates()
-
 
     i = 0
     for l in f:
