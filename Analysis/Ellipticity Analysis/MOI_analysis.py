@@ -22,6 +22,9 @@ extern_drive_path = '/media/sam/ASTRO_DATA/201206/'
 
 folder = 'Ellipticity Analysis'
 
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+
 def MOI_Import(filename):
     """
     Parameters

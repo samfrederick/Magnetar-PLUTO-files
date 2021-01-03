@@ -10,10 +10,13 @@ analysis_dir = ('/Users/samfrederick/Documents/GitHub/'
 import os
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+import seaborn as sns
 import numpy as np
 from datetime import datetime
 os.chdir(analysis_dir + '/Ellipticity Analysis')
 from MOI_analysis import MOI_Import
+
+sns.set_style('whitegrid')
 
 os.chdir(analysis_dir + '/Angular Res Analysis')
 
@@ -117,7 +120,7 @@ def Plots(norm_df, savefig=False):
     ellip_cmap = mpl.cm.ScalarMappable(norm=norm, cmap=mpl.cm.BuPu)
     ellip_cmap.set_array([])
                                                            
-    fig, ax = plt.subplots(3, 2, figsize=(7, 6))
+    fig, ax = plt.subplots(3, 2, figsize=(9, 5))
     z = 0
     for plt_idx, res in enumerate(['theta8', 'theta16', 'theta32']):
         i, j, k = 0 + z, 0 + z, 0 + z
@@ -147,17 +150,17 @@ def Plots(norm_df, savefig=False):
         ax[plt_idx, 1].legend(labels=['$\epsilon$'], loc='upper left',
                               fontsize=10)
         plt.subplots_adjust(left=.3, right=.98, wspace=.3,
-                            top=.925, bottom=.08)
+                            top=.925, bottom=.09)
         
-        plt.text(-0.5, 0.5, '$\Delta_{\\theta,\phi} = \\frac{\pi}{8}$',
+        plt.text(-0.6, 0.5, 'a) $\Delta_{\\theta,\phi} = \\frac{\pi}{8}$',
                  horizontalalignment='center',
                  verticalalignment='center', transform=ax[0,0].transAxes,
                  fontsize=14)
-        plt.text(-0.5, 0.5, '$\Delta_{\\theta,\phi} = \\frac{\pi}{16}$',
+        plt.text(-0.6, 0.5, 'b) $\Delta_{\\theta,\phi} = \\frac{\pi}{16}$',
                  horizontalalignment='center',
                  verticalalignment='center', transform=ax[1,0].transAxes,
                  fontsize=14)
-        plt.text(-0.5, 0.5, '$\Delta_{\\theta,\phi} = \\frac{\pi}{32}$',
+        plt.text(-0.6, 0.5, 'c) $\Delta_{\\theta,\phi} = \\frac{\pi}{32}$',
                  horizontalalignment='center',
                  verticalalignment='center', transform=ax[2,0].transAxes,
                  fontsize=14)
@@ -169,7 +172,8 @@ def Plots(norm_df, savefig=False):
     ax[0, 1].set_title('Ellipticity', fontsize=10)
 
     if savefig:
-        today = datetime.now().strftime('%Y%m%d_%H%M%S')
+        today = datetime.now().strftime('%Y%m%d_%H%M')
+        os.chdir(analysis_dir + '/Angular Res Analysis')
         plt.savefig('Angular_Res_Comparison_'+today+'.png', dpi=300)
 
 ntheta8, ntheta16, ntheta32 = ImportData()
