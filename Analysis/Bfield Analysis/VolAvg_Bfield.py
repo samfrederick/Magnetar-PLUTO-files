@@ -10,9 +10,11 @@ os.chdir('/Users/samfrederick/Documents/GitHub/Magnetar-PLUTO-files/Analysis')
 
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 from datetime import datetime
 from differentiate import TimeDerivative # Must set path to Analysis folder
 import math as mt
+sns.set_style('darkgrid')
 
 def ImportBfieldData():
     total = pd.read_csv('Bfield Analysis/201206_VolAvg_Total_Bfield.csv',
