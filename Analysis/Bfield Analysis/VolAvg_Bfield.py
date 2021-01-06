@@ -69,7 +69,7 @@ def PlotBfield(df):
     
     today = datetime.now().strftime('%Y%m%d_%H%M%S')
     plt.savefig('Bfield Analysis/201206_Volume_Avg_Bfield_'+today+'.png', dpi=300)
-    plt.close()
+    #plt.close()
     
 # ----------------------------------------------------------------------------
 
