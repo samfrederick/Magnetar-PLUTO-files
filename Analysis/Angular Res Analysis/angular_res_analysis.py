@@ -16,7 +16,7 @@ from datetime import datetime
 os.chdir(analysis_dir + '/Ellipticity Analysis')
 from MOI_analysis import MOI_Import
 
-sns.set_style('whitegrid')
+sns.set_style('darkgrid')
 
 os.chdir(analysis_dir + '/Angular Res Analysis')
 
@@ -48,6 +48,7 @@ def ImportData():
     ntheta8_loc = '/Users/samfrederick/Angular_Resolution_Tests/ntheta_8'
     os.chdir(ntheta8_loc)
     ntheta8 = MOI_Import(ntheta8_loc + '/' + 'InertiaTensorData.csv')
+    ntheta8.dropna(axis=1, how='all')
     
     # Angular resolution = 16 along polar axis (0, pi)
     ntheta16_loc = '/Users/samfrederick/Angular_Resolution_Tests/ntheta_16'
@@ -126,6 +127,8 @@ def Plots(norm_df, savefig=False):
         i, j, k = 0 + z, 0 + z, 0 + z
         for col in norm_df:
             if col.endswith(res):
+                
+                # Ellipticity plots
                 if col.startswith('ellip'):
                     color = ellip_cmap.to_rgba(k + 1)
                     ax[plt_idx, 1].plot(norm_df.index, norm_df[col], c=color,
@@ -133,6 +136,8 @@ def Plots(norm_df, savefig=False):
                     eps_0 = norm_df.loc[0, col]
                     Errfill(norm_df.index, norm_df[col], eps_0, color=color, 
                             ax=ax[plt_idx, 1])
+                
+                # MOI plots
                 elif col.startswith('Ixx') or col.startswith('Izz'):
                     if col.startswith('Ixx'):
                         color = Ixx_cmap.to_rgba(i + 1)
@@ -140,11 +145,17 @@ def Plots(norm_df, savefig=False):
                         color = Izz_cmap.to_rgba(j + 1)
                     ax[plt_idx, 0].plot(norm_df.index, norm_df[col], c=color,
                             label=col)
-                    ax[plt_idx, 1].set_ylim(-0.15, 0.15)
-                    ax[plt_idx, 1].axhline(y=0, color='#949494',
-                                           linestyle='--')
+
+        # y limits for ellip plots, include horiz line at y = 0 
+        ax[plt_idx, 1].set_ylim(-0.15, 0.15)
+        ax[plt_idx, 1].axhline(y=0, color='#949494',
+                               linestyle='--')
+        
+        # y limits for MOI plots
+        ax[plt_idx, 0].set_ylim(0.25, 1.1)
                     
-        z += 1
+                    
+
         ax[plt_idx, 0].legend(labels=['$I_{xx}$', '$I_{zz}$'],
                               fontsize=10)
         ax[plt_idx, 1].legend(labels=['$\epsilon$'], loc='upper left',
@@ -165,6 +176,8 @@ def Plots(norm_df, savefig=False):
                  verticalalignment='center', transform=ax[2,0].transAxes,
                  fontsize=14)
         
+        z += 1
+    
     ax[2, 0].set_xlabel('Time (s)', fontsize=10)
     ax[2, 1].set_xlabel('Time (s)', fontsize=10)
     ax[0, 0].set_title('Normalized Principal\n Moments of Inertia',
