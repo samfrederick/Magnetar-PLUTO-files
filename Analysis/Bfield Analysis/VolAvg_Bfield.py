@@ -74,4 +74,4 @@ def PlotBfield(df):
 # ----------------------------------------------------------------------------
 
 bfield_df = ImportBfieldData()
-PlotBfield(bfield_df)
+PlotBfield(bfield_df.dropna())
