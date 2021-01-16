@@ -152,7 +152,7 @@ def Plots(norm_df, savefig=False):
                                linestyle='--')
         
         # y limits for MOI plots
-        ax[plt_idx, 0].set_ylim(0.25, 1.1)
+        ax[plt_idx, 0].set_ylim(0.20, 1.1)
                     
                     
 
