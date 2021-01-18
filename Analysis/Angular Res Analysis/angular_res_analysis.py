@@ -37,7 +37,7 @@ def Errfill(xdata, ydata, yerr, color=None, alpha_fill=0.3, ax=None):
         
     if np.isscalar(yerr) or len(yerr) == len(ydata):
         ymin = ydata - yerr
-        ymax = ydata + yerr
+        ymax = ydata #+ yerr
     elif len(yerr) == 2:
         ymin, ymax = yerr
     #ax.plot(xdata, ydata, color=color)
