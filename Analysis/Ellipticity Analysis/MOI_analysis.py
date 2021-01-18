@@ -71,33 +71,43 @@ def MOI_Import(filename):
 def Plot_Ellip_Timeseries(df, savefig=False):
     """
     """
-    fig, axs = plt.subplots(3, 1, figsize=(9, 7))
-    plt.subplots_adjust(hspace=.35)
-
+    fsize = 12
+    fig, axs = plt.subplots(3, 1, figsize=(6, 7))
+    
     time_lims = -0.5, mt.ceil(df.index[-1])
 
-    axs[0].set_title(r'Stellar Ellipticity ($\epsilon$)')
-    axs[0].plot(df.index, df.ellip, c='#aa4ab0')
-    axs[0].legend(labels=[r'$\epsilon$'], loc='lower right')
+    axs[0].set_title(r'Stellar Ellipticity ($\epsilon$)', fontsize=fsize)
+    axs[0].plot(df.index, df.ellip, c='#aa4ab0', linewidth=2)
+    axs[0].legend(labels=[r'$\epsilon$'], loc='lower right',
+                  fontsize=12)
     axs[0].axhline(y=0, color='#949494', linestyle='--')
     axs[0].set_ylim(-0.15, 0.15)
     axs[0].set_xlim(time_lims)
+    axs[0].tick_params(axis='both', labelsize=11) 
 
-    axs[1].set_title('First Derivative')
-    axs[1].plot(df.index, df.d_ellip, c='#d6004c')
+    axs[1].set_title('First Derivative', fontsize=fsize)
+    axs[1].plot(df.index, df.d_ellip, c='#d6004c', linewidth=2)
     axs[1].axhline(y=0, color='#949494', linestyle='--')
-    axs[1].legend(labels=[r'$\partial_t$ $\epsilon$'], loc='lower right')
+    axs[1].legend(labels=[r'$\partial_t$ $\epsilon$'], loc='lower right',
+                  fontsize=12)
     axs[1].set_ylim(-0.15, 0.15)
     axs[1].set_xlim(time_lims)
+    axs[1].tick_params(axis='both', labelsize=11) 
 
-    axs[2].set_title('Second Derivative')
-    axs[2].plot(df.index, df.d_d_ellip, c='#465aea')
+    axs[2].set_title('Second Derivative', fontsize=fsize)
+    axs[2].plot(df.index, df.d_d_ellip, c='#465aea', linewidth=2)
     axs[2].axhline(y=0, color='#949494', linestyle='--')
-    axs[2].legend(labels=[r'$\partial^2_t$ $\epsilon$'], loc='lower right')
+    axs[2].legend(labels=[r'$\partial^2_t$ $\epsilon$'], loc='lower right',
+                  fontsize=12)
     axs[2].set_ylim(-1.5, 1.5)
     axs[2].set_xlim(time_lims)
-    axs[2].set_xlabel('Time (s)')
-
+    axs[2].set_xlabel('Time (s)', fontsize=fsize)
+    axs[2].tick_params(axis='both', labelsize=11) 
+    
+    plt.subplots_adjust(left=0.1, right=0.9, bottom=0.1, top = 0.9, hspace=.5)
+    
+    
+    plt.tight_layout()
     if savefig:
         today = datetime.now().strftime('%Y%m%d_%H%M%S')
         plt.savefig(folder + '/201206_MOI_ellip_'+today+'.png', dpi=300)
@@ -107,32 +117,45 @@ def Plot_Ellip_Timeseries(df, savefig=False):
 def Plot_MOI_Timeseries(df, savefig=False):
     """
     """
-    fig, axs = plt.subplots(3, 1, figsize=(9, 8))
-    plt.subplots_adjust(hspace=.35)
+    fsize = 12
+    fig, axs = plt.subplots(3, 1, figsize=(6, 7))
     time_lims = -0.5, mt.ceil(df.index[-1])
 
-    axs[0].set_title('Principal Moments of Inertia I$_{xx}$ and I$_{zz}$')
-    axs[0].plot(df.index, df.Ixx, df.index, df.Izz)
-    axs[0].legend(labels=['I$_{xx}$', 'I$_{zz}$'])
+    axs[0].set_title('Principal Moments of Inertia I$_{xx}$ and I$_{zz}$',
+                     fontsize=fsize)
+    axs[0].plot(df.index, df.Ixx, df.index, df.Izz, linewidth=2)
+    axs[0].legend(labels=['I$_{xx}$', 'I$_{zz}$'], loc='upper right',
+                  fontsize=12)
     axs[0].set_xlim(time_lims)
+    axs[0].tick_params(axis='both', labelsize=11) 
 
-    axs[1].set_title('First Derivative')
-    axs[1].plot(df.index, df.d_Ixx, df.index, df.d_Izz)
+
+    axs[1].set_title('First Derivative', fontsize=fsize)
+    axs[1].plot(df.index, df.d_Ixx, df.index, df.d_Izz, linewidth=2)
     axs[1].legend(labels=[r'$\partial_t$ I$_{xx}$',
-                          r'$\partial_t$ I$_{zz}$'])
+                          r'$\partial_t$ I$_{zz}$'], loc='upper right',
+                  fontsize=12)
     axs[1].axhline(y=0, color='#949494', linestyle='--')
     axs[1].set_ylim(-2.5e44, 2.5e44)
     axs[1].set_xlim(time_lims)
+    axs[1].tick_params(axis='both', labelsize=11) 
 
-    axs[2].set_title('Second Derivative')
-    axs[2].plot(df.index, df.d_d_Ixx, df.index, df.d_d_Izz)
+
+    axs[2].set_title('Second Derivative', fontsize=fsize)
+    axs[2].plot(df.index, df.d_d_Ixx, df.index, df.d_d_Izz, linewidth=2)
     axs[2].legend(labels=[r'$\partial^2_t$ I$_{xx}$',
-                          r'$\partial^2_t$ I$_{zz}$'])
+                          r'$\partial^2_t$ I$_{zz}$'], loc='upper right',
+                  fontsize=12)
     axs[2].axhline(y=0, color='#949494', linestyle='--')
     axs[2].set_ylim(-2.5e45, 2.5e45)
-    axs[2].set_xlabel('Time (s)')
+    axs[2].set_xlabel('Time (s)', fontsize=fsize)
     axs[2].set_xlim(time_lims)
+    axs[2].tick_params(axis='both', labelsize=11)
+    
+    plt.subplots_adjust(left=0.1, right=0.9, bottom=0.1, top = 0.9, hspace=.5)
 
+
+    plt.tight_layout()
     if savefig:
         today = datetime.now().strftime('%Y%m%d_%H%M%S')
         plt.savefig(folder + '/201206_MOI_'+today+'.png', dpi=300)
