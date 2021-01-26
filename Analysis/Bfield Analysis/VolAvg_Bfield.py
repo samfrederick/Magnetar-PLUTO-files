@@ -53,7 +53,7 @@ def PlotBfield(df):
                 df[comp_names],
                 linewidth=2)
     axs[0].legend(labels=['$\\bar{B}_{p}$', '$\\bar{B}_{t}$'],
-                  loc='upper right', fontsize=10, framealpha=1)
+                  loc='lower left', fontsize=10, framealpha=1)
     axs[0].set_xlim(-1, 22)
     axs[0].tick_params(axis='both', labelsize=11) 
     
@@ -64,7 +64,7 @@ def PlotBfield(df):
     axs[1].axhline(y=0, color='#949494', linestyle='--')
     axs[1].legend(labels=['$\partial_t$ $\\bar{B}_{p}$',
                           '$\partial_t$ $\\bar{B}_{t}$'],
-                  loc='upper right',fontsize=10)
+                  loc='lower left',fontsize=10)
     axs[1].set_ylim(-2e17, 2e17)
     axs[1].set_xlim(-1, 22)
     axs[1].tick_params(axis='both', labelsize=11) 
@@ -76,7 +76,7 @@ def PlotBfield(df):
     axs[2].axhline(y=0, color='#949494', linestyle='--')
     axs[2].legend(labels=['$\partial^2_t$ $\\bar{B}_{p}$',
                           '$\partial^2_t$ $\\bar{B}_{t}$'],
-                  loc='upper right',fontsize=10)
+                  loc='lower left',fontsize=10)
     axs[2].set_ylim(-1e18, 1e18)
     axs[2].set_xlim(-1, 22)
     axs[2].set_xlabel('Time (s)', fontsize=fsize)
@@ -86,7 +86,7 @@ def PlotBfield(df):
     plt.tight_layout()
 
     today = datetime.now().strftime('%Y%m%d_%H%M%S')
-    plt.savefig('Bfield Analysis/201206_Volume_Avg_Bfield_'+today+'.png', dpi=300)
+    plt.savefig('Bfield Analysis/Volume_Avg_Bfield.png', dpi=300)
     #plt.close()
     
 # ----------------------------------------------------------------------------
