@@ -46,7 +46,8 @@ plt.errorbar(compute_data.nthetaphi.values,compute_data.timetosol.values,
              yerr=compute_data.err.values,fmt='o')
 
 plt.plot(xinterp,yinterp,'--',color='lightcoral')
-plt.xlabel('Angular resolution ($n_{\\theta} = \pi/\Delta_{\\theta,\phi}$)',fontsize = 18)
+plt.xlabel('Angular resolution ($n_{\\theta} = \pi/\Delta_{\\theta,\phi}$)',
+           fontsize = 18)
 plt.xticks(fontsize = 15)
 plt.ylabel('Time to Solution (hours)',fontsize = 18)
 plt.yticks(fontsize = 15)
