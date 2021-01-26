@@ -110,7 +110,7 @@ def Plot_Ellip_Timeseries(df, savefig=False):
     plt.tight_layout()
     if savefig:
         today = datetime.now().strftime('%Y%m%d_%H%M%S')
-        plt.savefig(folder + '/201206_MOI_ellip_'+today+'.png', dpi=300)
+        plt.savefig(folder + '/Ellip_evol.png', dpi=300)
         #plt.close()
 
 
@@ -158,7 +158,7 @@ def Plot_MOI_Timeseries(df, savefig=False):
     plt.tight_layout()
     if savefig:
         today = datetime.now().strftime('%Y%m%d_%H%M%S')
-        plt.savefig(folder + '/201206_MOI_'+today+'.png', dpi=300)
+        plt.savefig(folder + '/MOI_evol.png', dpi=300)
         #plt.close()
 
 
