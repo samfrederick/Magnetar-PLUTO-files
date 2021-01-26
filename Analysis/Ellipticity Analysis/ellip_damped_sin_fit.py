@@ -9,6 +9,7 @@ import numpy as np
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 
+sns.set_style('darkgrid')
 def Decaying_Sinusoid(t, offset, a, lam, omega, c):
     return offset + a*np.exp(lam*t)*np.cos(omega*t) + c*(t**-1)
 
