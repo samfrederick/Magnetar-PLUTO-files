@@ -187,8 +187,9 @@ def Plots(norm_df, savefig=False):
     if savefig:
         today = datetime.now().strftime('%Y%m%d_%H%M')
         os.chdir(analysis_dir + '/Angular Res Analysis')
-        plt.savefig('Angular_Res_Comparison_'+today+'.png', dpi=300)
+        plt.savefig('Angular_Res_Comparison.png', dpi=300)
 
 ntheta8, ntheta16, ntheta32 = ImportData()
 norm_df = NormalizedMOIDataframe()
+norm_df = norm_df.loc[:20, :]
 Plots(norm_df, savefig=True)
