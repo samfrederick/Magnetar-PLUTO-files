@@ -3,6 +3,9 @@ This repository provides files for modeling magnetar structure in PLUTO, an astr
 
 This work is in active development during the 2018-2019 academic year for the completion of an honors thesis in physics from Davidson College. 
 
+## Archived Repository Version 1.0.1
+[![DOI](https://zenodo.org/badge/146366066.svg)](https://zenodo.org/badge/latestdoi/146366066)
+
 ## File Structure
 
 * __Documents and .Tex files__ - Documents detailing boundary conditions and state equations for neutron star simulations
