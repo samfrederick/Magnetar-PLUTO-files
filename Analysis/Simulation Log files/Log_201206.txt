@@ -1,0 +1,166 @@
+ 
+   ___  __   __  ____________   
+  / _ \/ /  / / / /_  __/ __ \ 
+ / ___/ /__/ /_/ / / / / /_/ /  
+/_/  /____/\____/ /_/  \____/   
+=============================    v. 4.4  
+
+> System:
+
+  USER:             sam
+  SYSTEM_NAME:      Linux
+  NODE_NAME:        Planck
+  ARCH:             x86_64
+  BYTE_ORDER:       little
+
+  - Basic data type:
+    o sizeof (char)     = 1
+    o sizeof (uchar)    = 1
+    o sizeof (short)    = 2
+    o sizeof (ushort)   = 2
+    o sizeof (int)      = 4
+    o sizeof (long)     = 8
+    o sizeof (*int)     = 8
+    o sizeof (float)    = 4
+    o sizeof (double)   = 8
+    o sizeof (*double)  = 8
+
+  - Structure data type:
+    o sizeof (cmdLine)    = 64
+    o sizeof (Data)       = 280
+    o sizeof (Grid)       = 1056
+    o sizeof (Float_Vect) = 12
+    o sizeof (Image)      = 856
+    o sizeof (Output)     = 1768
+    o sizeof (RGB)        = 3
+    o sizeof (Runtime)    = 47000
+    o sizeof (Restart)    = 128
+    o sizeof (timeStep)   = 136
+    o sizeof (RBox)       = 112
+    o sizeof (State)      = 128
+    o sizeof (Sweep)      = 568
+
+> Local time:       Sun Dec  6 09:33:16 2020
+
+> Cmd line args:    
+
+> Header configuration:
+
+  PHYSICS:          MHD    [div.B: Divergence Cleaning (GLM)]
+  DIMENSIONS:       3
+  GEOMETRY:         Spherical
+  BODY_FORCE:       EXPLICIT
+  RECONSTRUCTION:   WENO 3rd order (Primitive lim)
+  TRACERS:          0
+  VARIABLES:        9
+  ENTROPY_SWITCH:   NO
+  BACKGROUND_FIELD: NO
+  LOADED MODULES:
+
+  ROTATION:         NO
+  EOS:              Ideal
+  TIME STEPPING:    Runga_Kutta III
+
+> Runtime configuration (pluto.ini):
+
+  +----------------------------------------------------------
+  | [Grid]
+  | 
+  | X1-grid    2     0     100      u    1.0 10 u 1.1
+  | X2-grid    1     0     32       u    3.141592659
+  | X3-grid    1     0     64       u    6.283185307
+  | 
+  | [Chombo Refinement]
+  | 
+  | Levels           4
+  | Ref_ratio        2 2 2 2 2
+  | Regrid_interval  2 2 2 2
+  | Refine_thresh    0.3
+  | Tag_buffer_size  3
+  | Block_factor     8
+  | Max_grid_size    64
+  | Fill_ratio       0.75
+  | 
+  | [Time]
+  | 
+  | CFL              0.4
+  | CFL_max_var      1.1
+  | tstop            30
+  | first_dt         1.e-5
+  | [Solver]
+  | 
+  | Solver         hll
+  | 
+  | [Boundary]
+  | 
+  | X1-beg        outflow
+  | X1-end        outflow
+  | X2-beg        polaraxis
+  | X2-end        polaraxis
+  | X3-beg        periodic
+  | X3-end        periodic
+  | 
+  | [Static Grid Output]
+  | 
+  | uservar       2    gpot hstatic_condition
+  | output_dir    /media/sam/BE48068348063B23/Simulation_Results/201206
+  | dbl          -1.0    -1    single_file
+  | flt          -1.0    -1    single_file
+  | vtk          .001    -1    single_file cgs
+  | dbl.h5       -1.0    -1
+  | flt.h5       -1.0    -1
+  | tab          -1.0    -1
+  | ppm          -1.0    -1
+  | png          -1.0    -1
+  | log           10
+  | log_dir    /media/sam/BE48068348063B23/Simulation_Results/201206
+  | analysis     -1.0    -1
+  | 
+  | [Chombo HDF5 output]
+  | 
+  | Checkpoint_interval  -1.0  0
+  | Plot_interval         1.0  0
+  | 
+  | [Particles]
+  | 
+  | Nparticles          -1     1
+  | particles_dbl        1.0  -1
+  | particles_flt       -1.0  -1
+  | particles_vtk       -1.0  -1
+  | particles_tab       -1.0  -1
+  | 
+  | [Parameters]
+  | RMIN    0
+  | RMAX  1.0
+  | RGRID 100
+  +---------------------------------------------------------
+
+> Generating grid...
+
+  Global grid:
+  X1: [   0.0000,   1.1000],    110 point(s), 3 ghosts
+  X2: [   0.0000,   3.1416],     32 point(s), 3 ghosts
+  X3: [   0.0000,   6.2832],     64 point(s), 3 ghosts
+
+  Local grid:
+  X1: [   0.0000,   1.1000],    110 point(s); 3 ghosts; Active zones = [3, 112]
+  X2: [   0.0000,   3.1416],     32 point(s); 3 ghosts; Active zones = [3, 34]
+  X3: [   0.0000,   6.2832],     64 point(s); 3 ghosts; Active zones = [3, 66]
+
+> Memory allocation
+> Assigning initial conditions (Startup) ...
+> Normalization Units:
+
+  [Density]:      1.000e+08 (gr/cm^3), 5.979e+31 (1/cm^3)
+  [Pressure]:     1.000e+28 (dyne/cm^2)
+  [Velocity]:     1.000e+10 (cm/s)
+  [Length]:       1.000e+10 (cm)
+  [Temperature]:  1.203e+12 X (p/rho*mu) (K)
+  [Time]:         1.000e+00 (sec), 3.171e-08 (yrs) 
+  [Mag Field]:    3.545e+14 (Gauss)
+ 
+> Number of processors: 1
+> Proc size:            110 X 32 X 64
+> Writing file #0 (vtk) to disk...
+> Starting computation... 
+
