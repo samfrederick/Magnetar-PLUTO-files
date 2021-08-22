@@ -1,7 +1,7 @@
 # Magnetar-PLUTO-files
 This repository provides files for modeling magnetar structure in PLUTO, an astrophysical dynamics software package.   
 
-This work is in active development during the 2018-2019 academic year for the completion of an honors thesis in physics from Davidson College. 
+This work was developed during the 2018-2019 academic year for the completion of an honors thesis in physics from Davidson College. 
 
 ## Archived Repository Version 1.0.1
 [![DOI](https://zenodo.org/badge/146366066.svg)](https://zenodo.org/badge/latestdoi/146366066)
